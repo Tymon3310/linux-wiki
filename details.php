@@ -40,7 +40,7 @@ $distro = $result->fetch_assoc();
                 <button id="theme-toggle" class="btn-theme-toggle" title="Przełącz tryb jasny/ciemny">
                     <i id="theme-toggle-icon" class="fas fa-sun"></i>
                 </button>
-                <a href="index.php" class="btn-return">Powrót do strony głównej</a>
+                <a href="index.php" class="btn-return"><i class="fas fa-home"></i> Powrót do strony głównej</a>
             </div>
         </header>
         
@@ -59,6 +59,7 @@ $distro = $result->fetch_assoc();
                     <div class="website-link">
                         <a href="<?php echo htmlspecialchars($distro['website']); ?>" 
                            target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-globe"></i> 
                            Oficjalna strona
                         </a>
                     </div>
@@ -87,7 +88,7 @@ $distro = $result->fetch_assoc();
             <?php endif; ?>
             
             <div class="actions">
-                <a href="index.php" class="btn btn-primary"><i class="fas fa-home"></i> Powrót do strony głównej</a>
+                <!-- <a href="index.php" class="btn btn-primary"><i class="fas fa-home"></i> Powrót do strony głównej</a> -->
                 <a href="edit.php?id=<?php echo $distro['id']; ?>" class="btn btn-edit"><i class="fas fa-edit"></i> Edytuj</a>
                 <button id="delete-button" class="btn btn-delete" data-id="<?php echo $distro['id']; ?>" 
                         data-name="<?php echo htmlspecialchars($distro['name']); ?>"><i class="fas fa-trash-alt"></i> Usuń</button>

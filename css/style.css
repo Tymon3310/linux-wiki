@@ -304,6 +304,13 @@ h1::after {
     transition: background-color 0.3s;
 }
 
+#search-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
 /* Sekcja wyników */
 .results-section {
     min-height: 200px;
@@ -398,7 +405,7 @@ button[type="submit"] i {
 .btn:hover,
 .btn-primary:hover,
 .btn-return:hover {
-    background-color: var(--primary-color);
+    background-color: #2980b9;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
