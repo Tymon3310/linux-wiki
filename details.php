@@ -29,12 +29,19 @@ $distro = $result->fetch_assoc();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($distro['name']); ?> - Szczegóły dystrybucji Linux</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Informacje o dystrybucji Linux</h1>
+            <div class="header-buttons">
+                <button id="theme-toggle" class="btn-theme-toggle" title="Przełącz tryb jasny/ciemny">
+                    <i id="theme-toggle-icon" class="fas fa-sun"></i>
+                </button>
+                <a href="index.php" class="btn-return">Powrót do strony głównej</a>
+            </div>
         </header>
         
         <main class="distro-details">
@@ -80,15 +87,15 @@ $distro = $result->fetch_assoc();
             <?php endif; ?>
             
             <div class="actions">
-                <a href="/" class="btn btn-primary">Powrót do strony głównej</a>
-                <a href="edit.php?id=<?php echo $distro['id']; ?>" class="btn btn-edit">Edytuj</a>
+                <a href="index.php" class="btn btn-primary"><i class="fas fa-home"></i> Powrót do strony głównej</a>
+                <a href="edit.php?id=<?php echo $distro['id']; ?>" class="btn btn-edit"><i class="fas fa-edit"></i> Edytuj</a>
                 <button id="delete-button" class="btn btn-delete" data-id="<?php echo $distro['id']; ?>" 
-                        data-name="<?php echo htmlspecialchars($distro['name']); ?>">Usuń</button>
+                        data-name="<?php echo htmlspecialchars($distro['name']); ?>"><i class="fas fa-trash-alt"></i> Usuń</button>
             </div>
-                        <br>
+            <br>
 
             <div class="comments-section">
-                <h3>Komentarze</h3>
+                <h3><i class="far fa-comments"></i> Komentarze</h3>
                 
                 <?php
                 // Pobranie komentarzy dla tej dystrybucji
@@ -96,41 +103,41 @@ $distro = $result->fetch_assoc();
                 $comment_result = $conn->query($comment_sql);
                 
                 if ($comment_result && $comment_result->num_rows > 0) {
-                    echo "<div class='comments-count'>{$comment_result->num_rows} " . 
+                    echo "<div class='comments-count'><i class='fas fa-comment-alt'></i> {$comment_result->num_rows} " . 
                          ($comment_result->num_rows == 1 ? "komentarz" : "komentarzy") . "</div>";
                     
                     echo "<div class='comments-container'>";
                     while ($comment = $comment_result->fetch_assoc()) {
                         echo "<div class='comment'>";
                         echo "<div class='comment-header'>";
-                        echo "<strong class='comment-author'>" . htmlspecialchars($comment['username']) . "</strong>";
-                        echo "<span class='comment-date'>". date('d.m.Y H:i', strtotime($comment['date_added'])) . "</span>";
+                        echo "<strong class='comment-author'><i class='fas fa-user'></i> " . htmlspecialchars($comment['username']) . "</strong>";
+                        echo "<span class='comment-date'><i class='far fa-clock'></i> ". date('d.m.Y H:i', strtotime($comment['date_added'])) . "</span>";
                         echo "</div>";
                         echo "<div class='comment-body'>" . nl2br(htmlspecialchars($comment['comment'])) . "</div>";
                         echo "<div class='comment-actions'>";
-                        echo "<button class='btn-delete-comment' data-comment-id='{$comment['id']}' data-username='" . htmlspecialchars($comment['username']) . "'>Usuń</button>";
+                        echo "<button class='btn-delete-comment' data-comment-id='{$comment['id']}' data-username='" . htmlspecialchars($comment['username']) . "'><i class='fas fa-trash-alt'></i> Usuń</button>";
                         echo "</div>";
                         echo "</div>";
                     }
                     echo "</div>";
                 } else {
-                    echo "<div class='no-comments'>Brak komentarzy do tej dystrybucji. Bądź pierwszy!</div>";
+                    echo "<div class='no-comments'><i class='fas fa-comment-slash'></i> Brak komentarzy do tej dystrybucji. Bądź pierwszy!</div>";
                 }
                 ?>
                 
                 <div class="add-comment-form">
-                    <h4>Dodaj komentarz</h4>
+                    <h4><i class="far fa-comment-dots"></i> Dodaj komentarz</h4>
                     <form method="post" action="include/add_comment.php" id="comment-form">
                         <input type="hidden" name="distro_id" value="<?php echo $distro['id']; ?>">
                         <div class="form-group">
-                            <label for="username">Nazwa użytkownika</label>
+                            <label for="username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
                             <input type="text" id="username" name="username" placeholder="Twoja nazwa użytkownika" required>
                         </div>
                         <div class="form-group">
-                            <label for="comment">Komentarz</label>
+                            <label for="comment"><i class="fas fa-pen"></i> Komentarz</label>
                             <textarea id="comment" name="comment" rows="4" placeholder="Twój komentarz..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Dodaj komentarz</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Dodaj komentarz</button>
                     </form>
                 </div>
             </div>
@@ -139,15 +146,15 @@ $distro = $result->fetch_assoc();
         <!-- Popup potwierdzenia usunięcia -->
         <div id="delete-modal" class="modal">
             <div class="modal-content">
-                <h3>Potwierdź usunięcie</h3>
+                <h3><i class="fas fa-exclamation-triangle"></i> Potwierdź usunięcie</h3>
                 <p>Czy na pewno chcesz usunąć dystrybucję <strong id="distro-name-to-delete"></strong>?</p>
-                <p class="warning">Ta operacja jest nieodwracalna!</p>
+                <p class="warning"><i class="fas fa-exclamation-circle"></i> Ta operacja jest nieodwracalna!</p>
                 
                 <div class="modal-actions">
                     <form id="delete-form" method="post" action="include/delete_distro.php">
                         <input type="hidden" id="distro-id-to-delete" name="id">
-                        <button type="button" id="cancel-delete" class="btn-secondary">Anuluj</button>
-                        <button type="submit" name="delete" class="btn-delete">Usuń</button>
+                        <button type="button" id="cancel-delete" class="btn-secondary"><i class="fas fa-ban"></i> Anuluj</button>
+                        <button type="submit" name="delete" class="btn-delete"><i class="fas fa-trash-alt"></i> Usuń</button>
                     </form>
                 </div>
             </div>
@@ -156,15 +163,15 @@ $distro = $result->fetch_assoc();
         <!-- Popup potwierdzenia usunięcia komentarza -->
         <div id="delete-comment-modal" class="modal">
             <div class="modal-content">
-                <h3>Potwierdź usunięcie komentarza</h3>
+                <h3><i class="fas fa-exclamation-triangle"></i> Potwierdź usunięcie komentarza</h3>
                 <p>Czy na pewno chcesz usunąć komentarz użytkownika <strong id="comment-username-to-delete"></strong>?</p>
-                <p class="warning">Ta operacja jest nieodwracalna!</p>
+                <p class="warning"><i class="fas fa-exclamation-circle"></i> Ta operacja jest nieodwracalna!</p>
                 
                 <div class="modal-actions">
                     <form id="delete-comment-form" method="post" action="include/delete_comment.php">
                         <input type="hidden" id="comment-id-to-delete" name="id">
-                        <button type="button" id="cancel-delete-comment" class="btn-secondary">Anuluj</button>
-                        <button type="submit" name="delete" class="btn-delete">Usuń</button>
+                        <button type="button" id="cancel-delete-comment" class="btn-secondary"><i class="fas fa-ban"></i> Anuluj</button>
+                        <button type="submit" name="delete" class="btn-delete"><i class="fas fa-trash-alt"></i> Usuń</button>
                     </form>
                 </div>
             </div>
@@ -175,6 +182,7 @@ $distro = $result->fetch_assoc();
         </footer>
     </div>
 
+    <script src="js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Funkcja konwertująca URL YouTube na format embed

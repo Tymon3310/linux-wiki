@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
 </head>
 <body>
@@ -15,7 +16,12 @@
         <header>
             <h1>Baza Dystrybucji Linux</h1>
             <div class="header-buttons">
-                <button id="show-add-form" class="btn-primary">Dodaj nową dystrybucję</button>
+                <button id="theme-toggle" class="btn-theme-toggle" title="Przełącz tryb jasny/ciemny">
+                    <i id="theme-toggle-icon" class="fas fa-sun"></i>
+                </button>
+                <button id="show-add-form" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję
+                </button>
             </div>
         </header>
         
@@ -24,7 +30,7 @@
             <h2>Znajdź dystrybucję Linux</h2>
             <form id="search-form" onsubmit="performSearch(); return false;">
                 <input type="text" name="search_distro" id="search-input" placeholder="Wpisz nazwę dystrybucji...">
-                <button type="submit" id="search-button">Szukaj</button>
+                <button type="submit" id="search-button"><i class="fas fa-search"></i> Szukaj</button>
             </form>
         </div>
 
@@ -77,7 +83,7 @@
                             <h3><?php echo htmlspecialchars($row['name']); ?></h3>
                             <p><?php echo substr(htmlspecialchars($row['description']), 0, 150); echo (strlen($row['description']) > 150) ? '...' : ''; ?></p>
                             <div class="card-buttons">
-                                <a href="details.php?id=<?php echo $row['id']; ?>" class="btn-details">Szczegóły</a>
+                                <a href="details.php?id=<?php echo $row['id']; ?>" class="btn-details"><i class="fas fa-info-circle"></i> Szczegóły</a>
                             </div>
                         </div>
                         <?php
@@ -97,39 +103,39 @@
         
         <!-- Formularz dodawania nowej dystrybucji -->
         <div id="add-form-container" class="add-form-section" style="display: none;">
-            <h2>Dodaj nową dystrybucję Linux</h2>
+            <h2><i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję Linux</h2>
             <form id="add-form" method="post" action="include/add_distro.php" enctype="multipart/form-data">
                 <input type="hidden" name="distro_name" id="distro-name-hidden">
                 
                 <div class="form-group">
-                    <label for="name">Nazwa dystrybucji:</label>
+                    <label for="name"><i class="fas fa-tag"></i> Nazwa dystrybucji:</label>
                     <input type="text" name="name" id="name" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="description">Opis (min. 30 znaków):</label>
+                    <label for="description"><i class="fas fa-align-left"></i> Opis (min. 30 znaków):</label>
                     <textarea name="description" id="description" rows="5" required></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label for="website">Strona internetowa (opcjonalnie):</label>
+                    <label for="website"><i class="fas fa-globe"></i> Strona internetowa (opcjonalnie):</label>
                     <input type="url" name="website" id="website" placeholder="https://example.com">
                 </div>
 
                 <div class="form-group">
-                    <label for="youtube">Filmik na Youtube o dystrybucji (opcjonalnie):</label>
+                    <label for="youtube"><i class="fab fa-youtube"></i> Filmik na Youtube o dystrybucji (opcjonalnie):</label>
                     <input type="url" name="youtube" id="youtube" placeholder="https://youtube.com/example" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Logo dystrybucji (max 2MB):</label>
+                    <label><i class="fas fa-image"></i> Logo dystrybucji (max 2MB):</label>
                     <!-- Oryginalny input zostaje, ale będzie ukryty przez JavaScript -->
                     <input type="file" name="logo" id="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml" required>
-                    <small>Akceptowane formaty: JPG, JPEG, PNG, GIF, SVG</small>
-                    <small>Możesz przeciągnąć i upuścić plik lub wkleić obraz ze schowka (Ctrl+V)</small>
+                    <small><i class="fas fa-info-circle"></i> Akceptowane formaty: JPG, JPEG, PNG, GIF, SVG</small>
+                    <small><i class="fas fa-hand-pointer"></i> Możesz przeciągnąć i upuścić plik lub wkleić obraz ze schowka (Ctrl+V)</small>
                 </div>
                 
-                <button type="submit" name="add" id="add-button">Dodaj dystrybucję</button>
+                <button type="submit" name="add" id="add-button"><i class="fas fa-plus"></i> Dodaj dystrybucję</button>
             </form>
         </div>
         
