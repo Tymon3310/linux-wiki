@@ -35,6 +35,47 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Funkcja przełączania między trybami jasnym i ciemnym
+    function toggleTheme() {
+        document.body.classList.toggle("light-mode");
+
+        // Store theme preference
+        const isLightMode = document.body.classList.contains("light-mode");
+        localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+
+        // Add transition class to animate theme change
+        document.documentElement.classList.add('theme-transitioning');
+
+        // Remove transition class after animation completes
+        setTimeout(() => {
+            document.documentElement.classList.remove('theme-transitioning');
+        }, 300); // Match this to your CSS transition time
+
+        // Update theme toggle button icon
+        const themeToggleIcon = document.getElementById('theme-toggle-icon');
+        if (themeToggleIcon) {
+            themeToggleIcon.className = isLightMode ? 'fas fa-moon' : 'fas fa-sun';
+            themeToggleIcon.title = isLightMode ? 'Przełącz na tryb ciemny' : 'Przełącz na tryb jasny';
+        }
+    }
+
+    // Initialize theme toggle button
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+
+    // Load theme preference from local storage
+    function loadThemePreference() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') {
+            toggleTheme(); // Apply light mode if it was saved
+        }
+    }
+
+    // Load theme preference when page loads
+    loadThemePreference();
+
     // Funkcja do wykonywania wyszukiwania dystrybucji
     window.performSearch = function () {
         const searchInput = document.getElementById('search-input');
@@ -96,8 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <h3>${distro.name}</h3>
                                 <p>${distro.description.substring(0, 150)}${distro.description.length > 150 ? '...' : ''}</p>
                                 <div class="card-buttons">
-                                    <a href="details.php?id=${distro.id}" class="btn-details">Szczegóły</a>
-                                    <a href="edit.php?id=${distro.id}" class="btn-edit">Edytuj</a>
+                                    <a href="details.php?id=${distro.id}" class="btn-details"><i class="fas fa-info-circle"></i> Szczegóły</a>
+                                    <a href="edit.php?id=${distro.id}" class="btn-edit"><i class="fas fa-edit"></i> Edytuj</a>
                                 </div>
                             </div>
                         `;
