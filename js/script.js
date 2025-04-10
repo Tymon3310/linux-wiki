@@ -96,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <h3>${distro.name}</h3>
                                 <p>${distro.description.substring(0, 150)}${distro.description.length > 150 ? '...' : ''}</p>
                                 <div class="card-buttons">
-                                    <a href="details.php?id=${distro.id}" class="btn-details"><i class="fas fa-info-circle"></i> Szczegóły</a>
-                                    <a href="edit.php?id=${distro.id}" class="btn-edit"><i class="fas fa-edit"></i> Edytuj</a>
+                                    <a href="details.php?id=${distro.id}" class="btn-details">Szczegóły</a>
+                                    <a href="edit.php?id=${distro.id}" class="btn-edit">Edytuj</a>
                                 </div>
                             </div>
                         `;
