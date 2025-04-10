@@ -130,15 +130,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     let resultsHTML = '<h2 class="section-title">Wyniki wyszukiwania dla: "' + searchTerm + '"</h2>';
                     resultsHTML += '<div class="search-results">';
                     data.forEach(distro => {
-                        const imagePath = distro.logo || '';
+                        const imagePath = distro.logo_path || '';
                         resultsHTML += `
                             <div class="distro-card">
                                 <img src="${imagePath}" alt="${distro.name}" class="distro-logo">
                                 <h3>${distro.name}</h3>
                                 <p>${distro.description.substring(0, 150)}${distro.description.length > 150 ? '...' : ''}</p>
                                 <div class="card-buttons">
-                                    <a href="details.php?id=${distro.id}" class="btn-details">Szczegóły</a>
-                                    <a href="edit.php?id=${distro.id}" class="btn-edit">Edytuj</a>
+                                    <a href="details.php?id=${distro.id}" class="btn-details"><i class="fas fa-info-circle"></i> Szczegóły</a>
+                                    <a href="edit.php?id=${distro.id}" class="btn-edit"><i class="fas fa-edit"></i> Edytuj</a>
                                 </div>
                             </div>
                         `;
