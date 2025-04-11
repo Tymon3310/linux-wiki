@@ -169,6 +169,24 @@ header {
     align-items: center;
 }
 
+/* Header buttons with consistent height */
+.header-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.header-buttons .btn-primary,
+.header-buttons .btn-return,
+.header-buttons button#show-add-form {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 0;
+}
+
 /* Theme toggle button */
 .btn-theme-toggle {
     background: none;
@@ -237,6 +255,19 @@ button[type="submit"]:hover {
 button[type="submit"]:active {
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Style for button icons - add proper spacing */
+.btn i,
+.btn-primary i,
+.btn-secondary i,
+.btn-edit i,
+.btn-details i,
+.btn-delete i,
+.btn-return i,
+button[type="submit"] i {
+    font-size: 0.9em;
+    margin-right: 8px; /* Add space between icon and text */
 }
 
 /* Tekst */
@@ -364,14 +395,17 @@ h1::after {
     align-items: center;
 }
 
-/* Consistent button styling */
+/* Fix for flex alignment in buttons to ensure text and icons are properly centered */
 .btn,
 .btn-primary,
 .btn-secondary,
 .btn-edit,
+.btn-details,
 .btn-delete,
 .btn-return {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-width: 120px;
     text-align: center;
     padding: 10px 20px;
@@ -394,6 +428,7 @@ h1::after {
 .btn-return i,
 button[type="submit"] i {
     font-size: 0.9em;
+    margin-right: 8px; /* Add space between icon and text */
 }
 
 .btn,
@@ -485,6 +520,25 @@ button[type="submit"] i {
     align-items: center;
     justify-content: center;
     margin: 0;
+}
+
+/* Form buttons with consistent height */
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.form-buttons .btn-primary,
+.form-buttons .btn-delete,
+.form-buttons .btn-secondary {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 120px;
 }
 
 /* Style for small action buttons in comments */

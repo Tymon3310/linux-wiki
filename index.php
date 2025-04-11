@@ -1,3 +1,7 @@
+<?php
+// Start session for user authentication
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -19,9 +23,24 @@
                 <button id="theme-toggle" class="btn-theme-toggle" title="Przełącz tryb jasny/ciemny">
                     <i id="theme-toggle-icon" class="fas fa-sun"></i>
                 </button>
-                <button id="show-add-form" class="btn-primary">
-                    <i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję
-                </button>
+                
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <!-- User is logged in -->
+                    <button id="show-add-form" class="btn-primary">
+                        <i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję
+                    </button>
+                    <a href="account.php" class="btn-primary">
+                        <i class="fas fa-user-circle"></i> Moje konto
+                    </a>
+                    <a href="logout.php" class="btn-primary">
+                        <i class="fas fa-sign-out-alt"></i> Wyloguj się
+                    </a>
+                <?php else: ?>
+                    <!-- User is not logged in -->
+                    <a href="login.php" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Zaloguj się
+                    </a>
+                <?php endif; ?>
             </div>
         </header>
         

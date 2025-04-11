@@ -1,6 +1,5 @@
 <?php
 /**
- * AJAX Search endpoint for Linux distributions
  * Endpoint do wyszukiwania dystrybucji Linux przez AJAX
  */
 

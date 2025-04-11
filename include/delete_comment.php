@@ -1,31 +1,47 @@
 <?php
+// Start session to get user information
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit;
+}
 
 require_once 'db_config.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id']) && is_numeric($_POST['id'])) {
-    $comment_id = intval($_POST['id']);
-
-    $check_sql = "SELECT * FROM comments WHERE id = $comment_id";
-    $check_result = mysqli_query($conn, $check_sql);
-
-    if (mysqli_num_rows($check_result) > 0) {
-        $comment_data = mysqli_fetch_assoc($check_result);
-        $distro_id = $comment_data['distro_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
+    $comment_id = (int)$_POST['id'];
+    $user_id = $_SESSION['user_id'];
+    
+    // Get the comment to verify ownership
+    $check_sql = "SELECT c.*, d.id AS distro_id FROM comments c JOIN distributions d ON c.distro_id = d.id WHERE c.id = $comment_id";
+    $check_result = $conn->query($check_sql);
+    
+    if ($check_result && $check_result->num_rows > 0) {
+        $comment = $check_result->fetch_assoc();
+        $distro_id = $comment['distro_id'];
         
-        // Usuń komentarz z bazy danych
-        $sql = "DELETE FROM comments WHERE id = $comment_id";
-
-        if (mysqli_query($conn, $sql)) {
-            header("Location: ../details.php?id=$distro_id&status=success&message=" . urlencode("Komentarz został pomyślnie usunięty."));
+        // Check if user owns the comment
+        if ($comment['user_id'] == $user_id) {
+            // User owns the comment, allow deletion
+            $sql = "DELETE FROM comments WHERE id = $comment_id";
+            
+            if ($conn->query($sql)) {
+                header("Location: ../details.php?id=$distro_id&status=success&message=" . urlencode("Komentarz został pomyślnie usunięty."));
+            } else {
+                header("Location: ../details.php?id=$distro_id&status=error&message=" . urlencode("Błąd podczas usuwania komentarza: " . $conn->error));
+            }
         } else {
-            header("Location: ../details.php?id=$distro_id&status=error&message=" . urlencode("Błąd podczas usuwania: " . mysqli_error($conn)));
+            // User doesn't own the comment
+            header("Location: ../details.php?id=$distro_id&status=error&message=" . urlencode("Nie masz uprawnień do usunięcia tego komentarza."));
         }
     } else {
-        header("Location: ../index.php?status=error&message=" . urlencode("Komentarz o podanym ID nie istnieje."));
+        header("Location: ../index.php?status=error&message=" . urlencode("Nie znaleziono komentarza."));
     }
 } else {
-    // Przekieruj jeśli dostęp bezpośredni bez właściwych parametrów
-    header("Location: ../index.php?status=error&message=" . urlencode("Nieprawidłowe żądanie usunięcia."));
+    header("Location: ../index.php");
 }
 
-mysqli_close($conn);
+$conn->close();
+?>

@@ -1,4 +1,13 @@
 <?php
+// Start session for user authentication
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php?redirect=" . urlencode("edit.php?id=" . $_GET['id']));
+    exit;
+}
+
 // Include database configuration
 include 'include/db_config.php';
 
@@ -9,6 +18,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 
 $id = (int)$_GET['id'];
+$user_id = $_SESSION['user_id'];
 
 // Fetch distribution details
 $sql = "SELECT * FROM distributions WHERE id = $id";
@@ -20,6 +30,12 @@ if (!$result || $result->num_rows === 0) {
 }
 
 $distro = $result->fetch_assoc();
+
+// Check if user owns this distribution
+if ($distro['added_by'] != $user_id) {
+    header("Location: details.php?id=$id&status=error&message=" . urlencode("Nie masz uprawnień do edycji tej dystrybucji."));
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -89,9 +105,28 @@ $distro = $result->fetch_assoc();
                 
                 <div class="form-buttons">
                     <button type="submit" name="update" class="btn-primary"><i class="fas fa-save"></i> Zapisz zmiany</button>
+                    <button type="button" id="delete-button" class="btn-delete" data-id="<?php echo $distro['id']; ?>" 
+                        data-name="<?php echo htmlspecialchars($distro['name']); ?>"><i class="fas fa-trash-alt"></i> Usuń</button>
                     <a href="details.php?id=<?php echo $distro['id']; ?>" class="btn-secondary"><i class="fas fa-times"></i> Anuluj</a>
                 </div>
             </form>
+        </div>
+        
+        <!-- Popup potwierdzenia usunięcia -->
+        <div id="delete-modal" class="modal">
+            <div class="modal-content">
+                <h3><i class="fas fa-exclamation-triangle"></i> Potwierdź usunięcie</h3>
+                <p>Czy na pewno chcesz usunąć dystrybucję <strong id="distro-name-to-delete"></strong>?</p>
+                <p class="warning"><i class="fas fa-exclamation-circle"></i> Ta operacja jest nieodwracalna!</p>
+                
+                <div class="modal-actions">
+                    <form id="delete-form" method="post" action="include/delete_distro.php">
+                        <input type="hidden" id="distro-id-to-delete" name="id">
+                        <button type="button" id="cancel-delete" class="btn-secondary"><i class="fas fa-ban"></i> Anuluj</button>
+                        <button type="submit" name="delete" class="btn-delete"><i class="fas fa-trash-alt"></i> Usuń</button>
+                    </form>
+                </div>
+            </div>
         </div>
         
         <footer>
@@ -100,6 +135,51 @@ $distro = $result->fetch_assoc();
     </div>
     
     <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Funkcjonalność potwierdzenia usunięcia dystrybucji
+            const deleteButton = document.getElementById('delete-button');
+            const deleteModal = document.getElementById('delete-modal');
+            const cancelDelete = document.getElementById('cancel-delete');
+            const distroNameToDelete = document.getElementById('distro-name-to-delete');
+            const distroIdToDelete = document.getElementById('distro-id-to-delete');
+            
+            if (deleteButton) {
+                deleteButton.addEventListener('click', function() {
+                    const distroId = this.getAttribute('data-id');
+                    const distroName = this.getAttribute('data-name');
+                    
+                    // Ustawienie wartości w popupie
+                    distroNameToDelete.textContent = distroName;
+                    distroIdToDelete.value = distroId;
+                    
+                    // Wyświetlenie popupu
+                    deleteModal.style.display = 'block';
+                });
+            }
+            
+            // Zamknięcie popupu po kliknięciu Anuluj
+            if (cancelDelete) {
+                cancelDelete.addEventListener('click', function() {
+                    deleteModal.style.display = 'none';
+                });
+            }
+            
+            // Zamknięcie popupu po kliknięciu poza nim
+            window.addEventListener('click', function(event) {
+                if (event.target === deleteModal) {
+                    deleteModal.style.display = 'none';
+                }
+            });
+            
+            // Zamknięcie popupu po naciśnięciu klawisza Escape
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && deleteModal.style.display === 'block') {
+                    deleteModal.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 <?php

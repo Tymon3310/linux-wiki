@@ -49,4 +49,16 @@ $sql = "CREATE TABLE IF NOT EXISTS comments (
 if ($conn->query($sql) !== TRUE) {
     die("Błąd przy tworzeniu tabeli comments: " . $conn->error);
 }
+
+$sql = "CREATE TABLE IF NOT EXISTS accounts (
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+
+if ($conn->query($sql) !== TRUE) {
+    die("Błąd przy tworzeniu tabeli accounts: " . $conn->error);
+}
 ?>

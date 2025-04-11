@@ -1,4 +1,7 @@
 <?php
+// Start session for user authentication
+session_start();
+
 // Dołączenie konfiguracji bazy danych
 include 'include/db_config.php';
 
@@ -88,10 +91,7 @@ $distro = $result->fetch_assoc();
             <?php endif; ?>
             
             <div class="actions">
-                <!-- <a href="index.php" class="btn btn-primary"><i class="fas fa-home"></i> Powrót do strony głównej</a> -->
                 <a href="edit.php?id=<?php echo $distro['id']; ?>" class="btn btn-edit"><i class="fas fa-edit"></i> Edytuj</a>
-                <button id="delete-button" class="btn btn-delete" data-id="<?php echo $distro['id']; ?>" 
-                        data-name="<?php echo htmlspecialchars($distro['name']); ?>"><i class="fas fa-trash-alt"></i> Usuń</button>
             </div>
             <br>
 
@@ -115,9 +115,11 @@ $distro = $result->fetch_assoc();
                         echo "<span class='comment-date'><i class='far fa-clock'></i> ". date('d.m.Y H:i', strtotime($comment['date_added'])) . "</span>";
                         echo "</div>";
                         echo "<div class='comment-body'>" . nl2br(htmlspecialchars($comment['comment'])) . "</div>";
-                        echo "<div class='comment-actions'>";
-                        echo "<button class='btn-delete-comment' data-comment-id='{$comment['id']}' data-username='" . htmlspecialchars($comment['username']) . "'><i class='fas fa-trash-alt'></i> Usuń</button>";
-                        echo "</div>";
+                        if (isset($_SESSION['username']) && $_SESSION['username'] === $comment['username']) {
+                            echo "<div class='comment-actions'>";
+                            echo "<button class='btn-delete-comment' data-comment-id='{$comment['id']}' data-username='" . htmlspecialchars($comment['username']) . "'><i class='fas fa-trash-alt'></i> Usuń</button>";
+                            echo "</div>";
+                        }
                         echo "</div>";
                     }
                     echo "</div>";
@@ -128,18 +130,18 @@ $distro = $result->fetch_assoc();
                 
                 <div class="add-comment-form">
                     <h4><i class="far fa-comment-dots"></i> Dodaj komentarz</h4>
+                    <?php if (isset($_SESSION['username'])): ?>
                     <form method="post" action="include/add_comment.php" id="comment-form">
                         <input type="hidden" name="distro_id" value="<?php echo $distro['id']; ?>">
-                        <div class="form-group">
-                            <label for="username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
-                            <input type="text" id="username" name="username" placeholder="Twoja nazwa użytkownika" required>
-                        </div>
                         <div class="form-group">
                             <label for="comment"><i class="fas fa-pen"></i> Komentarz</label>
                             <textarea id="comment" name="comment" rows="4" placeholder="Twój komentarz..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Dodaj komentarz</button>
                     </form>
+                    <?php else: ?>
+                    <p class="login-required"><i class="fas fa-info-circle"></i> Musisz być zalogowany, aby dodać komentarz.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </main>
