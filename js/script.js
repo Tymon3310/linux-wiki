@@ -1,6 +1,6 @@
-// Obsługa zdarzeń po załadowaniu strony
+// Obsługa zdarzeń po kompletnym wczytaniu strony
 document.addEventListener('DOMContentLoaded', function () {
-    // Inicjalizacja przycisku pokazującego formularz dodawania
+    // Inicjalizacja przycisku wyświetlającego formularz dodawania dystrybucji
     const showAddFormButton = document.getElementById('show-add-form');
     if (showAddFormButton) {
         showAddFormButton.addEventListener('click', function () {
@@ -8,21 +8,21 @@ document.addEventListener('DOMContentLoaded', function () {
             const nameInput = document.getElementById('name');
             const hiddenInput = document.getElementById('distro-name-hidden');
 
-            // Przekopiowanie wartości z pola wyszukiwania do pola nazwy w formularzu
+            // Kopiowanie wpisanej frazy z wyszukiwarki do pola nazwy w formularzu
             if (searchInput && nameInput && hiddenInput) {
                 nameInput.value = searchInput.value;
                 hiddenInput.value = searchInput.value;
             }
 
-            // Wyświetlenie formularza dodawania
+            // Pokazanie formularza dodawania dystrybucji
             const addFormContainer = document.getElementById('add-form-container');
             if (addFormContainer) {
                 addFormContainer.style.display = 'block';
 
-                // Płynne przewinięcie do formularza
+                // Płynne przewinięcie strony do formularza
                 addFormContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-                // Ustawienie fokusu na odpowiednie pole
+                // Automatyczne ustawienie kursora w odpowiednim polu
                 setTimeout(() => {
                     if (!nameInput.value) {
                         nameInput.focus();
@@ -35,23 +35,23 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Funkcja przełączania między trybami jasnym i ciemnym
+    // Funkcja przełączająca między jasnym i ciemnym motywem
     function toggleTheme() {
         document.body.classList.toggle("light-mode");
 
-        // Store theme preference
+        // Zapisanie preferencji motywu w pamięci przeglądarki
         const isLightMode = document.body.classList.contains("light-mode");
         localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
 
-        // Add transition class to animate theme change
+        // Dodanie klasy przejścia dla płynnej animacji zmiany motywu
         document.documentElement.classList.add('theme-transitioning');
 
-        // Remove transition class after animation completes
+        // Usunięcie klasy przejścia po zakończeniu animacji
         setTimeout(() => {
             document.documentElement.classList.remove('theme-transitioning');
-        }, 300); // Match this to your CSS transition time
+        }, 300); // Czas musi być zgodny z czasem przejścia w CSS
 
-        // Update theme toggle button icon
+        // Aktualizacja ikony przycisku zmiany motywu
         const themeToggleIcon = document.getElementById('theme-toggle-icon');
         if (themeToggleIcon) {
             themeToggleIcon.className = isLightMode ? 'fas fa-moon' : 'fas fa-sun';
@@ -59,24 +59,24 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Initialize theme toggle button
+    // Inicjalizacja przycisku zmiany motywu
     const themeToggleBtn = document.getElementById('theme-toggle');
     if (themeToggleBtn) {
         themeToggleBtn.addEventListener('click', toggleTheme);
     }
 
-    // Load theme preference from local storage
+    // Wczytanie zapisanej preferencji motywu z pamięci lokalnej
     function loadThemePreference() {
         const theme = localStorage.getItem('theme');
         if (theme === 'light') {
-            toggleTheme(); // Apply light mode if it was saved
+            toggleTheme(); // Zastosowanie jasnego motywu, jeśli był zapisany
         }
     }
 
-    // Load theme preference when page loads
+    // Wczytanie preferencji motywu przy ładowaniu strony
     loadThemePreference();
 
-    // Funkcja do wykonywania wyszukiwania dystrybucji
+    // Funkcja wykonująca wyszukiwanie dystrybucji
     window.performSearch = function () {
         const searchInput = document.getElementById('search-input');
         if (!searchInput) return;
@@ -85,12 +85,12 @@ document.addEventListener('DOMContentLoaded', function () {
         const searchTerm = searchInput.value.trim();
         if (searchTerm.length < 2) return;
 
-        // Pokaż animację ładowania
+        // Pokazanie animacji ładowania podczas wyszukiwania
         const resultsDiv = document.getElementById('results');
         if (!resultsDiv) return;
         resultsDiv.innerHTML = '<div class="loading">Szukam dystrybucji...</div>';
 
-        // Aktualizacja adresu URL z zapytaniem wyszukiwania
+        // Aktualizacja adresu URL z parametrem wyszukiwania
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.set('q', searchTerm);
         window.history.pushState({}, '', newUrl);
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 resultsDiv.innerHTML = '';
 
-                // Obsługa przypadku gdy nie znaleziono wyników
+                // Obsługa przypadku, gdy nie znaleziono żadnych wyników
                 if (data.length === 0) {
                     resultsDiv.innerHTML = `
                         <div class="no-results">
@@ -148,12 +148,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(error => {
-                // Obsługa błędów zapytania AJAX
+                // Obsługa błędów podczas zapytania AJAX
                 resultsDiv.innerHTML = `<div class="error-message">Błąd wyszukiwania: ${error.message}</div>`;
             });
     }
 
-    // Automatyczne wyszukiwanie jeśli w URL znajduje się parametr q
+    // Automatyczne wyszukiwanie, jeśli w URL znajduje się parametr 'q'
     const urlParams = new URLSearchParams(window.location.search);
     const searchQuery = urlParams.get('q');
     if (searchQuery) {
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Wyszukiwanie podczas wpisywania z opóźnieniem
+    // Wyszukiwanie dynamiczne podczas wpisywania z opóźnieniem
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
         let typingTimer;
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Funkcja pomocnicza do pobierania parametrów z URL
+    // Pomocnicza funkcja do pobierania parametrów z adresu URL
     function getUrlParameter(name) {
         name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
         var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -197,12 +197,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
     }
 
-    // Obsługa komunikatów o sukcesie i błędach
+    // Obsługa komunikatów o sukcesie i błędach z URL
     const status = getUrlParameter('status');
     const added = getUrlParameter('added');
     const message = getUrlParameter('message');
 
-    // Wyświetlanie komunikatu o powodzeniu operacji
+    // Wyświetlanie komunikatu o pomyślnym dodaniu dystrybucji
     if (status === 'success' && added) {
         const resultsDiv = document.getElementById('results');
         if (resultsDiv) {
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             resultsDiv.insertBefore(successDiv, resultsDiv.firstChild);
 
-            // Automatyczne ukrywanie komunikatu po czasie
+            // Automatyczne ukrywanie komunikatu po określonym czasie
             setTimeout(function () {
                 successDiv.style.opacity = '0';
                 successDiv.style.transition = 'opacity 1s';
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             resultsDiv.insertBefore(errorDiv, resultsDiv.firstChild);
 
-            // Automatyczne ukrywanie komunikatu po czasie
+            // Automatyczne ukrywanie komunikatu o błędzie po dłuższym czasie
             setTimeout(function () {
                 errorDiv.style.opacity = '0';
                 errorDiv.style.transition = 'opacity 1s';
@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Walidacja formularza przed wysłaniem
+    // Walidacja formularza przed jego wysłaniem
     const addForm = document.getElementById('add-form');
     if (addForm) {
         addForm.addEventListener('submit', function (event) {
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
             let isValid = true;
             let errorMessages = [];
 
-            // Walidacja nazwy
+            // Sprawdzanie poprawności nazwy
             if (!nameInput.value.trim()) {
                 isValid = false;
                 errorMessages.push('Proszę podać nazwę dystrybucji');
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 nameInput.classList.remove('error-field');
             }
 
-            // Walidacja opisu
+            // Sprawdzanie poprawności opisu
             if (!descriptionInput.value.trim()) {
                 isValid = false;
                 errorMessages.push('Proszę podać opis dystrybucji');
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 descriptionInput.classList.remove('error-field');
             }
 
-            // Walidacja logo
+            // Sprawdzanie poprawności logo
             if (!logoInput.files || logoInput.files.length === 0) {
                 isValid = false;
                 errorMessages.push('Proszę wybrać plik z logo');
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-            // Walidacja adresu strony (opcjonalnie)
+            // Sprawdzanie poprawności adresu strony (pole nieobowiązkowe)
             if (websiteInput && websiteInput.value.trim()) {
                 const urlPattern = /^(https?:\/\/)([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
                 if (!urlPattern.test(websiteInput.value.trim())) {
@@ -311,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-            // Jeśli walidacja nie przeszła, zatrzymaj wysyłanie formularza i pokaż błędy
+            // Jeśli formularz zawiera błędy, zatrzymaj wysyłanie i pokaż komunikaty
             if (!isValid) {
                 event.preventDefault();
 
@@ -325,14 +325,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 errorHTML += '</ul>';
                 errorContainer.innerHTML = errorHTML;
 
-                // Usuń poprzednie komunikaty o błędach
+                // Usunięcie poprzednich komunikatów o błędach
                 const existingErrors = addForm.querySelectorAll('.validation-errors');
                 existingErrors.forEach(el => el.remove());
 
-                // Dodaj nowy komunikat o błędach
+                // Dodanie nowego komunikatu o błędach
                 addForm.insertBefore(errorContainer, addForm.firstChild);
 
-                // Przewiń do komunikatu o błędach
+                // Płynne przewinięcie do komunikatu o błędach
                 errorContainer.scrollIntoView({ behavior: 'smooth' });
             }
         });

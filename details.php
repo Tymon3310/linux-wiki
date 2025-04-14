@@ -1,5 +1,5 @@
 <?php
-// Start session for user authentication
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
 
 // Dołączenie konfiguracji bazy danych
@@ -32,6 +32,9 @@ $distro = $result->fetch_assoc();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($distro['name']); ?> - Szczegóły dystrybucji Linux</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
 </head>
@@ -43,7 +46,18 @@ $distro = $result->fetch_assoc();
                 <button id="theme-toggle" class="btn-theme-toggle" title="Przełącz tryb jasny/ciemny">
                     <i id="theme-toggle-icon" class="fas fa-sun"></i>
                 </button>
-                <a href="index.php" class="btn-return"><i class="fas fa-home"></i> Powrót do strony głównej</a>
+                <a href="index.php" class="btn-return"><i class="fas fa-home"></i> Strona główna</a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <!-- Użytkownik jest zalogowany -->
+                    <a href="logout.php" class="btn-primary">
+                        <i class="fas fa-sign-out-alt"></i> Wyloguj się
+                    </a>
+                <?php else: ?>
+                    <!-- Użytkownik nie jest zalogowany -->
+                    <a href="login.php" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Zaloguj się
+                    </a>
+                <?php endif; ?>
             </div>
         </header>
         

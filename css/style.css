@@ -1,4 +1,4 @@
-/* Arkusz styli */
+/* Arkusz styli dla bazy dystrybucji Linux */
 
 :root {
     --primary-color: #2b70b6;
@@ -21,11 +21,15 @@
     --light-success-color: #2ecc71;
     --light-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
-    /* Transition for theme switching */
+    /* Czas przejścia przy zmianie motywu */
     --transition-time: 0.3s;
 }
 
-/* Light mode colors */
+a {
+    color: inherit;
+}
+
+/* Kolory dla jasnego motywu */
 .light-mode {
     --primary-color: var(--light-primary-color);
     --secondary-color: var(--light-secondary-color);
@@ -38,18 +42,18 @@
     --shadow: var(--light-shadow);
 }
 
-/* Theme transition class */
+/* Klasa przejścia między motywami */
 .theme-transitioning * {
     transition: background-color var(--transition-time), color var(--transition-time), border-color var(--transition-time);
 }
 
-/* Theme Switch Styles */
+/* Style dla jasnego motywu */
 .light-mode {
     background-color: var(--light-bg-color);
     color: var(--light-text-color);
 }
 
-/* Apply light mode to various elements */
+/* Zastosowanie jasnego motywu dla różnych elementów */
 body.light-mode,
 body:has(.light-mode) {
     background-color: var(--light-bg-color);
@@ -100,19 +104,19 @@ body:has(.light-mode) .btn-edit {
 .light-mode .btn-delete,
 body:has(.light-mode) .btn-delete {
     background-color: var(--error-color) !important;
-    /* Use !important to override any other rules */
+    /* Użyj !important, aby nadpisać inne reguły */
 }
 
 html:not(.light-mode) .btn-delete,
 body:not(.light-mode) .btn-delete,
 .btn-delete {
     background-color: var(--error-color) !important;
-    /* Use !important to override any other rules */
+    /* Użyj !important, aby nadpisać inne reguły */
 }
 
 .btn-delete:hover {
     background-color: #c0392b !important;
-    /* A darker red when hovering */
+    /* Ciemniejszy czerwony przy najechaniu */
 }
 
 light-mode header,
@@ -169,7 +173,7 @@ header {
     align-items: center;
 }
 
-/* Header buttons with consistent height */
+/* Przycisk w nagłówku o spójnej wysokości */
 .header-buttons {
     display: flex;
     gap: 10px;
@@ -187,7 +191,7 @@ header {
     margin: 0;
 }
 
-/* Theme toggle button */
+/* Przycisk przełączania motywu */
 .btn-theme-toggle {
     background: none;
     border: none;
@@ -217,7 +221,7 @@ header {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Enhanced button transitions for all buttons */
+/* Ulepszone przejścia dla przycisków */
 .btn,
 .btn-primary,
 .btn-secondary,
@@ -232,7 +236,7 @@ button[type="submit"],
     transition: all 0.3s ease;
 }
 
-/* Improve hover effects for buttons */
+/* Poprawione efekty najechania dla przycisków */
 .btn:hover,
 .btn-primary:hover,
 .btn-secondary:hover,
@@ -244,7 +248,7 @@ button[type="submit"]:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Active state for buttons when clicked */
+/* Aktywny stan przycisków po kliknięciu */
 .btn:active,
 .btn-primary:active,
 .btn-secondary:active,
@@ -257,7 +261,7 @@ button[type="submit"]:active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Style for button icons - add proper spacing */
+/* Styl dla ikon przycisków - dodanie odpowiedniego odstępu */
 .btn i,
 .btn-primary i,
 .btn-secondary i,
@@ -267,7 +271,8 @@ button[type="submit"]:active {
 .btn-return i,
 button[type="submit"] i {
     font-size: 0.9em;
-    margin-right: 8px; /* Add space between icon and text */
+    margin-right: 8px;
+    /* Dodanie odstępu między ikoną a tekstem */
 }
 
 /* Tekst */
@@ -395,7 +400,7 @@ h1::after {
     align-items: center;
 }
 
-/* Fix for flex alignment in buttons to ensure text and icons are properly centered */
+/* Poprawka dla wyrównania w przyciskach, aby tekst i ikony były odpowiednio wyśrodkowane */
 .btn,
 .btn-primary,
 .btn-secondary,
@@ -428,7 +433,8 @@ h1::after {
 .btn-return i,
 button[type="submit"] i {
     font-size: 0.9em;
-    margin-right: 8px; /* Add space between icon and text */
+    margin-right: 8px;
+    /* Dodanie odstępu między ikoną a tekstem */
 }
 
 .btn,
@@ -471,7 +477,7 @@ button[type="submit"] i {
 /* Stylizacja przycisku usuwania */
 .btn-delete {
     background-color: var(--error-color) !important;
-    /* Use !important to override any other rules */
+    /* Użyj !important, aby nadpisać inne reguły */
     color: white;
     text-decoration: none;
     padding: 10px 20px;
@@ -485,7 +491,7 @@ button[type="submit"] i {
 
 .btn-delete:hover {
     background-color: #c0392b !important;
-    /* A darker red when hovering */
+    /* Ciemniejszy czerwony przy najechaniu */
 }
 
 /* Kontener przycisków karty */
@@ -500,7 +506,7 @@ button[type="submit"] i {
     text-align: center;
 }
 
-/* Actions container */
+/* Kontener akcji */
 .actions {
     display: flex;
     flex-wrap: wrap;
@@ -522,7 +528,7 @@ button[type="submit"] i {
     margin: 0;
 }
 
-/* Form buttons with consistent height */
+/* Przycisk formularza o spójnej wysokości */
 .form-buttons {
     display: flex;
     gap: 10px;
@@ -541,7 +547,7 @@ button[type="submit"] i {
     min-width: 120px;
 }
 
-/* Style for small action buttons in comments */
+/* Styl dla małych przycisków akcji w komentarzach */
 .comment-actions .btn-delete-comment {
     background-color: transparent;
     color: var(--error-color);
@@ -800,7 +806,7 @@ button.btn {
     transition: opacity 0.5s;
 }
 
-/* Szeguły */
+/* Szczegóły */
 .distro-details h2 {
     text-align: center;
     font-size: 2.2rem;
@@ -881,7 +887,7 @@ footer {
     }
 }
 
-/* na małe wyświetalcze */
+/* na małe wyświetlacze */
 @media (max-width: 768px) {
     h1 {
         font-size: 1.8rem;
@@ -923,7 +929,6 @@ footer {
         max-width: 100%;
     }
 }
-
 
 /* Obrazy */
 .logo-container {
@@ -1022,7 +1027,7 @@ footer {
     min-width: 120px;
 }
 
-/* Add specific hover effect for modal delete buttons */
+/* Dodanie specyficznego efektu najechania dla przycisków usuwania w popupie */
 .modal-actions .btn-delete:hover {
     background-color: #c0392b !important;
     transform: translateY(-2px);
@@ -1227,7 +1232,7 @@ footer {
 .video-container {
     position: relative;
     padding-bottom: 56.25%;
-    /* 16:9 Aspect Ratio */
+    /* Proporcja 16:9 */
     height: 0;
     overflow: hidden;
     max-width: 100%;

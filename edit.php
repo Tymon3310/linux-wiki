@@ -1,17 +1,17 @@
 <?php
-// Start session for user authentication
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
 
-// Check if user is logged in
+// Sprawdzenie czy użytkownik jest zalogowany
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php?redirect=" . urlencode("edit.php?id=" . $_GET['id']));
     exit;
 }
 
-// Include database configuration
+// Dołączenie konfiguracji bazy danych
 include 'include/db_config.php';
 
-// Check if ID parameter exists
+// Sprawdzenie czy parametr ID istnieje
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: index.php?status=error&message=" . urlencode("Nieprawidłowy identyfikator dystrybucji."));
     exit();
@@ -20,7 +20,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = (int)$_GET['id'];
 $user_id = $_SESSION['user_id'];
 
-// Fetch distribution details
+// Pobieranie szczegółów dystrybucji
 $sql = "SELECT * FROM distributions WHERE id = $id";
 $result = $conn->query($sql);
 
@@ -31,7 +31,7 @@ if (!$result || $result->num_rows === 0) {
 
 $distro = $result->fetch_assoc();
 
-// Check if user owns this distribution
+// Sprawdzenie czy użytkownik jest właścicielem tej dystrybucji
 if ($distro['added_by'] != $user_id) {
     header("Location: details.php?id=$id&status=error&message=" . urlencode("Nie masz uprawnień do edycji tej dystrybucji."));
     exit();
@@ -49,6 +49,7 @@ if ($distro['added_by'] != $user_id) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
 </head>
 <body>
     <div class="container">
@@ -58,7 +59,18 @@ if ($distro['added_by'] != $user_id) {
                 <button id="theme-toggle" class="btn-theme-toggle" title="Przełącz tryb jasny/ciemny">
                     <i id="theme-toggle-icon" class="fas fa-sun"></i>
                 </button>
-                <a href="index.php" class="btn-return">Powrót do strony głównej</a>
+                <a href="index.php" class="btn-return"><i class="fas fa-home"></i> Strona główna</a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <!-- Użytkownik jest zalogowany -->
+                    <a href="logout.php" class="btn-primary">
+                        <i class="fas fa-sign-out-alt"></i> Wyloguj się
+                    </a>
+                <?php else: ?>
+                    <!-- Użytkownik nie jest zalogowany -->
+                    <a href="login.php" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Zaloguj się
+                    </a>
+                <?php endif; ?>
             </div>
         </header>
         
@@ -169,8 +181,8 @@ if ($distro['added_by'] != $user_id) {
             window.addEventListener('click', function(event) {
                 if (event.target === deleteModal) {
                     deleteModal.style.display = 'none';
-                }
-            });
+                });
+            }
             
             // Zamknięcie popupu po naciśnięciu klawisza Escape
             document.addEventListener('keydown', function(event) {

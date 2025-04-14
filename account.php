@@ -2,7 +2,7 @@
 session_start();
 include 'include/db_config.php';
 
-// Check if user is logged in
+// Sprawdzanie, czy użytkownik jest zalogowany
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -12,12 +12,12 @@ $userId = $_SESSION['user_id'];
 $message = '';
 $error = '';
 
-// Get user information
+// Pobieranie danych użytkownika
 $user_sql = "SELECT * FROM accounts WHERE id = $userId";
 $user_result = $conn->query($user_sql);
 
 if (!$user_result || $user_result->num_rows === 0) {
-    // User not found - this should not happen, but just in case
+    // Nie znaleziono użytkownika - nie powinno się to zdarzyć, ale na wszelki wypadek
     session_destroy();
     header('Location: login.php');
     exit;
@@ -25,7 +25,7 @@ if (!$user_result || $user_result->num_rows === 0) {
 
 $user = $user_result->fetch_assoc();
 
-// Handle password change form
+// Obsługa formularza zmiany hasła
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
@@ -51,11 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     }
 }
 
-// Get user's distributions
+// Pobieranie dystrybucji dodanych przez użytkownika
 $distros_sql = "SELECT id, name, date_added FROM distributions WHERE added_by = $userId ORDER BY date_added DESC";
 $distros_result = $conn->query($distros_sql);
 
-// Get user's comments
+// Pobieranie komentarzy użytkownika
 $comments_sql = "SELECT c.id, c.comment, c.date_added, d.id as distro_id, d.name as distro_name 
                 FROM comments c JOIN distributions d ON c.distro_id = d.id 
                 WHERE c.user_id = $userId ORDER BY c.date_added DESC";
@@ -295,7 +295,7 @@ $comments_result = $conn->query($comments_sql);
     <script src="js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Handle tabs
+            // Obsługa zakładek
             const handleTabs = (tabContainerSelector, tabContentSelector) => {
                 const tabs = document.querySelectorAll(tabContainerSelector + ' .tab');
                 const contents = document.querySelectorAll(tabContentSelector);
@@ -304,21 +304,21 @@ $comments_result = $conn->query($comments_sql);
                     tab.addEventListener('click', function() {
                         const tabId = this.getAttribute('data-tab');
                         
-                        // Remove active class
+                        // Usuwanie klasy aktywnej
                         tabs.forEach(t => t.classList.remove('active'));
                         contents.forEach(c => c.classList.remove('active'));
                         
-                        // Add active class
+                        // Dodawanie klasy aktywnej
                         this.classList.add('active');
                         document.getElementById(tabId).classList.add('active');
                     });
                 });
             };
             
-            // Initialize main tabs
+            // Inicjalizacja głównych zakładek
             handleTabs('.account-container > .tab-container', '.account-section.tab-content');
             
-            // Initialize activity subtabs
+            // Inicjalizacja podzakładek aktywności
             handleTabs('#activity > .tab-container', '#activity .tab-content');
         });
     </script>

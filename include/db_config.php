@@ -1,29 +1,29 @@
 <?php
-// Konfiguracja połączenia z bazą danych
+// Konfiguracja połączenia z bazą danych MySQL
 
 $host = "localhost";
 $username = "root";
 $password = "";    
 $database = "linux_distributions";
 
-// Utworzenie połączenia
+// Nawiązanie połączenia z serwerem bazy danych
 $conn = new mysqli($host, $username, $password);
 
-// Sprawdzenie połączenia
+// Sprawdzenie czy połączenie się powiodło
 if ($conn->connect_error) {
     die("Błąd połączenia z bazą danych: " . $conn->connect_error);
 }
 
-//  Utworzenie bazy danych jeśli nie istnieje
+// Automatyczne utworzenie bazy danych, jeśli jeszcze nie istnieje
 $sql = "CREATE DATABASE IF NOT EXISTS $database";
 if ($conn->query($sql) !== TRUE) {
     die("Błąd przy tworzeniu bazy danych: " . $conn->error);
 }
 
-//Wybór bazy danych
+// Wybór bazy danych do pracy
 $conn->select_db($database);
 
-// Utworzenie tabeli jeśli nie istnieje
+// Utworzenie tabeli dla dystrybucji, jeśli jeszcze nie istnieje
 $sql = "CREATE TABLE IF NOT EXISTS distributions (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -37,7 +37,8 @@ $sql = "CREATE TABLE IF NOT EXISTS distributions (
 if ($conn->query($sql) !== TRUE) {
     die("Błąd przy tworzeniu tabeli distributions: " . $conn->error);
 }
-// Utworzenie tabeli komentarzy jeśli nie istnieje
+
+// Utworzenie tabeli dla komentarzy, jeśli jeszcze nie istnieje
 $sql = "CREATE TABLE IF NOT EXISTS comments (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     distro_id INT NOT NULL,
@@ -50,6 +51,7 @@ if ($conn->query($sql) !== TRUE) {
     die("Błąd przy tworzeniu tabeli comments: " . $conn->error);
 }
 
+// Utworzenie tabeli dla kont użytkowników, jeśli jeszcze nie istnieje
 $sql = "CREATE TABLE IF NOT EXISTS accounts (
     id INT(11) AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,

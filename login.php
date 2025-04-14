@@ -2,7 +2,7 @@
 session_start();
 include 'include/db_config.php';
 
-// Check if user is already logged in
+// Sprawdzenie czy użytkownik jest już zalogowany
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
@@ -11,31 +11,31 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 $success = '';
 
-// Process login and registration forms
+// Przetwarzanie formularzy logowania i rejestracji
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Login form submission
+    // Obsługa formularza logowania
     if (isset($_POST['login'])) {
         $username = $conn->real_escape_string($_POST['username']);
         $password = $_POST['password'];
         
-        // Validate inputs
+        // Walidacja danych wejściowych
         if (empty($username) || empty($password)) {
             $error = "Proszę wypełnić wszystkie pola.";
         } else {
-            // Check credentials
+            // Sprawdzenie danych uwierzytelniających
             $sql = "SELECT id, username, password FROM accounts WHERE username = '$username'";
             $result = $conn->query($sql);
             
             if ($result && $result->num_rows > 0) {
                 $user = $result->fetch_assoc();
                 
-                // Verify password
+                // Weryfikacja hasła
                 if (password_verify($password, $user['password'])) {
-                    // Set session variables
+                    // Ustawienie zmiennych sesji
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
                     
-                    // Redirect to referrer or index
+                    // Przekierowanie do strony źródłowej lub strony głównej
                     $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
                     header("Location: $redirect");
                     exit;
@@ -48,14 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
-    // Registration form submission
+    // Obsługa formularza rejestracji
     if (isset($_POST['register'])) {
         $username = $conn->real_escape_string($_POST['username']);
         $email = $conn->real_escape_string($_POST['email']);
         $password = $_POST['password'];
         $confirm_password = $_POST['confirm_password'];
         
-        // Validate inputs
+        // Walidacja danych wejściowych
         if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
             $error = "Proszę wypełnić wszystkie pola.";
         } elseif ($password !== $confirm_password) {
@@ -65,17 +65,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = "Podany adres email jest nieprawidłowy.";
         } else {
-            // Check if username or email already exists
+            // Sprawdzenie czy nazwa użytkownika lub email już istnieją
             $check_sql = "SELECT id FROM accounts WHERE username = '$username' OR email = '$email'";
             $check_result = $conn->query($check_sql);
             
             if ($check_result && $check_result->num_rows > 0) {
                 $error = "Nazwa użytkownika lub adres email jest już zajęty.";
             } else {
-                // Hash password
+                // Hashowanie hasła
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
-                // Insert new user
+                // Dodanie nowego użytkownika
                 $insert_sql = "INSERT INTO accounts (username, email, password) VALUES ('$username', '$email', '$hashed_password')";
                 
                 if ($conn->query($insert_sql)) {
@@ -265,11 +265,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 tab.addEventListener('click', function() {
                     const target = this.getAttribute('data-tab');
                     
-                    // Remove active class from all tabs and forms
+                    // Usunięcie klasy aktywnej ze wszystkich zakładek i formularzy
                     tabs.forEach(t => t.classList.remove('active'));
                     forms.forEach(f => f.classList.remove('active'));
                     
-                    // Add active class to current tab and form
+                    // Dodanie klasy aktywnej do bieżącej zakładki i formularza
                     this.classList.add('active');
                     document.getElementById(target + '-form').classList.add('active');
                 });

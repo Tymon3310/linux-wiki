@@ -1,8 +1,8 @@
 <?php
-// Start session to get user information
+// Rozpoczęcie sesji, aby uzyskać informacje o użytkowniku
 session_start();
 
-// Check if user is logged in
+// Sprawdzenie, czy użytkownik jest zalogowany
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php?redirect=index.php");
     exit;
@@ -10,11 +10,11 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once 'db_config.php';
 
-// Enable error reporting for debugging
+// Włączenie raportowania błędów do celów diagnostycznych
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Function to generate a unique filename
+// Funkcja generująca unikalną nazwę pliku
 function generate_unique_filename($original_filename) {
     $extension = pathinfo($original_filename, PATHINFO_EXTENSION);
     $base_name = strtolower(preg_replace("/[^a-zA-Z0-9_]/", "_", pathinfo($original_filename, PATHINFO_FILENAME)));
@@ -22,16 +22,16 @@ function generate_unique_filename($original_filename) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
-    // Get user ID from session
+    // Pobranie ID użytkownika z sesji
     $user_id = $_SESSION['user_id'];
     
-    // Get POST data
+    // Pobranie danych z formularza
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
     $website = !empty($_POST['website']) ? mysqli_real_escape_string($conn, $_POST['website']) : NULL;
     $youtube = !empty($_POST['youtube']) ? mysqli_real_escape_string($conn, $_POST['youtube']) : NULL;
     
-    // Validate inputs
+    // Walidacja wprowadzonych danych
     $errors = [];
     
     if (empty($name)) {
@@ -50,11 +50,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
         $errors[] = "Adres filmu na YouTube jest nieprawidłowy.";
     }
     
-    // Check if logo was uploaded
+    // Sprawdzenie, czy przesłano plik z logo
     if (!isset($_FILES['logo']) || $_FILES['logo']['error'] === UPLOAD_ERR_NO_FILE) {
         $errors[] = "Logo dystrybucji jest wymagane.";
     } else {
-        // Verify file type
+        // Weryfikacja typu pliku
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
         $file_type = $_FILES['logo']['type'];
         
@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
             $errors[] = "Dozwolone są tylko pliki obrazów (JPG, PNG, GIF, SVG).";
         }
         
-        // Check file size (max 2MB)
+        // Sprawdzenie rozmiaru pliku (maksymalnie 2MB)
         if ($_FILES['logo']['size'] > 2 * 1024 * 1024) {
             $errors[] = "Rozmiar pliku nie może przekraczać 2MB.";
         }
@@ -74,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
         exit;
     }
     
-    // Handle logo upload
+    // Obsługa przesyłania pliku z logo
     $upload_dir = "../img/";
     $original_filename = basename($_FILES['logo']['name']);
     $unique_filename = generate_unique_filename($original_filename);
@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
     $db_path = "img/" . $unique_filename;
     
     if (move_uploaded_file($_FILES['logo']['tmp_name'], $upload_path)) {
-        // Insert distribution into database
+        // Dodanie dystrybucji do bazy danych
         $sql = "INSERT INTO distributions (name, description, website, youtube, logo_path, added_by) 
                 VALUES ('$name', '$description', " . ($website ? "'$website'" : "NULL") . ", " . 
                 ($youtube ? "'$youtube'" : "NULL") . ", '$db_path', $user_id)";
@@ -99,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
     exit;
 }
 
-// Redirect if direct access
+// Przekierowanie w przypadku bezpośredniego dostępu do pliku
 header("Location: ../index.php");
 exit;
 ?>

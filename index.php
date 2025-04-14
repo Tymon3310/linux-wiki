@@ -1,5 +1,5 @@
 <?php
-// Start session for user authentication
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
 ?>
 <!DOCTYPE html>
@@ -25,7 +25,7 @@ session_start();
                 </button>
                 
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <!-- User is logged in -->
+                    <!-- Użytkownik jest zalogowany -->
                     <button id="show-add-form" class="btn-primary">
                         <i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję
                     </button>
@@ -36,7 +36,7 @@ session_start();
                         <i class="fas fa-sign-out-alt"></i> Wyloguj się
                     </a>
                 <?php else: ?>
-                    <!-- User is not logged in -->
+                    <!-- Użytkownik nie jest zalogowany -->
                     <a href="login.php" class="btn-primary">
                         <i class="fas fa-sign-in-alt"></i> Zaloguj się
                     </a>
