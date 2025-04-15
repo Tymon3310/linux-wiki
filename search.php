@@ -1,7 +1,9 @@
 <?php
-/**
- * Endpoint do wyszukiwania dystrybucji Linux poprzez AJAX
- */
+// Endpoint do wyszukiwania dystrybucji Linux poprzez AJAX
+
+
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+session_start();
 
 // Dołączenie konfiguracji bazy danych
 include 'include/db_config.php';

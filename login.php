@@ -1,5 +1,7 @@
 <?php
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
+
 include 'include/db_config.php';
 
 // Sprawdzenie czy użytkownik jest już zalogowany

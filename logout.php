@@ -1,5 +1,5 @@
 <?php
-// Start the session if it's not already started
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
 
 // Clear all session variables

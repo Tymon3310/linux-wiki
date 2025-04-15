@@ -1,5 +1,5 @@
 <?php
-// Rozpoczęcie sesji, aby uzyskać informacje o użytkowniku
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
 
 // Włącz raportowanie błędów do debugowania
@@ -34,11 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     exit;
 } else {
-    // Debugowanie - formularz nie został przesłany poprawnie
-    //error_log("Formularz nie został przesłany lub użyto nieprawidłowej metody");
+    // Formularz nie został przesłany poprawnie
 }
 
-// Przekieruj jeśli dostęp bezpośredni
+// Przekierowanie przy dostępie bezpośrednim
 header("Location: ../index.php");
 exit;
 ?>

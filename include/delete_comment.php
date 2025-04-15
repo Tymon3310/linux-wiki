@@ -1,5 +1,5 @@
 <?php
-// Rozpoczęcie sesji, aby uzyskać informacje o użytkowniku
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
 
 // Sprawdzenie czy użytkownik jest zalogowany

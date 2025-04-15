@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $id = (int)$_POST['id'];
     $user_id = $_SESSION['user_id'];
     
-    // Najpierw sprawdź czy użytkownik ma uprawnienia do edycji tej dystrybucji
+    // Sprawdzenie uprawnień użytkownika do edycji dystrybucji
     $check_sql = "SELECT added_by FROM distributions WHERE id = $id";
     $check_result = $conn->query($check_sql);
     

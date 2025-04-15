@@ -1,8 +1,9 @@
 <?php
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
 include 'include/db_config.php';
 
-// Sprawdzanie, czy użytkownik jest zalogowany
+// Sprawdzenie, czy użytkownik jest zalogowany
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;

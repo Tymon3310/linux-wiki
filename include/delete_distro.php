@@ -23,21 +23,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
         
         // Sprawdzenie czy użytkownik jest właścicielem dystrybucji
         if ($distro['added_by'] == $user_id) {
-            // Użytkownik jest właścicielem dystrybucji, usuń ją
+            // Usuwanie pliku logo, jeśli istnieje
+            if (!empty($distro['logo_path']) && file_exists('../' . $distro['logo_path'])) {
+                unlink('../' . $distro['logo_path']);
+            }
+            // Usuwanie dystrybucji z bazy
             $sql = "DELETE FROM distributions WHERE id = $id";
-            
             if ($conn->query($sql)) {
-                // Usuń plik logo jeśli istnieje
-                $logo_path = "../" . $distro['logo_path'];
-                
-                if (file_exists($logo_path) && basename($logo_path) != "default.png") {
-                    unlink($logo_path);
-                }
-                
-                // Przekierowanie z komunikatem sukcesu
-                header("Location: ../index.php?status=success&message=" . urlencode("Dystrybucja została pomyślnie usunięta."));
+                header("Location: ../index.php?status=success&message=" . urlencode("Dystrybucja została usunięta."));
             } else {
-                header("Location: ../index.php?status=error&message=" . urlencode("Błąd podczas usuwania dystrybucji: " . $conn->error));
+                header("Location: ../index.php?status=error&message=" . urlencode("Błąd podczas usuwania: " . $conn->error));
             }
         } else {
             // Użytkownik nie jest właścicielem dystrybucji
