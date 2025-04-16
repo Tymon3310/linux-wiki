@@ -110,7 +110,10 @@ if ($distro['added_by'] != $user_id) {
                 
                 <div class="form-group">
                     <label><i class="fas fa-upload"></i> Zmień logo (opcjonalnie, maks. 2MB):</label>
-                    <input type="file" name="logo" id="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml">
+                    <div class="file-upload-container">
+                        <!-- Oryginalny input zostaje, ale będzie ukryty przez JavaScript -->
+                        <input type="file" name="logo" id="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml">
+                    </div>
                     <small><i class="fas fa-info-circle"></i> Akceptowane formaty: JPG, JPEG, PNG, GIF, SVG</small>
                     <small><i class="fas fa-hand-pointer"></i> Możesz przeciągnąć i upuścić plik lub wkleić obraz ze schowka (Ctrl+V)</small>
                 </div>

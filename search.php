@@ -1,7 +1,6 @@
 <?php
 // Endpoint do wyszukiwania dystrybucji Linux poprzez AJAX
 
-
 // Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
 

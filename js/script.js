@@ -1,38 +1,499 @@
 // Obsługa zdarzeń po kompletnym wczytaniu strony
 document.addEventListener('DOMContentLoaded', function () {
     // Inicjalizacja przycisku wyświetlającego formularz dodawania dystrybucji
-    const showAddFormButton = document.getElementById('show-add-form');
-    if (showAddFormButton) {
-        showAddFormButton.addEventListener('click', function () {
-            const searchInput = document.getElementById('search-input');
-            const nameInput = document.getElementById('name');
-            const hiddenInput = document.getElementById('distro-name-hidden');
+    const showAddFormButtons = document.querySelectorAll('#show-add-form');
+    const addFormContainer = document.getElementById('add-form-container');
+    const loginPrompt = document.getElementById('login-prompt');
 
-            // Kopiowanie wpisanej frazy z wyszukiwarki do pola nazwy w formularzu
-            if (searchInput && nameInput && hiddenInput) {
-                nameInput.value = searchInput.value;
-                hiddenInput.value = searchInput.value;
-            }
-
-            // Pokazanie formularza dodawania dystrybucji
-            const addFormContainer = document.getElementById('add-form-container');
-            if (addFormContainer) {
+    showAddFormButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            if (isUserLoggedIn && addFormContainer) {
                 addFormContainer.style.display = 'block';
+                addFormContainer.scrollIntoView({ behavior: 'smooth' });
 
-                // Płynne przewinięcie strony do formularza
-                addFormContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-                // Automatyczne ustawienie kursora w odpowiednim polu
-                setTimeout(() => {
-                    if (!nameInput.value) {
-                        nameInput.focus();
-                    } else {
-                        const descriptionInput = document.getElementById('description');
-                        if (descriptionInput) descriptionInput.focus();
-                    }
-                }, 500);
+                const nameInput = document.getElementById('name');
+                if (nameInput) nameInput.focus();
+            } else if (loginPrompt) {
+                loginPrompt.style.display = 'block';
+                loginPrompt.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                window.location.href = 'login.php';
             }
         });
+    });
+
+    // Funkcja do wykrywania przeglądarki Firefox
+    function isFirefox() {
+        return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    }
+
+    // Obsługa formularza dodawania dystrybucji
+    const addForm = document.getElementById('add-form');
+    if (addForm) {
+        addForm.addEventListener('submit', function (event) {
+            const nameInput = document.getElementById('name');
+            const descriptionInput = document.getElementById('description');
+            const logoInput = document.getElementById('logo');
+            const websiteInput = document.getElementById('website');
+
+            let isValid = true;
+            let errorMessages = [];
+
+            // Sprawdzanie poprawności nazwy
+            if (!nameInput.value.trim()) {
+                isValid = false;
+                errorMessages.push('Proszę podać nazwę dystrybucji');
+                nameInput.classList.add('error-field');
+            } else {
+                nameInput.classList.remove('error-field');
+            }
+
+            // Sprawdzanie poprawności opisu
+            if (!descriptionInput.value.trim()) {
+                isValid = false;
+                errorMessages.push('Proszę podać opis dystrybucji');
+                descriptionInput.classList.add('error-field');
+            } else if (descriptionInput.value.trim().length < 30) {
+                isValid = false;
+                errorMessages.push('Opis powinien zawierać co najmniej 30 znaków');
+                descriptionInput.classList.add('error-field');
+            } else {
+                descriptionInput.classList.remove('error-field');
+            }
+
+            // Sprawdzanie, czy dodano logo (tylko przy dodawaniu, nie przy edycji)
+            if (!window.location.pathname.includes('edit.php') && (!logoInput.files || logoInput.files.length === 0)) {
+                isValid = false;
+                errorMessages.push('Proszę dodać logo dystrybucji');
+                logoInput.parentElement.classList.add('error-field');
+            } else {
+                logoInput.parentElement.classList.remove('error-field');
+            }
+
+            // Sprawdzanie poprawności URL strony internetowej (jeśli podano)
+            if (websiteInput.value.trim() && !validateUrl(websiteInput.value)) {
+                isValid = false;
+                errorMessages.push('Proszę podać prawidłowy adres URL strony internetowej');
+                websiteInput.classList.add('error-field');
+            } else {
+                websiteInput.classList.remove('error-field');
+            }
+
+            // Zatrzymanie wysłania formularza, jeśli są błędy
+            if (!isValid) {
+                event.preventDefault();
+
+                // Tworzenie komunikatu o błędach
+                const errorContainer = document.createElement('div');
+                errorContainer.className = 'validation-errors';
+                let errorHTML = '<h3>Proszę poprawić następujące błędy:</h3><ul>';
+                errorMessages.forEach(msg => {
+                    errorHTML += `<li>${msg}</li>`;
+                });
+                errorHTML += '</ul>';
+                errorContainer.innerHTML = errorHTML;
+
+                // Usunięcie poprzednich komunikatów o błędach
+                const existingErrors = addForm.querySelectorAll('.validation-errors');
+                existingErrors.forEach(el => el.remove());
+
+                // Dodanie nowego komunikatu o błędach
+                addForm.insertBefore(errorContainer, addForm.firstChild);
+
+                // Płynne przewinięcie do komunikatu o błędach
+                errorContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+
+    // Obsługa również formularza edycji
+    const editForm = document.getElementById('edit-form');
+    if (editForm) {
+        editForm.addEventListener('submit', function (event) {
+            const nameInput = document.getElementById('name');
+            const descriptionInput = document.getElementById('description');
+            const websiteInput = document.getElementById('website');
+
+            let isValid = true;
+            let errorMessages = [];
+
+            // Sprawdzanie poprawności nazwy
+            if (!nameInput.value.trim()) {
+                isValid = false;
+                errorMessages.push('Proszę podać nazwę dystrybucji');
+                nameInput.classList.add('error-field');
+            } else {
+                nameInput.classList.remove('error-field');
+            }
+
+            // Sprawdzanie poprawności opisu
+            if (!descriptionInput.value.trim()) {
+                isValid = false;
+                errorMessages.push('Proszę podać opis dystrybucji');
+                descriptionInput.classList.add('error-field');
+            } else if (descriptionInput.value.trim().length < 30) {
+                isValid = false;
+                errorMessages.push('Opis powinien zawierać co najmniej 30 znaków');
+                descriptionInput.classList.add('error-field');
+            } else {
+                descriptionInput.classList.remove('error-field');
+            }
+
+            // Sprawdzanie poprawności URL strony internetowej (jeśli podano)
+            if (websiteInput.value.trim() && !validateUrl(websiteInput.value)) {
+                isValid = false;
+                errorMessages.push('Proszę podać prawidłowy adres URL strony internetowej');
+                websiteInput.classList.add('error-field');
+            } else {
+                websiteInput.classList.remove('error-field');
+            }
+
+            // Zatrzymanie wysłania formularza, jeśli są błędy
+            if (!isValid) {
+                event.preventDefault();
+
+                // Tworzenie komunikatu o błędach
+                const errorContainer = document.createElement('div');
+                errorContainer.className = 'validation-errors';
+                let errorHTML = '<h3>Proszę poprawić następujące błędy:</h3><ul>';
+                errorMessages.forEach(msg => {
+                    errorHTML += `<li>${msg}</li>`;
+                });
+                errorHTML += '</ul>';
+                errorContainer.innerHTML = errorHTML;
+
+                // Usunięcie poprzednich komunikatów o błędach
+                const existingErrors = editForm.querySelectorAll('.validation-errors');
+                existingErrors.forEach(el => el.remove());
+
+                // Dodanie nowego komunikatu o błędach
+                editForm.insertBefore(errorContainer, editForm.firstChild);
+
+                // Płynne przewinięcie do komunikatu o błędach
+                errorContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+
+    // Obsługa Drag & Drop oraz wklejania obrazów do pola logo
+    const logoInput = document.getElementById('logo');
+    const dropZones = document.querySelectorAll('.file-upload-container');
+
+    // Jeśli mamy logoInput i przynajmniej jeden dropZone
+    if (logoInput && dropZones.length > 0) {
+        console.log('Image upload handlers initialized');
+
+        // Iterujemy przez wszystkie dropZones (może być jeden w indeksie i jeden w edit)
+        dropZones.forEach(dropZone => {
+            // Dodanie wizualnej informacji - using the same text as the old drop zone
+            let uploadHint = document.createElement('div');
+            uploadHint.className = 'upload-hint';
+
+            // Specjalne ostrzeżenie dla Firefoksa
+            if (isFirefox()) {
+                uploadHint.innerHTML = '<p>Przeciągnij i upuść logo tutaj lub kliknij, aby wybrać plik<br>Możesz też wkleić obraz ze schowka (Ctrl+V)</p>' +
+                    '<p class="firefox-warning"><i class="fas fa-exclamation-triangle"></i> Uwaga: Firefox może nie obsługiwać przeciągania obrazów z innych stron. Zalecamy zapisać obraz na dysk i przeciągnąć go stąd.</p>';
+            } else {
+                uploadHint.innerHTML = '<p>Przeciągnij i upuść logo tutaj lub kliknij, aby wybrać plik<br>Możesz też wkleić obraz ze schowka (Ctrl+V)</p>';
+            }
+
+            // Remove any existing upload hints first to prevent duplicates
+            const existingHints = dropZone.querySelectorAll('.upload-hint');
+            existingHints.forEach(hint => hint.remove());
+
+            dropZone.appendChild(uploadHint);
+
+            // Styling dla drop zone
+            dropZone.style.position = 'relative';
+            dropZone.style.border = '2px dashed #ccc';
+            dropZone.style.borderRadius = '4px';
+            dropZone.style.padding = '20px';
+            dropZone.style.textAlign = 'center';
+            dropZone.style.cursor = 'pointer';
+
+            // Drag & drop dla obrazów
+            dropZone.addEventListener('dragover', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.style.border = '2px dashed #4CAF50';
+                this.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
+            });
+
+            dropZone.addEventListener('dragleave', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.style.border = '2px dashed #ccc';
+                this.style.backgroundColor = '';
+            });
+
+            dropZone.addEventListener('drop', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.style.border = '2px dashed #ccc';
+                this.style.backgroundColor = '';
+
+                // Zaawansowany workaround dla Firefox
+                if (isFirefox()) {
+                    try {
+                        // Próba pobrania plików bezpośrednio
+                        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                            logoInput.files = e.dataTransfer.files;
+                            const file = e.dataTransfer.files[0];
+                            previewImage(file, dropZone);
+                            return;
+                        }
+
+                        // Próba pobrania danych jako URL i konwersji na Blob
+                        const items = e.dataTransfer.items;
+                        if (items) {
+                            for (let i = 0; i < items.length; i++) {
+                                if (items[i].kind === 'string' && items[i].type.match('^text/uri-list')) {
+                                    items[i].getAsString(function (url) {
+                                        // Wyświetl komunikat o próbie pobrania
+                                        const loadingMsg = document.createElement('div');
+                                        loadingMsg.className = 'loading-message';
+                                        loadingMsg.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Próba pobrania obrazu...</p>';
+                                        dropZone.appendChild(loadingMsg);
+
+                                        // Próba pobrania obrazu za pomocą fetch
+                                        fetch(url, { mode: 'no-cors' })
+                                            .then(response => response.blob())
+                                            .then(blob => {
+                                                loadingMsg.remove();
+
+                                                // Stwórz plik z Blob
+                                                const file = new File([blob], "image.png", { type: blob.type });
+                                                const dt = new DataTransfer();
+                                                dt.items.add(file);
+                                                logoInput.files = dt.files;
+                                                previewImage(file, dropZone);
+                                            })
+                                            .catch(error => {
+                                                loadingMsg.remove();
+                                                showFirefoxError(dropZone);
+                                            });
+                                    });
+                                    return;
+                                }
+                            }
+                        }
+
+                        // Jeśli dotarliśmy tutaj, to nie udało się przetworzyć obrazu
+                        showFirefoxError(dropZone);
+                    } catch (error) {
+                        console.error('Firefox drag & drop error:', error);
+                        showFirefoxError(dropZone);
+                    }
+                } else if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    // Standardowa obsługa dla innych przeglądarek
+                    logoInput.files = e.dataTransfer.files;
+                    console.log('File dropped:', e.dataTransfer.files[0].name);
+                    const file = e.dataTransfer.files[0];
+                    previewImage(file, dropZone);
+                }
+            });
+
+            // Funkcja wyświetlająca błąd dla Firefox
+            function showFirefoxError(dropZone) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'upload-error';
+                errorMsg.innerHTML = '<p><i class="fas fa-exclamation-triangle"></i> Nie można przeciągnąć tego obrazu. W przeglądarce Firefox zapisz obraz na dysku (prawy przycisk myszy -> Zapisz obraz jako...), a następnie go przeciągnij lub użyj przycisku wyboru pliku.</p>';
+
+                // Usuń poprzednie komunikaty błędów
+                const existingErrors = dropZone.querySelectorAll('.upload-error');
+                existingErrors.forEach(err => err.remove());
+
+                dropZone.appendChild(errorMsg);
+
+                // Ukryj komunikat po 5 sekundach
+                setTimeout(() => {
+                    errorMsg.style.opacity = '0';
+                    setTimeout(() => errorMsg.remove(), 500);
+                }, 7000);
+            }
+
+            // Kliknięcie w drop zone otwiera okno wyboru pliku
+            dropZone.addEventListener('click', function (event) {
+                if (event.target === dropZone || event.target.className === 'upload-hint' || event.target.parentElement.className === 'upload-hint') {
+                    logoInput.click();
+                }
+            });
+        });
+
+        // Wklejanie obrazów ze schowka (Ctrl+V) - działa globalnie dla wszystkich dropZones
+        document.addEventListener('paste', function (e) {
+            console.log('Paste detected, active element:', document.activeElement);
+
+            // Znajdź aktywny dropZone (ten, który zawiera aktywny element lub jest najbliżej)
+            let activeDropZone = null;
+
+            // Sprawdź czy focus jest na polu logo lub obszarze formularza
+            if (document.activeElement === logoInput ||
+                document.activeElement.tagName === 'BODY') {
+                // Użyj pierwszego dropZone, jeśli focus jest globalny
+                activeDropZone = dropZones[0];
+            } else {
+                // Znajdź dropZone, który zawiera aktywny element
+                dropZones.forEach(dropZone => {
+                    if (dropZone.contains(document.activeElement)) {
+                        activeDropZone = dropZone;
+                    }
+                });
+
+                // Jeśli nadal nie znaleziono, użyj pierwszego
+                if (!activeDropZone && dropZones.length > 0) {
+                    activeDropZone = dropZones[0];
+                }
+            }
+
+            // Jeśli mamy aktywny dropZone, obsłuż wklejanie
+            if (activeDropZone) {
+                const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+                console.log('Clipboard items:', items.length);
+
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].type.indexOf('image') !== -1) {
+                        console.log('Image found in clipboard');
+                        const file = items[i].getAsFile();
+                        console.log('Image file:', file.name, file.type, file.size);
+
+                        // Utworzenie obiektu DataTransfer i dodanie pliku
+                        try {
+                            const dt = new DataTransfer();
+                            dt.items.add(file);
+                            logoInput.files = dt.files;
+
+                            // Podgląd wklejonego obrazka
+                            previewImage(file, activeDropZone);
+                        } catch (error) {
+                            console.error('Error handling pasted image:', error);
+                            const errorMsg = document.createElement('div');
+                            errorMsg.className = 'upload-error';
+                            errorMsg.innerHTML = '<p><i class="fas fa-exclamation-triangle"></i> Wystąpił błąd podczas wklejania obrazu. Spróbuj zapisać obraz na dysku i przeciągnij go tutaj.</p>';
+                            activeDropZone.appendChild(errorMsg);
+
+                            setTimeout(() => {
+                                errorMsg.style.opacity = '0';
+                                setTimeout(() => errorMsg.remove(), 500);
+                            }, 5000);
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+
+        // Funkcja podglądu obrazu
+        function previewImage(file, dropZone) {
+            console.log('Generating preview for:', file.name);
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                // Usuń istniejący podgląd, jeśli istnieje
+                const existingPreview = dropZone.querySelector('.image-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+
+                // Utwórz nowy podgląd
+                const preview = document.createElement('div');
+                preview.className = 'image-preview';
+                preview.style.marginTop = '10px';
+
+                preview.innerHTML = `
+                    <div class="preview-header">
+                        <span class="filename">${file.name}</span>
+                        <button type="button" class="remove-preview" title="Usuń wybrany obraz">&times;</button>
+                    </div>
+                    <img src="${e.target.result}" alt="Podgląd logo" style="max-width: 100%; max-height: 200px;">
+                `;
+
+                dropZone.appendChild(preview);
+
+                // Ukryj wskazówkę uploadowania
+                const uploadHint = dropZone.querySelector('.upload-hint');
+                if (uploadHint) {
+                    uploadHint.style.display = 'none';
+                }
+
+                // Obsługa usuwania podglądu i czyszczenia pola input
+                const removeButton = preview.querySelector('.remove-preview');
+                if (removeButton) {
+                    removeButton.addEventListener('click', function (evt) {
+                        evt.preventDefault();
+                        evt.stopPropagation(); // Zapobiegaj uruchomieniu click na dropZone
+
+                        // Usuń podgląd
+                        preview.remove();
+
+                        // Wyczyść input pliku
+                        try {
+                            logoInput.value = ''; // Standardowe czyszczenie
+
+                            // Dodatkowe czyszczenie dla kompatybilności ze wszystkimi przeglądarkami
+                            if (logoInput.value) {
+                                // Dla IE i Edge
+                                logoInput.type = '';
+                                logoInput.type = 'file';
+                            }
+
+                            // Czyszczenie dla nowoczesnych przeglądarek
+                            if ('files' in logoInput && logoInput.files.length > 0) {
+                                try {
+                                    const dt = new DataTransfer();
+                                    logoInput.files = dt.files;
+                                } catch (e) {
+                                    console.log('Could not clear file input using DataTransfer:', e);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error clearing file input:', e);
+                        }
+
+                        // Pokaż ponownie wskazówkę uploadowania
+                        if (uploadHint) {
+                            uploadHint.style.display = '';
+                        }
+
+                        console.log('Image removed successfully');
+                    });
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Obsługa standardowego inputa plików
+        logoInput.addEventListener('change', function (e) {
+            if (this.files && this.files[0]) {
+                console.log('File selected via input:', this.files[0].name);
+
+                // Znajdź najbliższy kontener dropZone dla tego inputa
+                let parentDropZone = null;
+                dropZones.forEach(dropZone => {
+                    if (dropZone.contains(this)) {
+                        parentDropZone = dropZone;
+                    }
+                });
+
+                // Jeśli nie znaleziono, użyj pierwszego dostępnego
+                if (!parentDropZone && dropZones.length > 0) {
+                    parentDropZone = dropZones[0];
+                }
+
+                if (parentDropZone) {
+                    previewImage(this.files[0], parentDropZone);
+                }
+            }
+        });
+    }
+
+    // Funkcja walidująca URL
+    function validateUrl(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 
     // Funkcja przełączająca między jasnym i ciemnym motywem
@@ -103,34 +564,44 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Obsługa przypadku, gdy nie znaleziono żadnych wyników
                 if (data.length === 0) {
-                    resultsDiv.innerHTML = `
-                        <div class="no-results">
-                            <p>Nie znaleziono dystrybucji "${searchTerm}".</p>
-                            <p>Czy chcesz dodać tę dystrybucję do naszej bazy danych?</p>
-                            <button id="add-missing-distro" class="btn">Dodaj nową dystrybucję</button>
-                        </div>
-                    `;
+                    if (isUserLoggedIn) {
+                        resultsDiv.innerHTML = `
+                            <div class="no-results">
+                                <p>Nie znaleziono dystrybucji "${searchTerm}".</p>
+                                <p>Czy chcesz dodać tę dystrybucję do naszej bazy danych?</p>
+                                <button id="add-missing-distro" class="btn">Dodaj nową dystrybucję</button>
+                            </div>
+                        `;
 
-                    // Obsługa przycisku dodawania nowej dystrybucji
-                    document.getElementById('add-missing-distro').addEventListener('click', function () {
-                        const addFormContainer = document.getElementById('add-form-container');
-                        const nameInput = document.getElementById('name');
+                        // Obsługa przycisku dodawania nowej dystrybucji
+                        document.getElementById('add-missing-distro').addEventListener('click', function () {
+                            const addFormContainer = document.getElementById('add-form-container');
+                            const nameInput = document.getElementById('name');
 
-                        if (addFormContainer && nameInput) {
-                            nameInput.value = searchTerm;
-                            addFormContainer.style.display = 'block';
-                            addFormContainer.scrollIntoView({ behavior: 'smooth' });
+                            if (addFormContainer && nameInput) {
+                                nameInput.value = searchTerm;
+                                addFormContainer.style.display = 'block';
+                                addFormContainer.scrollIntoView({ behavior: 'smooth' });
 
-                            const descriptionInput = document.getElementById('description');
-                            if (descriptionInput) descriptionInput.focus();
-                        }
-                    });
+                                const descriptionInput = document.getElementById('description');
+                                if (descriptionInput) descriptionInput.focus();
+                            }
+                        });
+                    } else {
+                        resultsDiv.innerHTML = `
+                            <div class="no-results">
+                                <p>Nie znaleziono dystrybucji "${searchTerm}".</p>
+                                <p>Zaloguj się, aby dodać nową dystrybucję do naszej bazy danych.</p>
+                                <a href="login.php" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Zaloguj się</a>
+                            </div>
+                        `;
+                    }
                 } else {
                     // Generowanie HTML z wynikami wyszukiwania
                     let resultsHTML = '<h2 class="section-title">Wyniki wyszukiwania dla: "' + searchTerm + '"</h2>';
                     resultsHTML += '<div class="search-results">';
                     data.forEach(distro => {
-                        const imagePath = distro.logo || '';
+                        const imagePath = distro.logo_path || 'img/default.png';
                         resultsHTML += `
                             <div class="distro-card">
                                 <img src="${imagePath}" alt="${distro.name}" class="distro-logo">
@@ -243,98 +714,5 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, 1000);
             }, 8000);
         }
-    }
-
-    // Walidacja formularza przed jego wysłaniem
-    const addForm = document.getElementById('add-form');
-    if (addForm) {
-        addForm.addEventListener('submit', function (event) {
-            const nameInput = document.getElementById('name');
-            const descriptionInput = document.getElementById('description');
-            const logoInput = document.getElementById('logo');
-            const websiteInput = document.getElementById('website');
-
-            let isValid = true;
-            let errorMessages = [];
-
-            // Sprawdzanie poprawności nazwy
-            if (!nameInput.value.trim()) {
-                isValid = false;
-                errorMessages.push('Proszę podać nazwę dystrybucji');
-                nameInput.classList.add('error-field');
-            } else {
-                nameInput.classList.remove('error-field');
-            }
-
-            // Sprawdzanie poprawności opisu
-            if (!descriptionInput.value.trim()) {
-                isValid = false;
-                errorMessages.push('Proszę podać opis dystrybucji');
-                descriptionInput.classList.add('error-field');
-            } else if (descriptionInput.value.trim().length < 30) {
-                isValid = false;
-                errorMessages.push('Opis powinien zawierać co najmniej 30 znaków');
-                descriptionInput.classList.add('error-field');
-            } else {
-                descriptionInput.classList.remove('error-field');
-            }
-
-            // Sprawdzanie poprawności logo
-            if (!logoInput.files || logoInput.files.length === 0) {
-                isValid = false;
-                errorMessages.push('Proszę wybrać plik z logo');
-                logoInput.classList.add('error-field');
-            } else {
-                const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/svg+xml'];
-                if (!allowedTypes.includes(logoInput.files[0].type)) {
-                    isValid = false;
-                    errorMessages.push('Logo musi być w formacie: PNG, JPEG, GIF lub SVG');
-                    logoInput.classList.add('error-field');
-                } else if (logoInput.files[0].size > 2 * 1024 * 1024) {
-                    isValid = false;
-                    errorMessages.push('Logo nie może przekraczać 2MB');
-                    logoInput.classList.add('error-field');
-                } else {
-                    logoInput.classList.remove('error-field');
-                }
-            }
-
-            // Sprawdzanie poprawności adresu strony (pole nieobowiązkowe)
-            if (websiteInput && websiteInput.value.trim()) {
-                const urlPattern = /^(https?:\/\/)([\w-]+(\.[\w-]+)+)([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?$/;
-                if (!urlPattern.test(websiteInput.value.trim())) {
-                    isValid = false;
-                    errorMessages.push('Proszę podać poprawny adres URL (np. https://example.com)');
-                    websiteInput.classList.add('error-field');
-                } else {
-                    websiteInput.classList.remove('error-field');
-                }
-            }
-
-            // Jeśli formularz zawiera błędy, zatrzymaj wysyłanie i pokaż komunikaty
-            if (!isValid) {
-                event.preventDefault();
-
-                const errorContainer = document.createElement('div');
-                errorContainer.className = 'validation-errors';
-
-                let errorHTML = '<ul>';
-                errorMessages.forEach(msg => {
-                    errorHTML += `<li>${msg}</li>`;
-                });
-                errorHTML += '</ul>';
-                errorContainer.innerHTML = errorHTML;
-
-                // Usunięcie poprzednich komunikatów o błędach
-                const existingErrors = addForm.querySelectorAll('.validation-errors');
-                existingErrors.forEach(el => el.remove());
-
-                // Dodanie nowego komunikatu o błędach
-                addForm.insertBefore(errorContainer, addForm.firstChild);
-
-                // Płynne przewinięcie do komunikatu o błędach
-                errorContainer.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
     }
 });

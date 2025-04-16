@@ -14,6 +14,11 @@ session_start();
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script>
+        // Pass authentication status to JavaScript
+        const isUserLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+    </script>
+    <script src="js/script.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -79,8 +84,16 @@ session_start();
                 } else {
                     echo "<div class='not-found'>";
                     echo "<p>Nie znaleziono dystrybucji \"" . htmlspecialchars($search) . "\" w naszej bazie danych.</p>";
-                    echo "<p>Czy chcesz dodać tę dystrybucję?</p>";
-                    echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
+                    
+                    // Show "Add New Distribution" button only to logged-in users
+                    if (isset($_SESSION['user_id'])) {
+                        echo "<p>Czy chcesz dodać tę dystrybucję?</p>";
+                        echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
+                    } else {
+                        echo "<p>Zaloguj się, aby móc dodać nową dystrybucję.</p>";
+                        echo "<a href='login.php' class='btn-primary'><i class='fas fa-sign-in-alt'></i> Zaloguj się</a>";
+                    }
+                    
                     echo "</div>";
                 }
                 
@@ -111,7 +124,15 @@ session_start();
                 } else {
                     echo "<div class='no-distros'>";
                     echo "<p>Brak dystrybucji w bazie danych.</p>";
-                    echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
+                    
+                    // Show "Add New Distribution" button only to logged-in users
+                    if (isset($_SESSION['user_id'])) {
+                        echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
+                    } else {
+                        echo "<p>Zaloguj się, aby móc dodać nową dystrybucję.</p>";
+                        echo "<a href='login.php' class='btn-primary'><i class='fas fa-sign-in-alt'></i> Zaloguj się</a>";
+                    }
+                    
                     echo "</div>";
                 }
                 
@@ -121,6 +142,7 @@ session_start();
         </div>
         
         <!-- Formularz dodawania nowej dystrybucji -->
+        <?php if (isset($_SESSION['user_id'])): ?>
         <div id="add-form-container" class="add-form-section" style="display: none;">
             <h2><i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję Linux</h2>
             <form id="add-form" method="post" action="include/add_distro.php" enctype="multipart/form-data">
@@ -143,13 +165,15 @@ session_start();
 
                 <div class="form-group">
                     <label for="youtube"><i class="fab fa-youtube"></i> Filmik na Youtube o dystrybucji (opcjonalnie):</label>
-                    <input type="url" name="youtube" id="youtube" placeholder="https://youtube.com/example" required>
+                    <input type="url" name="youtube" id="youtube" placeholder="https://youtube.com/example">
                 </div>
 
                 <div class="form-group">
                     <label><i class="fas fa-image"></i> Logo dystrybucji (max 2MB):</label>
-                    <!-- Oryginalny input zostaje, ale będzie ukryty przez JavaScript -->
-                    <input type="file" name="logo" id="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml" required>
+                    <div class="file-upload-container">
+                        <!-- Oryginalny input zostaje, ale będzie ukryty przez JavaScript -->
+                        <input type="file" name="logo" id="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml" required>
+                    </div>
                     <small><i class="fas fa-info-circle"></i> Akceptowane formaty: JPG, JPEG, PNG, GIF, SVG</small>
                     <small><i class="fas fa-hand-pointer"></i> Możesz przeciągnąć i upuścić plik lub wkleić obraz ze schowka (Ctrl+V)</small>
                 </div>
@@ -157,12 +181,17 @@ session_start();
                 <button type="submit" name="add" id="add-button"><i class="fas fa-plus"></i> Dodaj dystrybucję</button>
             </form>
         </div>
+        <?php else: ?>
+        <div id="login-prompt" class="add-form-section" style="display: none;">
+            <h2><i class="fas fa-user-lock"></i> Wymagane logowanie</h2>
+            <p>Aby dodać nową dystrybucję Linux, musisz się najpierw zalogować.</p>
+            <a href="login.php" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Zaloguj się</a>
+        </div>
+        <?php endif; ?>
         
         <footer>
             <p>&copy; <?php echo date('Y'); ?> Tymon3310</p>
         </footer>
     </div>
-    
-    <script src="js/script.js"></script>
 </body>
 </html>

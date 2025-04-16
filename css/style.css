@@ -808,6 +808,81 @@ button.btn {
     transition: opacity 0.5s;
 }
 
+/* Drag and drop styling */
+.file-upload-container,
+.form-group:has(#logo) {
+    position: relative;
+    padding: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.file-upload-container.dragover,
+.form-group:has(#logo).dragover {
+    border-color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.1);
+}
+
+.drop-zone-visual {
+    padding: 20px 0;
+}
+
+.drop-message {
+    color: #666;
+    font-size: 16px;
+}
+
+.image-preview {
+    margin-top: 15px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    display: block;
+    margin: 0 auto;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+.remove-preview {
+    background: #ff5252;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+}
+
+/* Hide the actual file input */
+input[type="file"]#logo {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
 /* Szczegóły */
 .distro-details h2 {
     text-align: center;
