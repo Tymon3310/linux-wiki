@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 15, 2025 at 07:04 PM
+-- Generation Time: Apr 16, 2025 at 11:12 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -109,7 +109,12 @@ INSERT INTO `distributions` (`id`, `name`, `description`, `youtube`, `logo_path`
 (22, 'KDE neon', 'KDE neon to dystrybucja Linuksa rozwijana przez zespół KDE, bazująca na stabilnych wydaniach Ubuntu LTS (Long Term Support). Jej głównym celem jest dostarczanie użytkownikom najnowszych wersji środowiska graficznego KDE Plasma oraz powiązanych aplikacji KDE bezpośrednio od twórców. Jest to doskonały wybór dla entuzjastów KDE, którzy chcą mieć stabilną podstawę systemu i jednocześnie najświeższe oprogramowanie KDE.', NULL, 'img/kde_neon.png', 'https://neon.kde.org/', 1, '2025-03-30 18:38:03'),
 (23, 'AlmaLinux', 'AlmaLinux to kolejna, rozwijana przez społeczność i wspierana przez CloudLinux Inc., darmowa dystrybucja Linuksa klasy enterprise. Podobnie jak Rocky Linux, jest zaprojektowana jako w 100% kompatybilny binarnie zamiennik dla Red Hat Enterprise Linux (RHEL). Powstała w odpowiedzi na zmiany w strategii CentOS i oferuje stabilną, bezpieczną i darmową platformę dla zastosowań serwerowych i korporacyjnych.', NULL, 'img/almalinux.png', 'https://almalinux.org/', 1, '2025-03-30 18:40:06'),
 (24, 'Kubuntu', 'Kubuntu to oficjalna pochodna dystrybucji Ubuntu, która zamiast domyślnego środowiska GNOME używa środowiska graficznego KDE Plasma. Łączy łatwość użytkowania i szeroką bazę oprogramowania Ubuntu z bogactwem funkcji i możliwościami konfiguracji oferowanymi przez KDE Plasma. Wydawana jest w tych samych cyklach co Ubuntu, w tym wersje LTS.', NULL, 'img/kubuntu.png', ' https://kubuntu.org/', 1, '2025-03-30 18:40:31'),
-(26, 'Solus', 'Solus to niezależna dystrybucja Linuksa budowana od podstaw (nie bazuje na Debianie, Fedorze czy Archu). Wykorzystuje model \"curated rolling release\", co oznacza ciągłe aktualizacje, ale z pewnym opóźnieniem i testowaniem, aby zapewnić stabilność. Znana jest z własnego, eleganckiego środowiska graficznego Budgie (choć oferuje też wersje z GNOME, MATE i KDE Plasma) oraz menedżera pakietów eopkg. Skupia się na zapewnieniu dobrego doświadczenia na komputerach osobistych.', NULL, 'img/solus.png', 'https://getsol.us/', 1, '2025-03-30 18:55:36');
+(26, 'Solus', 'Solus to niezależna dystrybucja Linuksa budowana od podstaw (nie bazuje na Debianie, Fedorze czy Archu). Wykorzystuje model \"curated rolling release\", co oznacza ciągłe aktualizacje, ale z pewnym opóźnieniem i testowaniem, aby zapewnić stabilność. Znana jest z własnego, eleganckiego środowiska graficznego Budgie (choć oferuje też wersje z GNOME, MATE i KDE Plasma) oraz menedżera pakietów eopkg. Skupia się na zapewnieniu dobrego doświadczenia na komputerach osobistych.', NULL, 'img/solus.png', 'https://getsol.us/', 1, '2025-03-30 18:55:36'),
+(32, 'Talis', 'Tails to dystrybucja Linuksa typu \"live\", zaprojektowana z myślą o maksymalnej ochronie prywatności i anonimowości. Uruchamiana jest z nośnika USB lub DVD i nie pozostawia żadnych śladów na komputerze, na którym jest używana. Cały ruch internetowy jest automatycznie kierowany przez sieć Tor. Zawiera zestaw preinstalowanych narzędzi kryptograficznych i do bezpiecznej komunikacji.', NULL, 'img/image_67ff70b61a5b2.png', 'https://tails.net/', 1, '2025-04-16 08:56:22'),
+(33, 'Garuda Linux', 'Garuda Linux to dystrybucja Linuksa bazująca na Arch Linux, która koncentruje się na wysokiej wydajności i atrakcyjnym wyglądzie \"prosto z pudełka\". Oferuje zoptymalizowane jądro (linux-zen), system plików BTRFS z automatycznymi migawkami (snapshots) oraz różne narzędzia ułatwiające zarządzanie systemem i grami. Dostępna jest w wielu wersjach z różnymi, mocno dostosowanymi wizualnie środowiskami graficznymi (głównie KDE Plasma).', NULL, 'img/image_67ff70ebd7f41.png', 'https://garudalinux.org/', 1, '2025-04-16 08:57:15'),
+(34, 'Slackware', 'Slackware to jedna z najstarszych, wciąż aktywnie rozwijanych dystrybucji Linuksa, znana ze swojego przywiązania do tradycji uniksowej, prostoty i stabilności. Nie posiada skomplikowanych narzędzi konfiguracyjnych, preferując ręczną edycję plików tekstowych. Jest skierowana do doświadczonych użytkowników, którzy chcą dogłębnie poznać i kontrolować swój system. Używa tradycyjnego systemu zarządzania pakietami (pkgtool, installpkg, removepkg).', NULL, 'img/image_67ff7108c414f.png', 'http://www.slackware.com/', 1, '2025-04-16 08:57:44'),
+(35, 'Void Linux', 'Void Linux to niezależna dystrybucja Linuksa typu rolling-release, budowana od podstaw. Wyróżnia się użyciem własnego menedżera pakietów XBPS (X Binary Package System) oraz systemu inicjalizacji runit zamiast bardziej powszechnego systemd. Stawia na prostotę, stabilność i wydajność. Oferuje zarówno wersje z glibc, jak i musl libc. Jest przeznaczona dla użytkowników ceniących sobie alternatywne podejście do zarządzania systemem.', NULL, 'img/image_67ff712b03199.png', 'https://voidlinux.org/', 1, '2025-04-16 08:58:19'),
+(36, 'Qubes OS', 'Qubes OS to dystrybucja Linuksa skupiona na bezpieczeństwie poprzez izolację (security by compartmentalization). Wykorzystuje wirtualizację (Xen hypervisor) do uruchamiania różnych części systemu i aplikacji w oddzielnych, odizolowanych maszynach wirtualnych (Qubes). Pozwala to na segregację zadań (np. praca, bankowość, przeglądanie internetu) i ogranicza skutki ewentualnego ataku na jedną z części systemu. Jest to system dla zaawansowanych użytkowników świadomych kwestii bezpieczeństwa.', NULL, 'img/image_67ff7331765a5.png', 'https://www.qubes-os.org/', 1, '2025-04-16 09:06:57');
 
 --
 -- Indexes for dumped tables
@@ -155,7 +160,7 @@ ALTER TABLE `comments`
 -- AUTO_INCREMENT for table `distributions`
 --
 ALTER TABLE `distributions`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
