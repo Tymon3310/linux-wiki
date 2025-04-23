@@ -15,42 +15,37 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Funkcja generująca unikalną nazwę pliku
-function generate_unique_filename($original_filename) {
+function generate_unique_filename($original_filename, $distro_name = null) {
     $extension = pathinfo($original_filename, PATHINFO_EXTENSION);
-    $base_name = strtolower(preg_replace("/[^a-zA-Z0-9_]/", "_", pathinfo($original_filename, PATHINFO_FILENAME)));
-    return $base_name . "_" . uniqid() . "." . $extension;
+    $base_name = strtolower(preg_replace("/[^a-zA-Z0-9_]/", "_", $distro_name));
+    return $base_name . "." . $extension;
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
-    $id = (int)$_POST['id'];
-    $user_id = $_SESSION['user_id'];
-    
-    // Sprawdzenie uprawnień użytkownika do edycji dystrybucji
-    $check_sql = "SELECT added_by FROM distributions WHERE id = $id";
-    $check_result = $conn->query($check_sql);
-    
-    if ($check_result && $check_result->num_rows > 0) {
-        $distro = $check_result->fetch_assoc();
-        
-        // Sprawdzenie czy użytkownik jest właścicielem dystrybucji lub administratorem
-        if ($distro['added_by'] != $user_id) {
-            header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Nie masz uprawnień do edycji tej dystrybucji."));
-            exit;
-        }
-    } else {
-        header("Location: ../index.php?status=error&message=" . urlencode("Nie znaleziono dystrybucji o podanym identyfikatorze."));
-        exit;
-    }
-    
-    // Pobranie danych z formularza
+    $id = intval($_POST['id']);
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
-    $website = !empty($_POST['website']) ? mysqli_real_escape_string($conn, $_POST['website']) : NULL;
-    $youtube = !empty($_POST['youtube']) ? mysqli_real_escape_string($conn, $_POST['youtube']) : NULL;
-    
+    $website = isset($_POST['website']) ? mysqli_real_escape_string($conn, $_POST['website']) : '';
+    $youtube = isset($_POST['youtube']) ? mysqli_real_escape_string($conn, $_POST['youtube']) : '';
+
+    // Najpierw sprawdź czy dystrybucja istnieje i pobierz stare logo i autora
+    $check_sql = "SELECT * FROM distributions WHERE id = $id";
+    $check_result = mysqli_query($conn, $check_sql);
+    if (!$check_result || mysqli_num_rows($check_result) == 0) {
+        header("Location: ../index.php?status=error&message=" . urlencode("Dystrybucja o podanym ID nie istnieje."));
+        exit;
+    }
+    $distro = mysqli_fetch_assoc($check_result);
+    $old_logo = $distro['logo_path'];
+
+    // Sprawdzenie uprawnień właściciela
+    if ($distro['added_by'] != $_SESSION['user_id']) {
+        header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Nie masz uprawnień do edycji tej dystrybucji."));
+        exit;
+    }
+
     // Walidacja danych wejściowych
     $errors = [];
-    
     if (empty($name)) {
         $errors[] = "Nazwa dystrybucji jest wymagana.";
     }
@@ -72,65 +67,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
         header("Location: ../edit.php?id=$id&status=error&message=" . urlencode($error_message));
         exit;
     }
-    
-    // Rozpoczęcie tworzenia zapytania SQL
-    $sql_parts = [
-        "name = '$name'",
-        "description = '$description'",
-        "website = " . ($website ? "'$website'" : "NULL"),
-        "youtube = " . ($youtube ? "'$youtube'" : "NULL")
-    ];
-    
-    // Obsługa przesyłania logo, jeśli nowe logo zostało dostarczone
+
+    // Domyślnie użyj starej ścieżki logo
+    $logo_path = $old_logo;
+    // Obsługa przesyłania logo, jeśli nowe zostało dostarczone
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] !== UPLOAD_ERR_NO_FILE) {
-        // Weryfikacja typu pliku
-        $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
-        $file_type = $_FILES['logo']['type'];
-        
-        if (!in_array($file_type, $allowed_types)) {
-            header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Dozwolone są tylko pliki obrazów (JPG, PNG, GIF, SVG)."));
-            exit;
+        $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/img/";
+        if (!file_exists($target_dir) && !mkdir($target_dir, 0777, true)) {
+            header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Nie można utworzyć katalogu docelowego dla przesłanego pliku.")); exit;
         }
-        
-        // Sprawdzenie rozmiaru pliku (max 2MB)
-        if ($_FILES['logo']['size'] > 2 * 1024 * 1024) {
-            header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Rozmiar pliku nie może przekraczać 2MB."));
-            exit;
+        $ext = strtolower(pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION));
+        $file_name = preg_replace("/[^a-z0-9_.-]/", "_", strtolower($name)) . "." . $ext;
+        $target_file = $target_dir . $file_name;
+        if (!getimagesize($_FILES['logo']['tmp_name'])) {
+            header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Przesłany plik nie jest obrazem.")); exit;
         }
-        
-        // Przetwarzanie nowego logo
-        $upload_dir = "../img/";
-        $original_filename = basename($_FILES['logo']['name']);
-        $unique_filename = generate_unique_filename($original_filename);
-        $upload_path = $upload_dir . $unique_filename;
-        $db_path = "img/" . $unique_filename;
-        
-        if (move_uploaded_file($_FILES['logo']['tmp_name'], $upload_path)) {
-            // Pobranie ścieżki do starego logo
-            $old_logo_sql = "SELECT logo_path FROM distributions WHERE id = $id";
-            $old_logo_result = $conn->query($old_logo_sql);
-            
-            if ($old_logo_result && $old_logo_result->num_rows > 0) {
-                $old_logo = $old_logo_result->fetch_assoc()['logo_path'];
-                $old_logo_path = "../" . $old_logo;
-                
-                // Usunięcie starego pliku logo
-                if (file_exists($old_logo_path) && !strpos($old_logo, "default")) {
-                    unlink($old_logo_path);
-                }
+        if ($_FILES['logo']['size'] > 2000000) {
+            header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Plik jest za duży. Maksymalny rozmiar to 2MB.")); exit;
+        }
+        $allowed_ext = ['jpg','jpeg','png','gif','svg'];
+        if (!in_array($ext, $allowed_ext)) {
+            header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Dozwolone są tylko pliki JPG, JPEG, PNG, GIF i SVG.")); exit;
+        }
+        if (!is_writable($target_dir)) {
+            @chmod($target_dir, 0777);
+            if (!is_writable($target_dir)) {
+                header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Katalog docelowy nie ma uprawnień do zapisu.")); exit;
             }
-            
-            // Dodanie ścieżki do logo w zapytaniu SQL
-            $sql_parts[] = "logo_path = '$db_path'";
-        } else {
-            header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Błąd przesyłania pliku."));
-            exit;
+        }
+        if (!move_uploaded_file($_FILES['logo']['tmp_name'], $target_file)) {
+            $err = "Wystąpił błąd podczas przesyłania pliku.";
+            switch ($_FILES['logo']['error']) {
+                case UPLOAD_ERR_INI_SIZE: $err = "Przesłany plik przekracza upload_max_filesize w php.ini."; break;
+                case UPLOAD_ERR_FORM_SIZE: $err = "Przesłany plik przekracza MAX_FILE_SIZE formularza."; break;
+                case UPLOAD_ERR_PARTIAL: $err = "Plik został przesłany tylko częściowo."; break;
+                case UPLOAD_ERR_NO_TMP_DIR: $err = "Brak folderu tymczasowego."; break;
+                case UPLOAD_ERR_CANT_WRITE: $err = "Nie udało się zapisać pliku na dysku."; break;
+                case UPLOAD_ERR_EXTENSION: $err = "Przesyłanie pliku zostało zatrzymane przez rozszerzenie."; break;
+            }
+            error_log("File upload error: $err");
+            header("Location: ../edit.php?id=$id&status=error&message=" . urlencode($err)); exit;
+        }
+        $logo_path = "img/" . $file_name;
+        // Usuń stare logo jeśli nie default
+        $old_file = $_SERVER['DOCUMENT_ROOT'] . "/" . $old_logo;
+        if (file_exists($old_file) && strpos($old_logo, 'default') === false) {
+            unlink($old_file);
         }
     }
-    
-    // Finalizacja i wykonanie zapytania SQL
-    $sql = "UPDATE distributions SET " . implode(", ", $sql_parts) . " WHERE id = $id";
-    
+
+    // Aktualizuj dane w bazie
+    $sql = "UPDATE distributions SET 
+                name = '$name',
+                description = '$description',
+                logo_path = '$logo_path'";
+    if (!empty($website)) { $sql .= ", website = '$website'"; }
+    if (!empty($youtube)) { $sql .= ", youtube = '$youtube'"; }
+    $sql .= " WHERE id = $id";
+
     if ($conn->query($sql)) {
         header("Location: ../details.php?id=$id&status=success&message=" . urlencode("Dystrybucja została zaktualizowana."));
     } else {

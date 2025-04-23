@@ -1,6 +1,6 @@
-// Obsługa zdarzeń po kompletnym wczytaniu strony
+// Poczekaj, aż strona w pełni się załaduje, zanim zaczniemy działać!
 document.addEventListener('DOMContentLoaded', function () {
-    // Inicjalizacja przycisku wyświetlającego formularz dodawania dystrybucji
+    // Przygotuj przycisk, który pokaże formularz do dodania nowej dystrybucji
     const showAddFormButtons = document.querySelectorAll('#show-add-form');
     const addFormContainer = document.getElementById('add-form-container');
     const loginPrompt = document.getElementById('login-prompt');
@@ -22,12 +22,31 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Funkcja do wykrywania przeglądarki Firefox
+    // Sprawdź, czy korzystasz z przeglądarki Firefox (przyda się później)
     function isFirefox() {
         return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
     }
 
-    // Obsługa formularza dodawania dystrybucji
+    // Ta funkcja pokaże specjalny komunikat, jeśli Firefox nie radzi sobie z przeciąganiem obrazka
+    function showFirefoxError(dropZone) {
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'upload-error';
+        errorMsg.innerHTML = '<p><i class="fas fa-exclamation-triangle"></i> Nie można przeciągnąć tego obrazu. W przeglądarce Firefox zapisz obraz na dysku (prawy przycisk myszy -> Zapisz obraz jako...), a następnie go przeciągnij lub użyj przycisku wyboru pliku.</p>';
+
+        // Najpierw usuń stare komunikaty o błędach, żeby nie było bałaganu
+        const existingErrors = dropZone.querySelectorAll('.upload-error');
+        existingErrors.forEach(err => err.remove());
+
+        dropZone.appendChild(errorMsg);
+
+        // Schowaj komunikat po 7 sekundach, żeby nie przeszkadzał za długo
+        setTimeout(() => {
+            errorMsg.style.opacity = '0';
+            setTimeout(() => errorMsg.remove(), 500);
+        }, 7000);
+    }
+
+    // Obsługujemy tutaj formularz dodawania nowej dystrybucji Linuxa
     const addForm = document.getElementById('add-form');
     if (addForm) {
         addForm.addEventListener('submit', function (event) {
@@ -39,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
             let isValid = true;
             let errorMessages = [];
 
-            // Sprawdzanie poprawności nazwy
+            // Sprawdź, czy użytkownik wpisał nazwę dystrybucji
             if (!nameInput.value.trim()) {
                 isValid = false;
                 errorMessages.push('Proszę podać nazwę dystrybucji');
@@ -48,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 nameInput.classList.remove('error-field');
             }
 
-            // Sprawdzanie poprawności opisu
+            // Sprawdź, czy użytkownik dodał opis
             if (!descriptionInput.value.trim()) {
                 isValid = false;
                 errorMessages.push('Proszę podać opis dystrybucji');
@@ -61,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 descriptionInput.classList.remove('error-field');
             }
 
-            // Sprawdzanie, czy dodano logo (tylko przy dodawaniu, nie przy edycji)
+            // Sprawdź, czy użytkownik dodał logo (tylko przy dodawaniu, nie przy edycji)
             if (!window.location.pathname.includes('edit.php') && (!logoInput.files || logoInput.files.length === 0)) {
                 isValid = false;
                 errorMessages.push('Proszę dodać logo dystrybucji');
@@ -70,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 logoInput.parentElement.classList.remove('error-field');
             }
 
-            // Sprawdzanie poprawności URL strony internetowej (jeśli podano)
+            // Sprawdź, czy podany adres strony jest poprawny (jeśli w ogóle coś wpisano)
             if (websiteInput.value.trim() && !validateUrl(websiteInput.value)) {
                 isValid = false;
                 errorMessages.push('Proszę podać prawidłowy adres URL strony internetowej');
@@ -79,11 +98,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 websiteInput.classList.remove('error-field');
             }
 
-            // Zatrzymanie wysłania formularza, jeśli są błędy
+            // Jeśli są błędy, nie wysyłaj formularza dalej
             if (!isValid) {
                 event.preventDefault();
 
-                // Tworzenie komunikatu o błędach
+                // Przygotuj ładny komunikat z listą błędów
                 const errorContainer = document.createElement('div');
                 errorContainer.className = 'validation-errors';
                 let errorHTML = '<h3>Proszę poprawić następujące błędy:</h3><ul>';
@@ -93,20 +112,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 errorHTML += '</ul>';
                 errorContainer.innerHTML = errorHTML;
 
-                // Usunięcie poprzednich komunikatów o błędach
+                // Najpierw usuń stare komunikaty o błędach, żeby nie było ich za dużo
                 const existingErrors = addForm.querySelectorAll('.validation-errors');
                 existingErrors.forEach(el => el.remove());
 
-                // Dodanie nowego komunikatu o błędach
+                // Dodaj nowy komunikat z błędami na górę formularza
                 addForm.insertBefore(errorContainer, addForm.firstChild);
 
-                // Płynne przewinięcie do komunikatu o błędach
+                // Przewiń stronę do komunikatu, żeby użytkownik od razu go zobaczył
                 errorContainer.scrollIntoView({ behavior: 'smooth' });
             }
         });
     }
 
-    // Obsługa również formularza edycji
+    // Obsługujemy też formularz edycji dystrybucji, żeby było spójnie
     const editForm = document.getElementById('edit-form');
     if (editForm) {
         editForm.addEventListener('submit', function (event) {
@@ -117,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
             let isValid = true;
             let errorMessages = [];
 
-            // Sprawdzanie poprawności nazwy
+            // Sprawdź, czy użytkownik wpisał nazwę dystrybucji (edycja)
             if (!nameInput.value.trim()) {
                 isValid = false;
                 errorMessages.push('Proszę podać nazwę dystrybucji');
@@ -126,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 nameInput.classList.remove('error-field');
             }
 
-            // Sprawdzanie poprawności opisu
+            // Sprawdź, czy użytkownik dodał opis (edycja)
             if (!descriptionInput.value.trim()) {
                 isValid = false;
                 errorMessages.push('Proszę podać opis dystrybucji');
@@ -139,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 descriptionInput.classList.remove('error-field');
             }
 
-            // Sprawdzanie poprawności URL strony internetowej (jeśli podano)
+            // Sprawdź, czy podany adres strony jest poprawny (edycja)
             if (websiteInput.value.trim() && !validateUrl(websiteInput.value)) {
                 isValid = false;
                 errorMessages.push('Proszę podać prawidłowy adres URL strony internetowej');
@@ -148,11 +167,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 websiteInput.classList.remove('error-field');
             }
 
-            // Zatrzymanie wysłania formularza, jeśli są błędy
+            // Jeśli są błędy, nie wysyłaj formularza dalej
             if (!isValid) {
                 event.preventDefault();
 
-                // Tworzenie komunikatu o błędach
+                // Przygotuj ładny komunikat z listą błędów
                 const errorContainer = document.createElement('div');
                 errorContainer.className = 'validation-errors';
                 let errorHTML = '<h3>Proszę poprawić następujące błędy:</h3><ul>';
@@ -162,14 +181,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 errorHTML += '</ul>';
                 errorContainer.innerHTML = errorHTML;
 
-                // Usunięcie poprzednich komunikatów o błędach
+                // Najpierw usuń stare komunikaty o błędach, żeby nie było ich za dużo
                 const existingErrors = editForm.querySelectorAll('.validation-errors');
                 existingErrors.forEach(el => el.remove());
 
-                // Dodanie nowego komunikatu o błędach
+                // Dodaj nowy komunikat z błędami na górę formularza
                 editForm.insertBefore(errorContainer, editForm.firstChild);
 
-                // Płynne przewinięcie do komunikatu o błędach
+                // Przewiń stronę do komunikatu, żeby użytkownik od razu go zobaczył
                 errorContainer.scrollIntoView({ behavior: 'smooth' });
             }
         });
@@ -232,85 +251,158 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.style.border = '2px dashed #ccc';
                 this.style.backgroundColor = '';
 
-                // Zaawansowany workaround dla Firefox
+                // First, check if we have files directly (works in most cases)
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+
+                    // Validate if it's an image file
+                    if (file.type.match(/^image\/(jpeg|png|gif|svg\+xml)$/i)) {
+                        logoInput.files = e.dataTransfer.files;
+                        previewImage(file, dropZone);
+                        return;
+                    } else {
+                        // Show error for non-image files
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'upload-error';
+                        errorMsg.innerHTML = '<p><i class="fas fa-exclamation-triangle"></i> Błąd! Dozwolone są tylko pliki obrazów (JPG, PNG, GIF, SVG).</p>';
+
+                        // Remove existing error messages
+                        const existingErrors = dropZone.querySelectorAll('.upload-error');
+                        existingErrors.forEach(err => err.remove());
+
+                        dropZone.appendChild(errorMsg);
+
+                        // Hide the error after 5 seconds
+                        setTimeout(() => {
+                            errorMsg.style.opacity = '0';
+                            setTimeout(() => errorMsg.remove(), 500);
+                        }, 5000);
+                        return;
+                    }
+                }
+
+                // Firefox-specific handling for when direct file access fails
                 if (isFirefox()) {
                     try {
-                        // Próba pobrania plików bezpośrednio
-                        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                            logoInput.files = e.dataTransfer.files;
-                            const file = e.dataTransfer.files[0];
-                            previewImage(file, dropZone);
-                            return;
-                        }
-
-                        // Próba pobrania danych jako URL i konwersji na Blob
+                        // For Firefox, check if there are any items with URLs
                         const items = e.dataTransfer.items;
-                        if (items) {
+
+                        // Debug logging to help diagnose issues
+                        console.log('Firefox drag detected. Items:', items ? items.length : 'none');
+
+                        if (items && items.length) {
+                            let foundImage = false;
+
                             for (let i = 0; i < items.length; i++) {
+                                console.log('Item type:', items[i].type, 'kind:', items[i].kind);
+
                                 if (items[i].kind === 'string' && items[i].type.match('^text/uri-list')) {
+                                    foundImage = true;
                                     items[i].getAsString(function (url) {
-                                        // Wyświetl komunikat o próbie pobrania
-                                        const loadingMsg = document.createElement('div');
-                                        loadingMsg.className = 'loading-message';
-                                        loadingMsg.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Próba pobrania obrazu...</p>';
-                                        dropZone.appendChild(loadingMsg);
+                                        // Check if URL ends with a common image extension
+                                        if (url.match(/\.(jpeg|jpg|png|gif|svg)(\?.*)?$/i)) {
+                                            // Display loading message
+                                            const loadingMsg = document.createElement('div');
+                                            loadingMsg.className = 'loading-message';
+                                            loadingMsg.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Próba pobrania obrazu...</p>';
 
-                                        // Próba pobrania obrazu za pomocą fetch
-                                        fetch(url, { mode: 'no-cors' })
-                                            .then(response => response.blob())
-                                            .then(blob => {
-                                                loadingMsg.remove();
+                                            // Remove existing messages
+                                            const existingMsgs = dropZone.querySelectorAll('.loading-message');
+                                            existingMsgs.forEach(msg => msg.remove());
 
-                                                // Stwórz plik z Blob
-                                                const file = new File([blob], "image.png", { type: blob.type });
-                                                const dt = new DataTransfer();
-                                                dt.items.add(file);
-                                                logoInput.files = dt.files;
-                                                previewImage(file, dropZone);
-                                            })
-                                            .catch(error => {
+                                            dropZone.appendChild(loadingMsg);
+
+                                            // Try to fetch the image using a proxy or direct fetch
+                                            try {
+                                                // Create an Image element to check if loading works
+                                                const img = new Image();
+                                                img.crossOrigin = 'anonymous'; // Try to handle CORS
+
+                                                img.onload = function () {
+                                                    loadingMsg.remove();
+
+                                                    // Create a canvas to convert the image to a blob
+                                                    const canvas = document.createElement('canvas');
+                                                    canvas.width = img.width;
+                                                    canvas.height = img.height;
+                                                    const ctx = canvas.getContext('2d');
+                                                    ctx.drawImage(img, 0, 0);
+
+                                                    // Convert to blob
+                                                    canvas.toBlob(function (blob) {
+                                                        // Create a File object from the Blob
+                                                        const filename = url.split('/').pop().split('?')[0] || "image.png";
+                                                        const file = new File([blob], filename, { type: "image/png" });
+
+                                                        // Set the file to the input and show preview
+                                                        try {
+                                                            const dt = new DataTransfer();
+                                                            dt.items.add(file);
+                                                            logoInput.files = dt.files;
+                                                            previewImage(file, dropZone);
+                                                        } catch (e) {
+                                                            console.error('Error creating DataTransfer:', e);
+                                                            showFirefoxError(dropZone);
+                                                        }
+                                                    }, 'image/png');
+                                                };
+
+                                                img.onerror = function () {
+                                                    console.log('Image failed to load from URL:', url);
+                                                    loadingMsg.remove();
+                                                    showFirefoxError(dropZone);
+                                                };
+
+                                                // Try to load the image
+                                                img.src = url;
+                                            } catch (error) {
+                                                console.error('Error processing image URL:', error);
                                                 loadingMsg.remove();
                                                 showFirefoxError(dropZone);
-                                            });
+                                            }
+                                            return;
+                                        } else {
+                                            // Not an image URL
+                                            const errorMsg = document.createElement('div');
+                                            errorMsg.className = 'upload-error';
+                                            errorMsg.innerHTML = '<p><i class="fas fa-exclamation-triangle"></i> Błąd! Dozwolone są tylko pliki obrazów (JPG, PNG, GIF, SVG).</p>';
+                                            dropZone.appendChild(errorMsg);
+
+                                            setTimeout(() => {
+                                                errorMsg.style.opacity = '0';
+                                                setTimeout(() => errorMsg.remove(), 500);
+                                            }, 5000);
+                                        }
                                     });
                                     return;
                                 }
                             }
-                        }
 
-                        // Jeśli dotarliśmy tutaj, to nie udało się przetworzyć obrazu
-                        showFirefoxError(dropZone);
+                            // If we found items but no valid image URLs
+                            if (!foundImage) {
+                                showFirefoxError(dropZone);
+                            }
+                        } else {
+                            // No items found in dataTransfer
+                            showFirefoxError(dropZone);
+                        }
                     } catch (error) {
                         console.error('Firefox drag & drop error:', error);
                         showFirefoxError(dropZone);
                     }
-                } else if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    // Standardowa obsługa dla innych przeglądarek
-                    logoInput.files = e.dataTransfer.files;
-                    console.log('File dropped:', e.dataTransfer.files[0].name);
-                    const file = e.dataTransfer.files[0];
-                    previewImage(file, dropZone);
+                } else {
+                    // For non-Firefox browsers with no files in dataTransfer
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'upload-error';
+                    errorMsg.innerHTML = '<p><i class="fas fa-exclamation-triangle"></i> Nie można przeciągnąć tego obrazu. Spróbuj zapisać obraz na dysku, a następnie go przeciągnij lub użyj przycisku wyboru pliku.</p>';
+                    dropZone.appendChild(errorMsg);
+
+                    setTimeout(() => {
+                        errorMsg.style.opacity = '0';
+                        setTimeout(() => errorMsg.remove(), 500);
+                    }, 5000);
                 }
             });
-
-            // Funkcja wyświetlająca błąd dla Firefox
-            function showFirefoxError(dropZone) {
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'upload-error';
-                errorMsg.innerHTML = '<p><i class="fas fa-exclamation-triangle"></i> Nie można przeciągnąć tego obrazu. W przeglądarce Firefox zapisz obraz na dysku (prawy przycisk myszy -> Zapisz obraz jako...), a następnie go przeciągnij lub użyj przycisku wyboru pliku.</p>';
-
-                // Usuń poprzednie komunikaty błędów
-                const existingErrors = dropZone.querySelectorAll('.upload-error');
-                existingErrors.forEach(err => err.remove());
-
-                dropZone.appendChild(errorMsg);
-
-                // Ukryj komunikat po 5 sekundach
-                setTimeout(() => {
-                    errorMsg.style.opacity = '0';
-                    setTimeout(() => errorMsg.remove(), 500);
-                }, 7000);
-            }
 
             // Kliknięcie w drop zone otwiera okno wyboru pliku
             dropZone.addEventListener('click', function (event) {

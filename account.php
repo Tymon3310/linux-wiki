@@ -1,9 +1,9 @@
 <?php
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczynamy sesję, żeby wiedzieć, kto jest zalogowany
 session_start();
 include 'include/db_config.php';
 
-// Sprawdzenie, czy użytkownik jest zalogowany
+// Sprawdzamy, czy użytkownik jest zalogowany. Jeśli nie, przekierowujemy go do logowania
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -13,12 +13,11 @@ $userId = $_SESSION['user_id'];
 $message = '';
 $error = '';
 
-// Pobieranie danych użytkownika
+// Pobieramy dane użytkownika z bazy
 $user_sql = "SELECT * FROM accounts WHERE id = $userId";
 $user_result = $conn->query($user_sql);
 
 if (!$user_result || $user_result->num_rows === 0) {
-    // Nie znaleziono użytkownika - nie powinno się to zdarzyć, ale na wszelki wypadek
     session_destroy();
     header('Location: login.php');
     exit;
@@ -26,7 +25,7 @@ if (!$user_result || $user_result->num_rows === 0) {
 
 $user = $user_result->fetch_assoc();
 
-// Obsługa formularza zmiany hasła
+// Obsługa zmiany hasła przez użytkownika
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
@@ -52,11 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     }
 }
 
-// Pobieranie dystrybucji dodanych przez użytkownika
+// Pobieramy listę dystrybucji dodanych przez użytkownika
 $distros_sql = "SELECT id, name, date_added FROM distributions WHERE added_by = $userId ORDER BY date_added DESC";
 $distros_result = $conn->query($distros_sql);
 
-// Pobieranie komentarzy użytkownika
+// Pobieramy komentarze użytkownika
 $comments_sql = "SELECT c.id, c.comment, c.date_added, d.id as distro_id, d.name as distro_name 
                 FROM comments c JOIN distributions d ON c.distro_id = d.id 
                 WHERE c.user_id = $userId ORDER BY c.date_added DESC";
@@ -75,85 +74,6 @@ $comments_result = $conn->query($comments_sql);
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
-    <style>
-        .account-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .account-section {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .tab-container {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-right: 5px;
-        }
-        
-        .tab.active {
-            color: var(--primary-color);
-            font-weight: bold;
-            border-bottom: 3px solid var(--primary-color);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .user-info {
-            display: grid;
-            grid-template-columns: 150px 1fr;
-            gap: 10px;
-        }
-        
-        .info-label {
-            font-weight: bold;
-        }
-        
-        .activity-item {
-            padding: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-        
-        .activity-date {
-            color: #777;
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
-        
-        .empty-message {
-            text-align: center;
-            color: #777;
-            padding: 20px;
-            font-style: italic;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
