@@ -60,7 +60,7 @@ $distro = $result->fetch_assoc();
                 <?php endif; ?>
             </div>
         </header>
-        
+        <?php include 'include/messages.php'; ?>
         <main class="distro-details">
             <h2><?php echo htmlspecialchars($distro['name']); ?></h2>
             
@@ -83,8 +83,23 @@ $distro = $result->fetch_assoc();
                     <?php endif; ?>
                     
                     <div class="added-date">
-                        Dodano: <?php echo date('d.m.Y', strtotime($distro['date_added'])); ?>
+                        Dodano: <?php echo date('d.m.Y', strtotime($distro['date_added'])); ?>   
                     </div>
+                    <div class="added-by">
+                        Dodane przez: 
+                        <?php
+                        // Pobranie nazwy użytkownika, który dodał dystrybucję
+                        $user_sql = "SELECT username FROM accounts WHERE id = " . (int)$distro['added_by'];
+                        $user_result = $conn->query($user_sql);
+                        
+                        if ($user_result && $user_result->num_rows > 0) {
+                            $user = $user_result->fetch_assoc();
+                            echo '<a href="user.php?id=' . (int)$distro['added_by'] . '">' . htmlspecialchars($user['username']) . '</a>';
+                        } else {
+                            echo "Nieznany użytkownik";
+                        }
+                        ?>
+                </div>
                 </div>
                 
                 <div class="distro-description">
@@ -113,8 +128,8 @@ $distro = $result->fetch_assoc();
                 <h3><i class="far fa-comments"></i> Komentarze</h3>
                 
                 <?php
-                // Pobranie komentarzy dla tej dystrybucji
-                $comment_sql = "SELECT * FROM comments WHERE distro_id = $id ORDER BY date_added DESC";
+                // Pobranie komentarzy dla tej dystrybucji wraz z nazwami użytkowników
+                $comment_sql = "SELECT c.*, a.username FROM comments c JOIN accounts a ON c.user_id = a.id WHERE c.distro_id = $id ORDER BY c.date_added DESC";
                 $comment_result = $conn->query($comment_sql);
                 
                 if ($comment_result && $comment_result->num_rows > 0) {
@@ -125,11 +140,14 @@ $distro = $result->fetch_assoc();
                     while ($comment = $comment_result->fetch_assoc()) {
                         echo "<div class='comment'>";
                         echo "<div class='comment-header'>";
-                        echo "<strong class='comment-author'><i class='fas fa-user'></i> " . htmlspecialchars($comment['username']) . "</strong>";
+                        echo "<strong class='comment-author'><i class='fas fa-user'></i> <a href='user.php?id=" . (int)
+                              $comment['user_id'] . "'>" . htmlspecialchars($comment['username']) . "</a>" .
+                              ($comment['user_id'] == 1 ? " <span class='admin-tag'>Admin</span>" : "") .
+                              "</strong>";
                         echo "<span class='comment-date'><i class='far fa-clock'></i> ". date('d.m.Y H:i', strtotime($comment['date_added'])) . "</span>";
                         echo "</div>";
                         echo "<div class='comment-body'>" . nl2br(htmlspecialchars($comment['comment'])) . "</div>";
-                        if (isset($_SESSION['username']) && $_SESSION['username'] === $comment['username']) {
+                        if (isset($_SESSION['username']) && (($_SESSION['username'] === $comment['username']) || ($_SESSION['user_id'] == 1))) {
                             echo "<div class='comment-actions'>";
                             echo "<button class='btn-delete-comment' data-comment-id='{$comment['id']}' data-username='" . htmlspecialchars($comment['username']) . "'><i class='fas fa-trash-alt'></i> Usuń</button>";
                             echo "</div>";

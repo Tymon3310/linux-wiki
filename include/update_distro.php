@@ -14,12 +14,6 @@ require_once 'db_config.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Funkcja generująca unikalną nazwę pliku
-function generate_unique_filename($original_filename, $distro_name = null) {
-    $extension = pathinfo($original_filename, PATHINFO_EXTENSION);
-    $base_name = strtolower(preg_replace("/[^a-zA-Z0-9_]/", "_", $distro_name));
-    return $base_name . "." . $extension;
-}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $id = intval($_POST['id']);
@@ -39,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $old_logo = $distro['logo_path'];
 
     // Sprawdzenie uprawnień właściciela
-    if ($distro['added_by'] != $_SESSION['user_id']) {
+    if ($distro['added_by'] != $_SESSION['user_id'] && $_SESSION['user_id'] != 1) {
         header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Nie masz uprawnień do edycji tej dystrybucji."));
         exit;
     }
@@ -95,6 +89,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
                 header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Katalog docelowy nie ma uprawnień do zapisu.")); exit;
             }
         }
+        // If a file with the same name exists, remove it so move_uploaded_file can overwrite
+        if (file_exists($target_file)) {
+            unlink($target_file);
+        }
         if (!move_uploaded_file($_FILES['logo']['tmp_name'], $target_file)) {
             $err = "Wystąpił błąd podczas przesyłania pliku.";
             switch ($_FILES['logo']['error']) {
@@ -108,11 +106,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
             error_log("File upload error: $err");
             header("Location: ../edit.php?id=$id&status=error&message=" . urlencode($err)); exit;
         }
-        $logo_path = "img/" . $file_name;
-        // Usuń stare logo jeśli nie default
-        $old_file = $_SERVER['DOCUMENT_ROOT'] . "/" . $old_logo;
-        if (file_exists($old_file) && strpos($old_logo, 'default') === false) {
-            unlink($old_file);
+        // Ustal ścieżkę nowego logo
+        $new_logo_rel = "img/" . $file_name;
+        $logo_path = $new_logo_rel;
+        // Usuń stare logo tylko jeśli różni się od nowego i nie jest domyślne
+        if ($old_logo !== $new_logo_rel && strpos($old_logo, 'default') === false) {
+            $old_file = $_SERVER['DOCUMENT_ROOT'] . "/" . $old_logo;
+            if (file_exists($old_file)) {
+                unlink($old_file);
+            }
         }
     }
 

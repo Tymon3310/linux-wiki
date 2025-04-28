@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     if ($check_result && $check_result->num_rows > 0) {
         $distro = $check_result->fetch_assoc();
         
-        // Sprawdzenie czy użytkownik jest właścicielem dystrybucji
-        if ($distro['added_by'] == $user_id) {
+        // Allow owner or admin (user_id 1) to delete
+        if ($distro['added_by'] == $user_id || $user_id == 1) {
             // Usuwanie pliku logo, jeśli istnieje
             if (!empty($distro['logo_path']) && file_exists('../' . $distro['logo_path'])) {
                 unlink('../' . $distro['logo_path']);

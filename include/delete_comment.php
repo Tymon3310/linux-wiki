@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     if ($check_result && $check_result->num_rows > 0) {
         $comment = $check_result->fetch_assoc();
         $distro_id = $comment['distro_id'];
-        // Sprawdzamy, czy użytkownik jest właścicielem komentarza
-        if ($comment['user_id'] == $user_id) {
+        // Sprawdzamy, czy użytkownik jest właścicielem komentarza lub admin
+        if ($comment['user_id'] == $user_id || $user_id == 1) {
             // Użytkownik jest właścicielem komentarza, więc pozwalamy na usunięcie
             $sql = "DELETE FROM comments WHERE id = $comment_id";
             

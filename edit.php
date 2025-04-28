@@ -32,7 +32,7 @@ if (!$result || $result->num_rows === 0) {
 $distro = $result->fetch_assoc();
 
 // Sprawdzenie czy użytkownik jest właścicielem tej dystrybucji
-if ($distro['added_by'] != $user_id) {
+if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
     header("Location: details.php?id=$id&status=error&message=" . urlencode("Nie masz uprawnień do edycji tej dystrybucji."));
     exit();
 }
@@ -42,7 +42,7 @@ if ($distro['added_by'] != $user_id) {
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" width="device-width, initial-scale=1.0">
     <title>Edytuj <?php echo htmlspecialchars($distro['name']); ?> - Baza Dystrybucji Linux</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -73,7 +73,8 @@ if ($distro['added_by'] != $user_id) {
                 <?php endif; ?>
             </div>
         </header>
-        
+        <?php include 'include/messages.php'; ?>
+
         <div class="add-form-section">
             <h2><i class="fas fa-edit"></i> Edytuj dystrybucję: <?php echo htmlspecialchars($distro['name']); ?></h2>
             
@@ -184,8 +185,8 @@ if ($distro['added_by'] != $user_id) {
             window.addEventListener('click', function(event) {
                 if (event.target === deleteModal) {
                     deleteModal.style.display = 'none';
-                });
-            }
+                }
+            });
             
             // Zamknięcie popupu po naciśnięciu klawisza Escape
             document.addEventListener('keydown', function(event) {

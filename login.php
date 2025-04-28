@@ -195,17 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="auth-tab" data-tab="register">Rejestracja</div>
                 </div>
                 
-                <?php if ($error): ?>
-                    <div class="error-message">
-                        <?php echo $error; ?>
-                    </div>
-                <?php endif; ?>
-                
-                <?php if ($success): ?>
-                    <div class="success-message">
-                        <?php echo $success; ?>
-                    </div>
-                <?php endif; ?>
+                <?php include 'include/messages.php'; ?>
                 
                 <form method="post" id="login-form" class="auth-form active">
                     <div class="form-group">

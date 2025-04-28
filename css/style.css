@@ -1027,11 +1027,12 @@ footer {
     padding: 1rem;
 }
 
-/* Data */
-.added-date {
+
+.added-date,
+.added-by {
     color: #777;
     font-size: 0.9rem;
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
     text-align: center;
 }
 
@@ -1414,4 +1415,16 @@ footer {
     color: #777;
     padding: 20px;
     font-style: italic;
+}
+
+/* At the end of the file, add admin tag styling */
+.admin-tag {
+    font-size: 0.85em;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-left: 5px;
+    border: #000000 0px solid;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background-color: var(--error-color);
 }

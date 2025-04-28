@@ -14,12 +14,6 @@ require_once 'db_config.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Funkcja do generowania unikalnej nazwy pliku (np. dla obrazków)
-function generate_unique_filename($original_filename, $distro_name = null) {
-    $extension = pathinfo($original_filename, PATHINFO_EXTENSION);
-    $base_name = strtolower(preg_replace("/[^a-zA-Z0-9_]/", "_", $distro_name));
-    return $base_name . "." . $extension;
-}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
     // Pobieramy ID użytkownika z sesji
@@ -169,9 +163,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
     }
     
     // Dodajemy dystrybucję do bazy danych
-    $sql = "INSERT INTO distributions (name, description, website, youtube, logo_path, added_by) 
-            VALUES ('$name', '$description', " . ($website ? "'$website'" : "NULL") . ", " . 
-            ($youtube ? "'$youtube'" : "NULL") . ", '$logo_path', $user_id)";
+    $sql = "INSERT INTO distributions (name, description, website, youtube, logo_path, added_by) VALUES (" .
+           "'" . $name . "', " .
+           "'" . $description . "', " .
+           ($website ? "'" . $website . "'" : "NULL") . ", " .
+           ($youtube ? "'" . $youtube . "'" : "NULL") . ", " .
+           "'" . $logo_path . "', " .
+           $user_id .
+           ")";
     
     if ($conn->query($sql)) {
         header("Location: ../index.php?status=success&added=" . urlencode($name));

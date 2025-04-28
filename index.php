@@ -35,7 +35,7 @@ session_start();
                         <i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję
                     </button>
                     <a href="account.php" class="btn-primary">
-                        <i class="fas fa-user-circle"></i> Moje konto
+                        <i class="fas fa-user-circle"></i> Moje konto<?php if (isset($_SESSION['user_id']) && $_SESSION['user_id'] == 1) echo " <span class='admin-tag'>Admin</span>"; ?>
                     </a>
                     <a href="logout.php" class="btn-primary">
                         <i class="fas fa-sign-out-alt"></i> Wyloguj się
@@ -48,7 +48,8 @@ session_start();
                 <?php endif; ?>
             </div>
         </header>
-        
+        <?php include 'include/messages.php'; ?>
+
         <!-- Wyszukiwanie dystrybucji -->
         <div class="search-section">
             <h2>Znajdź dystrybucję Linux</h2>
