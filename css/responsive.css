@@ -1,0 +1,47 @@
+/* filepath: /opt/lampp/htdocs/css/responsive.css */
+/* Style Responsywne */
+
+/* na małe wyświetlacze */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    #search-form {
+        flex-direction: column;
+    }
+
+    #search-input {
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    #search-button {
+        border-radius: 4px;
+        width: 100%;
+    }
+
+    .search-section,
+    .add-form-section {
+        padding: 1.5rem;
+    }
+
+    .distro-content {
+        flex-direction: column;
+    }
+
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .btn-return {
+        margin-top: 1rem;
+    }
+
+    /* Upewnij się, że komentarze zajmują pełną szerokość na małych ekranach */
+    .comment {
+        max-width: 100%;
+        min-width: unset;
+    }
+}

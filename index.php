@@ -15,10 +15,10 @@ session_start();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <script>
-        // Pass authentication status to JavaScript
+        // Przekaż status uwierzytelnienia do JavaScript
         const isUserLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
     </script>
-    <script src="js/script.js" defer></script>
+    <script src="js/script.js"></script>
 </head>
 <body>
     <div class="container">
@@ -86,7 +86,7 @@ session_start();
                     echo "<div class='not-found'>";
                     echo "<p>Nie znaleziono dystrybucji \"" . htmlspecialchars($search) . "\" w naszej bazie danych.</p>";
                     
-                    // Show "Add New Distribution" button only to logged-in users
+                    // Pokaż przycisk "Dodaj nową dystrybucję" tylko zalogowanym użytkownikom
                     if (isset($_SESSION['user_id'])) {
                         echo "<p>Czy chcesz dodać tę dystrybucję?</p>";
                         echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
@@ -126,7 +126,7 @@ session_start();
                     echo "<div class='no-distros'>";
                     echo "<p>Brak dystrybucji w bazie danych.</p>";
                     
-                    // Show "Add New Distribution" button only to logged-in users
+                    // Pokaż przycisk "Dodaj nową dystrybucję" tylko zalogowanym użytkownikom
                     if (isset($_SESSION['user_id'])) {
                         echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
                     } else {
@@ -193,6 +193,48 @@ session_start();
         <footer>
             <p>&copy; <?php echo date('Y'); ?> Tymon3310</p>
         </footer>
+        <button onclick="topFunction()" id="backToTop" class="back-to-top" title="Go to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
     </div>
+    <script>
+        // Scroll animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+            
+            // Back to top button functionality
+            const backToTopButton = document.getElementById('backToTop');
+            
+            window.onscroll = function() {
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                    backToTopButton.style.display = 'block';
+                } else {
+                    backToTopButton.style.display = 'none';
+                }
+            };
+        });
+
+        // Funkcja przewijania do góry strony
+       // Back to top button functionality
+    function topFunction() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+        
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 23, 2025 at 09:49 AM
+-- Generation Time: Apr 30, 2025 at 09:49 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,14 +33,15 @@ CREATE TABLE `accounts` (
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `date_added` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `accounts`
 --
 
 INSERT INTO `accounts` (`id`, `username`, `email`, `password`, `date_added`) VALUES
-(1, 'Tymon3310', 'kopczynski.tymon@gmail.com', '$2y$10$wVSExLuYShZpumLuR.nTtOrjjICrNHD/Fhhyv5IcTKobuP6ySEFVm', '2025-04-10 09:10:24');
+(1, 'Tymon3310', 'kopczynski.tymon@gmail.com', '$2y$10$wVSExLuYShZpumLuR.nTtOrjjICrNHD/Fhhyv5IcTKobuP6ySEFVm', '2025-04-10 09:10:24'),
+(2, 'test', 'test@test.com', '$2y$10$Ew2m1uhh8M8gGomrt7LWfeiub0rPGgF35AoQb7/a5WGyPSWa85ewS', '2025-04-23 08:13:21');
 
 -- --------------------------------------------------------
 
@@ -55,7 +56,7 @@ CREATE TABLE `comments` (
   `username` varchar(50) NOT NULL,
   `comment` text NOT NULL,
   `date_added` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `comments`
@@ -159,19 +160,19 @@ ALTER TABLE `distributions`
 -- AUTO_INCREMENT for table `accounts`
 --
 ALTER TABLE `accounts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `distributions`
 --
 ALTER TABLE `distributions`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

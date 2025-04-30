@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     if ($check_result && $check_result->num_rows > 0) {
         $distro = $check_result->fetch_assoc();
         
-        // Allow owner or admin (user_id 1) to delete
+        // Zezwól właścicielowi lub administratorowi (user_id 1) na usunięcie
         if ($distro['added_by'] == $user_id || $user_id == 1) {
             // Usuwanie pliku logo, jeśli istnieje
             if (!empty($distro['logo_path']) && file_exists('../' . $distro['logo_path'])) {

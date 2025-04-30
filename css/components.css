@@ -1,0 +1,42 @@
+/* css/components.css */
+/* Różne Style Komponentów */
+
+.description-text {
+    line-height: 1.8;
+}
+
+/* Tekst */
+h1,
+h2,
+h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 2.2rem;
+    text-align: center;
+    position: relative;
+}
+
+h1::after {
+    content: "";
+    display: block;
+    width: 100px;
+    height: 4px;
+    background: var(--secondary-color);
+    margin: 10px auto;
+}
+
+/* Stylizacja tagu administratora */
+.admin-tag {
+    font-size: 0.85em;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-left: 5px;
+    border: #000000 0px solid;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background-color: var(--error-color);
+}

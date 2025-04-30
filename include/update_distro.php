@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
                 header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Katalog docelowy nie ma uprawnień do zapisu.")); exit;
             }
         }
-        // If a file with the same name exists, remove it so move_uploaded_file can overwrite
+        // Jeśli plik o tej samej nazwie istnieje, usuń go, aby move_uploaded_file mógł go nadpisać
         if (file_exists($target_file)) {
             unlink($target_file);
         }

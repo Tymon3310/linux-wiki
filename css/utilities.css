@@ -1,0 +1,59 @@
+/* css/utilities.css */
+/* Utility Helpers */
+
+/* Kontener akcji */
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.actions .btn,
+.actions .btn-primary,
+.actions .btn-secondary,
+.actions .btn-edit,
+.actions .btn-delete,
+.actions .btn-return {
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+/* Tytuł sekcji */
+.section-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+
+/* Back to top button */
+.back-to-top {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99;
+    border: none;
+    outline: none;
+    background-color: var(--card-bg);
+    /* Adjusted from --content-bg */
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 50%;
+    font-size: 18px;
+    box-shadow: var(--shadow);
+    /* Adjusted from --box-shadow */
+    transition: all 0.3s;
+}
+
+.back-to-top:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    /* Adjusted from --navbar-hover */
+    transform: translateY(-5px);
+}

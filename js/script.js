@@ -251,17 +251,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.style.border = '2px dashed #ccc';
                 this.style.backgroundColor = '';
 
-                // First, check if we have files directly (works in most cases)
+                // Najpierw sprawdź, czy mamy pliki bezpośrednio (działa w większości przypadków)
                 if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                     const file = e.dataTransfer.files[0];
 
-                    // Validate if it's an image file
+                    // Sprawdź, czy to plik obrazu
                     if (file.type.match(/^image\/(jpeg|png|gif|svg\+xml)$/i)) {
                         logoInput.files = e.dataTransfer.files;
                         previewImage(file, dropZone);
                         return;
                     } else {
-                        // Show error for non-image files
+                        // Pokaż błąd dla plików niebędących obrazami
                         const errorMsg = document.createElement('div');
                         errorMsg.className = 'upload-error';
                         errorMsg.innerHTML = '<p><i class="fas fa-exclamation-triangle"></i> Błąd! Dozwolone są tylko pliki obrazów (JPG, PNG, GIF, SVG).</p>';
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         dropZone.appendChild(errorMsg);
 
-                        // Hide the error after 5 seconds
+                        // Ukryj błąd po 5 sekundach
                         setTimeout(() => {
                             errorMsg.style.opacity = '0';
                             setTimeout(() => errorMsg.remove(), 500);
@@ -281,20 +281,20 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-                // Firefox-specific handling for when direct file access fails
+                // Obsługa specyficzna dla Firefoksa, gdy bezpośredni dostęp do pliku zawiedzie
                 if (isFirefox()) {
                     try {
-                        // For Firefox, check if there are any items with URLs
+                        // Dla Firefoksa sprawdź, czy są jakieś elementy z adresami URL
                         const items = e.dataTransfer.items;
 
-                        // Debug logging to help diagnose issues
-                        console.log('Firefox drag detected. Items:', items ? items.length : 'none');
+                        // Logowanie debugowania, aby pomóc w diagnozowaniu problemów
+                        console.log('Wykryto przeciąganie w Firefoksie. Elementy:', items ? items.length : 'brak');
 
                         if (items && items.length) {
                             let foundImage = false;
 
                             for (let i = 0; i < items.length; i++) {
-                                console.log('Item type:', items[i].type, 'kind:', items[i].kind);
+                                console.log('Typ elementu:', items[i].type, 'rodzaj:', items[i].kind);
 
                                 if (items[i].kind === 'string' && items[i].type.match('^text/uri-list')) {
                                     foundImage = true;
@@ -807,4 +807,5 @@ document.addEventListener('DOMContentLoaded', function () {
             }, 8000);
         }
     }
+
 });

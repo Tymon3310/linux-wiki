@@ -1,0 +1,36 @@
+/* filepath: /opt/lampp/htdocs/css/cards.css */
+/* Style Kart */
+
+.distro-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+.distro-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.distro-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin: 1rem auto;
+}
+
+.distro-card h3 {
+    text-align: center;
+    padding: 0 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.distro-card p {
+    padding: 0 1rem 1rem;
+    flex-grow: 1;
+    color: #666;
+}

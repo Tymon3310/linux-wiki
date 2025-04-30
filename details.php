@@ -114,7 +114,7 @@ $distro = $result->fetch_assoc();
             <div class="distro-video">
                 <h3>Prezentacja wideo</h3>
                 <div class="video-container" id="youtube-embed-container" data-youtube-url="<?php echo htmlspecialchars($distro['youtube']); ?>">
-                    <!-- YouTube embed będzie tutaj wstawiony przez JavaScript -->
+                    <!-- Osadzenie YouTube zostanie tutaj wstawione przez JavaScript -->
                 </div>
             </div>
             <?php endif; ?>

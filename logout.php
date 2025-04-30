@@ -2,18 +2,18 @@
 // Rozpoczęcie sesji dla uwierzytelniania użytkowników
 session_start();
 
-// Clear all session variables
+// Wyczyść wszystkie zmienne sesji
 $_SESSION = array();
 
-// If a session cookie is used, destroy the cookie
+// Jeśli używane jest ciasteczko sesji, zniszcz je
 if (isset($_COOKIE[session_name()])) {
     setcookie(session_name(), '', time()-42000, '/');
 }
 
-// Destroy the session
+// Zniszcz sesję
 session_destroy();
 
-// Redirect to the homepage
+// Przekieruj na stronę główną
 header("Location: index.php");
 exit;
 ?>

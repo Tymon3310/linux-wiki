@@ -1,0 +1,75 @@
+/* filepath: /opt/lampp/htdocs/css/account.css */
+/* Style Strony Konta */
+
+.account-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.account-section {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.tab-container {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 5px;
+}
+
+.tab.active {
+    color: var(--primary-color);
+    font-weight: bold;
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.user-info {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 10px;
+}
+
+.info-label {
+    font-weight: bold;
+}
+
+.activity-item {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-date {
+    color: #777;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.empty-message {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+    font-style: italic;
+}
