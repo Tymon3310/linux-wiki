@@ -218,11 +218,16 @@ button[type="submit"] i {
 /* .btn-edit zdefiniowany poniżej - Konsolidacja */
 .btn-edit {
     background-color: #3498db;
-    /* text-decoration: none; */ /* Już ustawione w ogólnych stylach przycisków */
-    /* text-align: center; */ /* Już ustawione w ogólnych stylach przycisków */
-    /* padding: 8px 0; */ /* Nadpisane przez ogólne style przycisków */
-    /* display: block; */ /* Nadpisane przez ogólne style przycisków */
-    /* transition: background-color 0.3s; */ /* Już ustawione w ogólnych stylach przycisków */
+    /* text-decoration: none; */
+    /* Już ustawione w ogólnych stylach przycisków */
+    /* text-align: center; */
+    /* Już ustawione w ogólnych stylach przycisków */
+    /* padding: 8px 0; */
+    /* Nadpisane przez ogólne style przycisków */
+    /* display: block; */
+    /* Nadpisane przez ogólne style przycisków */
+    /* transition: background-color 0.3s; */
+    /* Już ustawione w ogólnych stylach przycisków */
 }
 
 .btn-edit:hover {
@@ -231,12 +236,18 @@ button[type="submit"] i {
 
 .btn-details {
     background-color: var(--primary-color);
-    /* text-decoration: none; */ /* Już ustawione */
-    /* text-align: center; */ /* Już ustawione */
-    /* padding: 8px 0; */ /* Nadpisane */
-    /* display: block; */ /* Nadpisane */
-    /* width: 100%; */ /* Nadpisane przez flex w card-buttons */
-    /* transition: background-color 0.3s; */ /* Już ustawione */
+    /* text-decoration: none; */
+    /* Już ustawione */
+    /* text-align: center; */
+    /* Już ustawione */
+    /* padding: 8px 0; */
+    /* Nadpisane */
+    /* display: block; */
+    /* Nadpisane */
+    /* width: 100%; */
+    /* Nadpisane przez flex w card-buttons */
+    /* transition: background-color 0.3s; */
+    /* Już ustawione */
     color: white !important;
 }
 
@@ -255,8 +266,10 @@ button[type="submit"] {
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
-    display: block; /* Zachowaj dla samodzielnych przycisków submit */
-    margin: 0 auto; /* Zachowaj dla samodzielnych przycisków submit */
+    display: block;
+    /* Zachowaj dla samodzielnych przycisków submit */
+    margin: 0 auto;
+    /* Zachowaj dla samodzielnych przycisków submit */
 }
 
 button[type="submit"]:hover {
