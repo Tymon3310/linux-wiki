@@ -119,8 +119,9 @@ function handleDrop(event, dropZone, logoInput) {
 
     const files = event.dataTransfer.files;
     const items = event.dataTransfer.items;
+    const types = event.dataTransfer.types;
 
-    // Sprawdź, czy upuszczono pliki
+    // Sprawdź, czy upuszczono pliki (np. z pulpitu)
     if (files && files.length > 0) {
         console.log('Upuszczono pliki:', files);
         // Weź tylko pierwszy plik, jeśli upuszczono ich więcej
@@ -143,8 +144,69 @@ function handleDrop(event, dropZone, logoInput) {
         } else {
             alert('Proszę upuścić plik obrazka (np. PNG, JPG, GIF).');
         }
-    } else if (items && items.length > 0 && items[0].kind === 'string' && items[0].type === 'text/uri-list') {
-        // Obsługa przeciągania obrazka bezpośrednio ze strony (często problematyczne w Firefox)
+    } 
+    // --- NOWA OBSŁUGA: Przeciąganie obrazka z tej samej strony w Firefox ---
+    else if (isFirefox() && types.includes('text/uri-list') && types.includes('application/x-moz-nativeimage')) {
+        console.log('[Firefox Intra-Page Drag] Wykryto przeciągnięcie obrazka z tej samej strony.');
+        const imageUrl = event.dataTransfer.getData('text/uri-list');
+        console.log('[Firefox Intra-Page Drag] URL obrazka:', imageUrl);
+
+        if (imageUrl) {
+            // Spróbuj pobrać obrazek z URL
+            fetch(imageUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.blob(); // Pobierz jako Blob
+                })
+                .then(blob => {
+                    console.log('[Firefox Intra-Page Drag] Pobrany Blob:', blob);
+                    // Utwórz obiekt File z Bloba
+                    // Spróbuj wyciągnąć nazwę pliku z URL
+                    let filename = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+                    // Usuń ewentualne parametry URL z nazwy pliku
+                    filename = filename.split('?')[0];
+                    // Jeśli nazwa jest pusta lub domyślna, nadaj generyczną
+                    if (!filename || filename.includes('.php') || filename.includes('.html')) {
+                        const extension = blob.type.split('/')[1] || 'png'; // Domyślnie png
+                        filename = `dragged-image.${extension}`;
+                    }
+
+                    const file = new File([blob], filename, { type: blob.type });
+                    console.log('[Firefox Intra-Page Drag] Utworzony plik:', file);
+
+                    // Ustaw plik w inpucie
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    logoInput.files = dataTransfer.files;
+
+                    // Wygeneruj podgląd
+                    previewImage(file, dropZone, logoInput);
+
+                    // Usuń ewentualny komunikat o błędzie Firefoxa
+                    const existingError = dropZone.querySelector('.upload-error');
+                    if (existingError) existingError.remove();
+                    // Ukryj wskazówkę po przetworzeniu
+                    const uploadHint = dropZone.querySelector('.upload-hint');
+                    if (uploadHint) {
+                        uploadHint.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('[Firefox Intra-Page Drag] Błąd podczas pobierania lub przetwarzania obrazka z URL:', error);
+                    alert('Nie udało się pobrać przeciągniętego obrazka. Spróbuj zapisać go najpierw na dysku.');
+                    // Pokaż błąd specyficzny dla Firefoxa, jeśli to był problem z URI
+                    showFirefoxError(dropZone);
+                });
+        } else {
+             console.warn('[Firefox Intra-Page Drag] Nie udało się uzyskać URL obrazka z dataTransfer.');
+             alert('Nie udało się przetworzyć przeciągniętego obrazka.');
+        }
+    }
+    // --- Koniec nowej obsługi ---
+    else if (items && items.length > 0 && items[0].kind === 'string' && items[0].type === 'text/uri-list') {
+        // Obsługa przeciągania obrazka bezpośrednio ze strony ZEWNĘTRZNEJ (często problematyczne w Firefox)
         console.log('Próba przeciągnięcia obrazka z innej strony (URI)');
         if (isFirefox()) {
             // W Firefoksie to często nie działa poprawnie, pokażmy błąd
@@ -160,8 +222,8 @@ function handleDrop(event, dropZone, logoInput) {
             });
         }
     } else if (items && items.length > 0 && items[0].kind === 'string' && items[0].type.startsWith('image/')) {
-        // Obsługa wklejania obrazka (np. ze schowka)
-        console.log('Próba wklejenia obrazka ze schowka.');
+        // Obsługa wklejania obrazka LUB przeciągania danych obrazka (rzadsze)
+        console.log('Próba przetworzenia elementu typu image/* (może być wklejenie lub nietypowy drag).');
         const file = items[0].getAsFile();
         if (file) {
             console.log('Wklejony plik:', file);
