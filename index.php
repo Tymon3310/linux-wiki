@@ -15,10 +15,9 @@ session_start();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
     <script>
-        // Przekaż status uwierzytelnienia do JavaScript
-        const isUserLoggedIn = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+        window.isUserLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
     </script>
-    <script src="js/script.js"></script>
+    <script type="module" src="js/script.js"></script>
 </head>
 <body>
     <div class="container">
@@ -66,7 +65,7 @@ session_start();
                 include 'include/db_config.php';
                 
                 $search = $conn->real_escape_string($_POST['search_distro']);
-                $sql = "SELECT * FROM distributions WHERE name LIKE '%$search%'";
+                $sql = "SELECT * a WHERE name LIKE '%$search%'";
                 $result = $conn->query($sql);
                 
                 if ($result && $result->num_rows > 0) {
@@ -144,7 +143,7 @@ session_start();
         
         <!-- Formularz dodawania nowej dystrybucji -->
         <?php if (isset($_SESSION['user_id'])): ?>
-        <div id="add-form-container" class="add-form-section" style="display: none;">
+        <div id="add-form-container" class="add-form-section">
             <h2><i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję Linux</h2>
             <form id="add-form" method="post" action="include/add_distro.php" enctype="multipart/form-data">
                 <input type="hidden" name="distro_name" id="distro-name-hidden">
@@ -157,6 +156,7 @@ session_start();
                 <div class="form-group">
                     <label for="description"><i class="fas fa-align-left"></i> Opis (min. 30 znaków):</label>
                     <textarea name="description" id="description" rows="5" required></textarea>
+                    <div id="description-counter" class="char-counter">0 znaków</div>
                 </div>
                 
                 <div class="form-group">
@@ -169,21 +169,25 @@ session_start();
                     <input type="url" name="youtube" id="youtube" placeholder="https://youtube.com/example">
                 </div>
 
+                <!-- Zaktualizowana sekcja przesyłania logo - jak w edit.php -->
                 <div class="form-group">
-                    <label><i class="fas fa-image"></i> Logo dystrybucji (max 2MB):</label>
-                    <div class="file-upload-container">
-                        <!-- Oryginalny input zostaje, ale będzie ukryty przez JavaScript -->
-                        <input type="file" name="logo" id="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml" required>
+                    <label for="logo"><i class="fas fa-upload"></i> Logo dystrybucji (opcjonalnie, maks. 2MB):</label>
+                    <div class="file-upload-container" data-existing-logo="" data-existing-logo-name="">
+                        <!-- Wskazówka i podgląd zostaną dodane dynamicznie przez JS -->
+                        <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml" style="display: none;">
+                        <button type="button" class="file-select-button">Wybierz plik</button>
+                        <div class="image-preview-container"></div> <!-- Kontener na podgląd -->
                     </div>
                     <small><i class="fas fa-info-circle"></i> Akceptowane formaty: JPG, JPEG, PNG, GIF, SVG</small>
                     <small><i class="fas fa-hand-pointer"></i> Możesz przeciągnąć i upuścić plik lub wkleić obraz ze schowka (Ctrl+V)</small>
+                    <!-- Komunikaty o błędach będą dodawane tutaj przez JS -->
                 </div>
                 
                 <button type="submit" name="add" id="add-button"><i class="fas fa-plus"></i> Dodaj dystrybucję</button>
             </form>
         </div>
         <?php else: ?>
-        <div id="login-prompt" class="add-form-section" style="display: none;">
+        <div id="login-prompt" class="add-form-section">
             <h2><i class="fas fa-user-lock"></i> Wymagane logowanie</h2>
             <p>Aby dodać nową dystrybucję Linux, musisz się najpierw zalogować.</p>
             <a href="login.php" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Zaloguj się</a>

@@ -167,7 +167,8 @@ $distro = $result->fetch_assoc();
                         <input type="hidden" name="distro_id" value="<?php echo $distro['id']; ?>">
                         <div class="form-group">
                             <label for="comment"><i class="fas fa-pen"></i> Komentarz</label>
-                            <textarea id="comment" name="comment" rows="4" placeholder="Twój komentarz..." required></textarea>
+                        <textarea id="comment" name="comment" rows="4" placeholder="Twój komentarz..." required></textarea>
+                        <div id="comment-counter" class="char-counter">0 znaków</div>
                         </div>
                         <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Dodaj komentarz</button>
                     </form>
@@ -217,150 +218,10 @@ $distro = $result->fetch_assoc();
         </footer>
     </div>
 
-    <script src="js/script.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Funkcja konwertująca URL YouTube na format embed
-            function getYoutubeEmbedUrl(url) {
-                if (!url) return null;
-                
-                // Obsługa różnych formatów URL YouTube
-                let videoId = null;
-                
-                // Format standardowy: https://www.youtube.com/watch?v=VIDEO_ID
-                const watchMatch = url.match(/youtube\.com\/watch\?v=([^&]+)/);
-                if (watchMatch) {
-                    videoId = watchMatch[1];
-                }
-                
-                // Format skrócony: https://youtu.be/VIDEO_ID
-                const shortMatch = url.match(/youtu\.be\/([^?&]+)/);
-                if (shortMatch) {
-                    videoId = shortMatch[1];
-                }
-                
-                // Format embed: https://www.youtube.com/embed/VIDEO_ID
-                const embedMatch = url.match(/youtube\.com\/embed\/([^?&]+)/);
-                if (embedMatch) {
-                    videoId = embedMatch[1];
-                }
-                
-                // Jeśli znaleziono ID filmu, zwróć URL do embedowania
-                if (videoId) {
-                    return `https://www.youtube.com/embed/${videoId}`;
-                }
-                
-                // W przypadku nieprawidłowego URL, zwróć null
-                return null;
-            }
-            
-            // Wstaw YouTube embed
-            const youtubeContainer = document.getElementById('youtube-embed-container');
-            if (youtubeContainer) {
-                const youtubeUrl = youtubeContainer.getAttribute('data-youtube-url');
-                const embedUrl = getYoutubeEmbedUrl(youtubeUrl);
-                
-                if (embedUrl) {
-                    const iframe = document.createElement('iframe');
-                    iframe.setAttribute('width', '100%');
-                    iframe.setAttribute('height', '480');
-                    iframe.setAttribute('src', embedUrl);
-                    iframe.setAttribute('frameborder', '0');
-                    iframe.setAttribute('allowfullscreen', '');
-                    iframe.setAttribute('loading', 'lazy');
-                    
-                    youtubeContainer.appendChild(iframe);
-                } else {
-                    // W przypadku nieprawidłowego URL YouTube, wyświetl komunikat
-                    youtubeContainer.innerHTML = '<p class="video-error">Nieprawidłowy URL wideo</p>';
-                }
-            }
-            
-            // Funkcjonalność potwierdzenia usunięcia dystrybucji
-            const deleteButton = document.getElementById('delete-button');
-            const deleteModal = document.getElementById('delete-modal');
-            const cancelDelete = document.getElementById('cancel-delete');
-            const distroNameToDelete = document.getElementById('distro-name-to-delete');
-            const distroIdToDelete = document.getElementById('distro-id-to-delete');
-            
-            if (deleteButton) {
-                deleteButton.addEventListener('click', function() {
-                    const distroId = this.getAttribute('data-id');
-                    const distroName = this.getAttribute('data-name');
-                    
-                    // Ustawienie wartości w popupie
-                    distroNameToDelete.textContent = distroName;
-                    distroIdToDelete.value = distroId;
-                    
-                    // Wyświetlenie popupu
-                    deleteModal.style.display = 'block';
-                });
-            }
-            
-            // Zamknięcie popupu po kliknięciu Anuluj
-            if (cancelDelete) {
-                cancelDelete.addEventListener('click', function() {
-                    deleteModal.style.display = 'none';
-                });
-            }
-            
-            // Zamknięcie popupu po kliknięciu poza nim
-            window.addEventListener('click', function(event) {
-                if (event.target === deleteModal) {
-                    deleteModal.style.display = 'none';
-                }
-            });
-            
-            // Zamknięcie popupu po naciśnięciu klawisza Escape
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && deleteModal.style.display === 'block') {
-                    deleteModal.style.display = 'none';
-                }
-            });
-            
-            // Funkcjonalność usuwania komentarzy
-            const deleteCommentButtons = document.querySelectorAll('.btn-delete-comment');
-            const deleteCommentModal = document.getElementById('delete-comment-modal');
-            const cancelDeleteComment = document.getElementById('cancel-delete-comment');
-            const commentUsernameToDelete = document.getElementById('comment-username-to-delete');
-            const commentIdToDelete = document.getElementById('comment-id-to-delete');
-            
-            deleteCommentButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const commentId = this.getAttribute('data-comment-id');
-                    const username = this.getAttribute('data-username');
-                    
-                    // Ustawienie wartości w popupie usuwania komentarza
-                    commentUsernameToDelete.textContent = username;
-                    commentIdToDelete.value = commentId;
-                    
-                    // Wyświetlenie popupu usuwania komentarza
-                    deleteCommentModal.style.display = 'block';
-                });
-            });
-            
-            // Zamknięcie popupu komentarza po kliknięciu Anuluj
-            if (cancelDeleteComment) {
-                cancelDeleteComment.addEventListener('click', function() {
-                    deleteCommentModal.style.display = 'none';
-                });
-            }
-            
-            // Zamknięcie popupu komentarza po kliknięciu poza nim
-            window.addEventListener('click', function(event) {
-                if (event.target === deleteCommentModal) {
-                    deleteCommentModal.style.display = 'none';
-                }
-            });
-            
-            // Zamknięcie popupu komentarza po naciśnięciu klawisza Escape
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && deleteCommentModal.style.display === 'block') {
-                    deleteCommentModal.style.display = 'none';
-                }
-            });
-        });
+        window.isUserLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
     </script>
+    <script type="module" src="js/script.js"></script>
 </body>
 </html>
 <?php

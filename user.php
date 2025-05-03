@@ -69,9 +69,13 @@ $comments_result = $conn->query($comments_sql);
             <div id="activity" >
                 <h3><i class="fas fa-history"></i> Aktywność użytkownika</h3>
                 
-                <div class="tab-container" style="margin-top: 20px;">
-                    <div class="tab active" data-tab="distros">Dodane dystrybucje</div>
-                    <div class="tab" data-tab="comments">Dodane komentarze</div>
+                <div class="tab-container activity-tabs">
+                    <div class="tab active" data-tab="distros">
+                        Dodane dystrybucje (<?php echo $distros_result->num_rows; ?>)
+                    </div>
+                    <div class="tab" data-tab="comments">
+                        Dodane komentarze (<?php echo $comments_result->num_rows; ?>)
+                    </div>
                 </div>
                 
                 <div id="distros" class="tab-content active">
@@ -102,7 +106,7 @@ $comments_result = $conn->query($comments_sql);
                                         <?php echo htmlspecialchars($comment['distro_name']); ?>
                                     </a>
                                 </div>
-                                <div style="margin-top: 5px;">
+                                <div class="comment-excerpt">
                                     <?php 
                                         $comment_text = htmlspecialchars($comment['comment']);
                                         echo (strlen($comment_text) > 100) 
@@ -126,35 +130,9 @@ $comments_result = $conn->query($comments_sql);
             <p>&copy; <?php echo date('Y'); ?> Tymon3310</p>
         </footer>
     </div>
-    <script src="js/script.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Obsługa zakładek
-            const handleTabs = (tabContainerSelector, tabContentSelector) => {
-                const tabs = document.querySelectorAll(tabContainerSelector + ' .tab');
-                const contents = document.querySelectorAll(tabContentSelector);
-                
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', function() {
-                        const tabId = this.getAttribute('data-tab');
-                        
-                        // Usuwanie klasy aktywnej
-                        tabs.forEach(t => t.classList.remove('active'));
-                        contents.forEach(c => c.classList.remove('active'));
-                        
-                        // Dodawanie klasy aktywnej
-                        this.classList.add('active');
-                        document.getElementById(tabId).classList.add('active');
-                    });
-                });
-            };
-            
-            // Inicjalizacja głównych zakładek
-            handleTabs('.account-container > .tab-container', '.account-section.tab-content');
-            
-            // Inicjalizacja podzakładek aktywności
-            handleTabs('#activity > .tab-container', '#activity .tab-content');
-        });
+        window.isUserLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
     </script>
+    <script type="module" src="js/script.js"></script>
 </body>
 </html>

@@ -103,83 +103,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
-    <style>
-        .auth-container {
-            max-width: 500px;
-            margin: 2rem auto;
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            padding: 2rem;
-        }
-        
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .auth-tab {
-            flex: 1;
-            text-align: center;
-            padding: 1rem;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .auth-tab.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
-        }
-        
-        .auth-form {
-            display: none;
-        }
-        
-        .auth-form.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            background-color: rgba(255,255,255,0.05);
-            color: var(--text-color);
-        }
-        
-        .form-group small {
-            display: block;
-            margin-top: 5px;
-            color: #777;
-        }
-        
-        .btn-primary {
-            width: 100%;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Added class="login-register-page" -->
+    <div class="container login-register-page">
         <header>
-            <h1>Baza Dystrybucji Linux</h1>
+            <h1>Logowanie / Rejestracja</h1>
             <div class="header-buttons">
                 <button id="theme-toggle" class="btn-theme-toggle" title="Przełącz tryb jasny/ciemny">
                     <i id="theme-toggle-icon" class="fas fa-sun"></i>
@@ -187,64 +116,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="index.php" class="btn-return"><i class="fas fa-home"></i> Strona główna</a>
             </div>
         </header>
-        
-        <main>
-            <div class="auth-container">
-                <div class="auth-tabs">
-                    <div class="auth-tab active" data-tab="login">Logowanie</div>
-                    <div class="auth-tab" data-tab="register">Rejestracja</div>
+
+        <?php include 'include/messages.php'; ?>
+
+        <div class="auth-container">
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Logowanie</div>
+                <div class="auth-tab" data-tab="register">Rejestracja</div>
+            </div>
+
+            <!-- Formularz logowania -->
+            <form method="post" id="login-form" class="auth-form active">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
+                    <input type="text" id="username" name="username" required>
                 </div>
                 
-                <?php include 'include/messages.php'; ?>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Hasło</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
                 
-                <form method="post" id="login-form" class="auth-form active">
-                    <div class="form-group">
-                        <label for="username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
-                        <input type="text" id="username" name="username" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="password"><i class="fas fa-lock"></i> Hasło</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    
-                    <button type="submit" name="login" class="btn-primary">
-                        <i class="fas fa-sign-in-alt"></i> Zaloguj się
-                    </button>
-                </form>
+                <button type="submit" name="login" class="btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Zaloguj się
+                </button>
+            </form>
+            
+            <!-- Formularz rejestracji -->
+            <form method="post" id="register-form" class="auth-form">
+                <div class="form-group">
+                    <label for="reg-username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
+                    <input type="text" id="reg-username" name="username" required>
+                </div>
                 
-                <form method="post" id="register-form" class="auth-form">
-                    <div class="form-group">
-                        <label for="reg-username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
-                        <input type="text" id="reg-username" name="username" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email"><i class="fas fa-envelope"></i> Adres email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="reg-password"><i class="fas fa-lock"></i> Hasło</label>
-                        <input type="password" id="reg-password" name="password" required>
-                        <small>Minimum 6 znaków</small>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="confirm-password"><i class="fas fa-lock"></i> Potwierdź hasło</label>
-                        <input type="password" id="confirm-password" name="confirm_password" required>
-                    </div>
-                    
-                    <button type="submit" name="register" class="btn-primary">
-                        <i class="fas fa-user-plus"></i> Utwórz konto
-                    </button>
-                </form>
-            </div>
-        </main>
-        
-        <footer>
-            <p>&copy; <?php echo date('Y'); ?> Tymon3310</p>
-        </footer>
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Adres email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reg-password"><i class="fas fa-lock"></i> Hasło</label>
+                    <input type="password" id="reg-password" name="password" required>
+                    <small>Minimum 6 znaków</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password"><i class="fas fa-lock"></i> Potwierdź hasło</label>
+                    <input type="password" id="confirm-password" name="confirm_password" required>
+                </div>
+                
+                <button type="submit" name="register" class="btn-primary">
+                    <i class="fas fa-user-plus"></i> Utwórz konto
+                </button>
+            </form>
+        </div>
     </div>
     
     <script src="js/script.js"></script>

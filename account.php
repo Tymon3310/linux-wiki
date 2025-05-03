@@ -144,9 +144,9 @@ $comments_result = $conn->query($comments_sql);
             <div id="activity" class="account-section tab-content">
                 <h3><i class="fas fa-history"></i> Moja aktywność</h3>
                 
-                <div class="tab-container" style="margin-top: 20px;">
-                    <div class="tab active" data-tab="distros">Dodane dystrybucje</div>
-                    <div class="tab" data-tab="comments">Moje komentarze</div>
+                <div class="tab-container activity-tabs">
+                    <div class="tab active" data-tab="distros">Dodane dystrybucje (<?php echo $distros_result->num_rows; ?>)</div>
+                    <div class="tab" data-tab="comments">Moje komentarze (<?php echo $comments_result->num_rows; ?>)</div>
                 </div>
                 
                 <div id="distros" class="tab-content active">
@@ -177,7 +177,7 @@ $comments_result = $conn->query($comments_sql);
                                         <?php echo htmlspecialchars($comment['distro_name']); ?>
                                     </a>
                                 </div>
-                                <div style="margin-top: 5px;">
+                                <div class="comment-excerpt">
                                     <?php 
                                         $comment_text = htmlspecialchars($comment['comment']);
                                         echo (strlen($comment_text) > 100) 

@@ -42,6 +42,16 @@
     min-width: 300px;
 }
 
+.description-text {
+    /* Add word wrapping */
+    word-wrap: break-word;
+    /* Older browsers */
+    overflow-wrap: break-word;
+    /* Standard property */
+    line-height: 1.6;
+    /* Optional: Improve readability */
+}
+
 /* Obrazy */
 .logo-container {
     display: flex;
@@ -66,6 +76,7 @@
 .added-by {
     color: #777;
     font-size: 0.9rem;
-    /* margin-top: 1rem; */ /* Komentarz zachowany, jeśli był celowy */
+    /* margin-top: 1rem; */
+    /* Komentarz zachowany, jeśli był celowy */
     text-align: center;
 }

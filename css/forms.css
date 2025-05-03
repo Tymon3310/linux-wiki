@@ -1,4 +1,3 @@
-/* filepath: /opt/lampp/htdocs/css/forms.css */
 /* Style Formularzy */
 
 /* Formularze */
@@ -205,3 +204,128 @@ input[type="file"]#logo {
     position: absolute;
     z-index: -1;
 }
+
+/* Styles moved from login.php */
+.auth-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+}
+
+.auth-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.auth-tab {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.auth-tab.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.auth-form {
+    display: none;
+    /* Initially hidden */
+}
+
+.auth-form.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* End styles from login.php */
+
+/* Style moved from edit.php */
+.current-logo img {
+    max-height: 100px;
+}
+
+/* End style from edit.php */
+
+/* Styles moved from index.php */
+#add-form-container,
+#login-prompt {
+    display: none;
+    /* Initially hidden, controlled by JS */
+}
+
+/* End styles from index.php */
+
+/* Styles moved from login.php - Added .login-register-page specificity */
+.login-register-page .auth-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+}
+
+.login-register-page .auth-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.login-register-page .auth-tab {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.login-register-page .auth-tab.active {
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.login-register-page .auth-form {
+    display: none;
+    /* Initially hidden */
+}
+
+.login-register-page .auth-form.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+/* Keyframes don't need the specificity prefix */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* End styles from login.php */

@@ -89,6 +89,7 @@ if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
                 <div class="form-group">
                     <label for="description"><i class="fas fa-align-left"></i> Opis (min. 30 znaków):</label>
                     <textarea name="description" id="description" rows="5" required><?php echo htmlspecialchars($distro['description']); ?></textarea>
+                    <div id="description-counter" class="char-counter">0 znaków</div>
                 </div>
                 
                 <div class="form-group">
@@ -104,7 +105,7 @@ if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
                 <div class="form-group">
                     <label><i class="fas fa-image"></i> Aktualne logo:</label>
                     <div class="current-logo">
-                        <img src="<?php echo htmlspecialchars($distro['logo_path']); ?>" alt="Aktualne logo" style="max-height: 100px;">
+                        <img src="<?php echo htmlspecialchars($distro['logo_path']); ?>" alt="Aktualne logo">
                         <p><?php echo htmlspecialchars(basename($distro['logo_path'])); ?></p>
                     </div>
                 </div>
@@ -150,52 +151,10 @@ if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
         </footer>
     </div>
     
-    <script src="js/script.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Funkcjonalność potwierdzenia usunięcia dystrybucji
-            const deleteButton = document.getElementById('delete-button');
-            const deleteModal = document.getElementById('delete-modal');
-            const cancelDelete = document.getElementById('cancel-delete');
-            const distroNameToDelete = document.getElementById('distro-name-to-delete');
-            const distroIdToDelete = document.getElementById('distro-id-to-delete');
-            
-            if (deleteButton) {
-                deleteButton.addEventListener('click', function() {
-                    const distroId = this.getAttribute('data-id');
-                    const distroName = this.getAttribute('data-name');
-                    
-                    // Ustawienie wartości w popupie
-                    distroNameToDelete.textContent = distroName;
-                    distroIdToDelete.value = distroId;
-                    
-                    // Wyświetlenie popupu
-                    deleteModal.style.display = 'block';
-                });
-            }
-            
-            // Zamknięcie popupu po kliknięciu Anuluj
-            if (cancelDelete) {
-                cancelDelete.addEventListener('click', function() {
-                    deleteModal.style.display = 'none';
-                });
-            }
-            
-            // Zamknięcie popupu po kliknięciu poza nim
-            window.addEventListener('click', function(event) {
-                if (event.target === deleteModal) {
-                    deleteModal.style.display = 'none';
-                }
-            });
-            
-            // Zamknięcie popupu po naciśnięciu klawisza Escape
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && deleteModal.style.display === 'block') {
-                    deleteModal.style.display = 'none';
-                }
-            });
-        });
+        window.isUserLoggedIn = <?php echo json_encode(isset($_SESSION['user_id'])); ?>;
     </script>
+    <script type="module" src="js/script.js"></script>
 </body>
 </html>
 <?php
