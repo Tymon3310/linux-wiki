@@ -118,3 +118,66 @@ export function displayStatusMessages() {
         }
     }
 }
+
+// Inicjalizuje modale potwierdzenia usunięcia (dystrybucji i komentarzy)
+export function initializeDeleteModals() {
+    // --- Modal usuwania dystrybucji (edit.php) ---
+    const deleteButton = document.getElementById('delete-button');
+    const deleteModal = document.getElementById('delete-modal');
+    const cancelDeleteButton = document.getElementById('cancel-delete');
+    const distroNameSpan = document.getElementById('distro-name-to-delete');
+    const distroIdInput = document.getElementById('distro-id-to-delete');
+
+    if (deleteButton && deleteModal && cancelDeleteButton && distroNameSpan && distroIdInput) {
+        deleteButton.addEventListener('click', function () {
+            const distroId = this.dataset.id;
+            const distroName = this.dataset.name;
+
+            distroNameSpan.textContent = distroName;
+            distroIdInput.value = distroId;
+            deleteModal.style.display = 'block';
+        });
+
+        cancelDeleteButton.addEventListener('click', function () {
+            deleteModal.style.display = 'none';
+        });
+
+        // Zamknij modal, jeśli użytkownik kliknie poza nim
+        window.addEventListener('click', function (event) {
+            if (event.target === deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        });
+    }
+
+    // --- Modal usuwania komentarzy (details.php) ---
+    const deleteCommentButtons = document.querySelectorAll('.btn-delete-comment');
+    const deleteCommentModal = document.getElementById('delete-comment-modal');
+    const cancelDeleteCommentButton = document.getElementById('cancel-delete-comment');
+    const commentUsernameSpan = document.getElementById('comment-username-to-delete');
+    const commentIdInput = document.getElementById('comment-id-to-delete');
+
+    if (deleteCommentModal && cancelDeleteCommentButton && commentUsernameSpan && commentIdInput) {
+        deleteCommentButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const commentId = this.dataset.commentId;
+                const username = this.dataset.username;
+
+                commentUsernameSpan.textContent = username;
+                commentIdInput.value = commentId;
+                deleteCommentModal.style.display = 'block';
+            });
+        });
+
+        cancelDeleteCommentButton.addEventListener('click', function () {
+            deleteCommentModal.style.display = 'none';
+        });
+
+        // Zamknij modal, jeśli użytkownik kliknie poza nim
+        window.addEventListener('click', function (event) {
+            if (event.target === deleteCommentModal) {
+                deleteCommentModal.style.display = 'none';
+            }
+        });
+    }
+}
