@@ -1,28 +1,28 @@
 <?php
-/**
- * AJAX Search endpoint for Linux distributions
- * Endpoint do wyszukiwania dystrybucji Linux przez AJAX
- */
+// Endpoint do wyszukiwania dystrybucji Linux poprzez AJAX
 
-// Include database configuration
+// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+session_start();
+
+// Dołączenie konfiguracji bazy danych
 include 'include/db_config.php';
 
-// Enable error logging for debugging
+// Włączenie logowania błędów do diagnostyki
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Check if search parameter is provided
+// Sprawdzenie czy parametr wyszukiwania został podany
 if (!isset($_GET['q']) || empty($_GET['q'])) {
     echo json_encode([]);
     exit;
 }
 
-// Get and sanitize search term
+// Pobranie i oczyszczenie frazy wyszukiwania
 $search = $conn->real_escape_string($_GET['q']);
 
-// Search in database (name, description and extended search)
+// Wyszukiwanie w bazie danych (nazwa, opis i wyszukiwanie rozszerzone)
 $sql = "SELECT * FROM distributions WHERE 
         name LIKE '%$search%' OR 
         description LIKE '%$search%'
@@ -38,18 +38,18 @@ $sql = "SELECT * FROM distributions WHERE
 
 $result = $conn->query($sql);
 
-// Prepare response
+// Przygotowanie odpowiedzi
 $distributions = [];
 
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        // Fix logo path if needed
+        // Naprawa ścieżki do logo, jeśli potrzebna
         $logo_path = $row['logo_path'];
         if (!preg_match('/^img\//', $logo_path)) {
             $logo_path = 'img/' . $logo_path;
         }
         
-        // Add each distribution to the results array
+        // Dodanie każdej dystrybucji do tablicy wyników
         $distributions[] = [
             'id' => $row['id'],
             'name' => htmlspecialchars($row['name']),
@@ -60,9 +60,9 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Return JSON response
+// Zwrócenie odpowiedzi w formacie JSON
 echo json_encode($distributions);
 
-// Close database connection
+// Zamknięcie połączenia z bazą danych
 $conn->close();
 ?>

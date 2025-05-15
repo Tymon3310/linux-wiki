@@ -1,1 +1,0 @@
-ALTER TABLE distributions ADD COLUMN youtube VARCHAR(255) DEFAULT NULL;

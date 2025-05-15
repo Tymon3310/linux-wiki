@@ -1,0 +1,133 @@
+/* CSS Theme Module */
+/* Variables and theme definitions for light/dark modes */
+:root {
+    --primary-color: #2b70b6;
+    --secondary-color: #f7a41d;
+    --text-color: #ffffff;
+    --bg-color: #1b1818;
+    --card-bg: #0e0d0d;
+    --error-color: #e74c3c;
+    --success-color: #2ecc71;
+    --border-color: #e0e0e0;
+    --shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    --light-primary-color: #3498db;
+    --light-secondary-color: #e67e22;
+    --light-bg-color: #ecf0f1;
+    --light-text-color: #2c3e50;
+    --light-card-bg: #ffffff;
+    --light-border-color: #bdc3c7;
+    --light-error-color: #e74c3c;
+    --light-success-color: #2ecc71;
+    --light-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    --transition-time: 0.3s;
+}
+
+/* Light theme overrides */
+.light-mode {
+    --primary-color: var(--light-primary-color);
+    --secondary-color: var(--light-secondary-color);
+    --text-color: var(--light-text-color);
+    --bg-color: var(--light-bg-color);
+    --card-bg: var(--light-card-bg);
+    --border-color: var(--light-border-color);
+    --error-color: var(--light-error-color);
+    --success-color: var(--light-success-color);
+    --shadow: var(--light-shadow);
+    background-color: var(--light-bg-color);
+    color: var(--light-text-color);
+}
+
+/* Smooth transitions during theme switch */
+.theme-transitioning * {
+    transition: background-color var(--transition-time), color var(--transition-time), border-color var(--transition-time);
+}
+
+/* Light mode element overrides */
+body.light-mode,
+body:has(.light-mode) {
+    background-color: var(--light-bg-color);
+    color: var(--light-text-color);
+}
+
+.light-mode .container,
+body:has(.light-mode) .container {
+    background-color: var(--light-bg-color);
+}
+
+.light-mode h1,
+.light-mode h2,
+.light-mode h3,
+body:has(.light-mode) h1,
+body:has(.light-mode) h2,
+body:has(.light-mode) h3 {
+    color: var(--light-primary-color);
+}
+
+.light-mode .card-bg,
+.light-mode .distro-card,
+.light-mode .search-section,
+.light-mode .add-form-section,
+.light-mode .modal-content,
+.light-mode .comment,
+body:has(.light-mode) .card-bg,
+body:has(.light-mode) .distro-card,
+body:has(.light-mode) .search-section,
+body:has(.light-mode) .add-form-section,
+body:has(.light-mode) .modal-content,
+body:has(.light-mode) .comment {
+    background-color: var(--light-card-bg);
+    box-shadow: var(--light-shadow);
+}
+
+.light-mode .btn-primary,
+.light-mode .btn-details,
+.light-mode .btn,
+.light-mode .btn-edit,
+body:has(.light-mode) .btn-primary,
+body:has(.light-mode) .btn-details,
+body:has(.light-mode) .btn,
+body:has(.light-mode) .btn-edit {
+    background-color: var(--light-primary-color);
+}
+
+.light-mode .btn-delete,
+body:has(.light-mode) .btn-delete {
+    background-color: var(--error-color) !important;
+}
+
+.light-mode header,
+.light-mode footer,
+body:has(.light-mode) header,
+body:has(.light-mode) footer {
+    border-color: var(--light-border-color);
+}
+
+.light-mode .drop-zone,
+.light-mode .logo-preview,
+body:has(.light-mode) .drop-zone,
+body:has(.light-mode) .logo-preview {
+    border-color: var(--light-border-color);
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.light-mode .btn-theme-toggle {
+    color: var(--light-text-color);
+}
+
+.light-mode .btn-theme-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode back to top button */
+.light-mode~.back-to-top,
+body:has(.light-mode) .back-to-top {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+}
+
+.light-mode~.back-to-top:hover,
+body:has(.light-mode) .back-to-top:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
