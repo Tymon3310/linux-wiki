@@ -98,7 +98,6 @@ body:has(.light-mode) .btn-delete {
 }
 
 .light-mode header,
-/* Note: 'light-mode header' selector might need adjustment if header is outside body */
 .light-mode footer,
 body:has(.light-mode) header,
 body:has(.light-mode) footer {
@@ -115,7 +114,6 @@ body:has(.light-mode) .logo-preview {
 
 .light-mode .btn-theme-toggle {
     color: var(--light-text-color);
-    /* Adjusted from original style.css */
 }
 
 .light-mode .btn-theme-toggle:hover {

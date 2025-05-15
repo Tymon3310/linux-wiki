@@ -58,13 +58,9 @@
     min-width: unset;
     max-width: unset;
     margin-bottom: 1rem;
-    /* Zachowaj margin-bottom z oryginalnego .comment */
     display: flex;
-    /* Zachowaj display flex z oryginalnego .comment */
     flex-direction: column;
-    /* Zachowaj flex-direction z oryginalnego .comment */
     gap: 10px;
-    /* Zachowaj gap z oryginalnego .comment */
 }
 
 .comment:hover {
@@ -125,26 +121,6 @@
     text-align: center;
 }
 
-/* Oryginalne, prostsze style .comment (mogą być zbędne lub dla innego kontekstu) */
-/* 
-.comment {
-    background-color: var(--card-bg);
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    margin-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex: 1;
-    min-width: 250px;
-    max-width: calc(50% - 10px);
-}
-
-.comment strong {
-    color: var(--primary-color);
-}
-
 .comment p {
     margin: 0;
 }
@@ -154,4 +130,3 @@
     font-size: 0.8rem;
     align-self: flex-end;
 }
-*/

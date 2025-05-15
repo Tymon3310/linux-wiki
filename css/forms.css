@@ -205,7 +205,6 @@ input[type="file"]#logo {
     z-index: -1;
 }
 
-/* Styles moved from login.php */
 .auth-container {
     max-width: 500px;
     margin: 2rem auto;
@@ -237,7 +236,6 @@ input[type="file"]#logo {
 
 .auth-form {
     display: none;
-    /* Initially hidden */
 }
 
 .auth-form.active {
@@ -257,25 +255,15 @@ input[type="file"]#logo {
     }
 }
 
-/* End styles from login.php */
-
-/* Style moved from edit.php */
 .current-logo img {
     max-height: 100px;
 }
 
-/* End style from edit.php */
-
-/* Styles moved from index.php */
 #add-form-container,
 #login-prompt {
     display: none;
-    /* Initially hidden, controlled by JS */
 }
 
-/* End styles from index.php */
-
-/* Styles moved from login.php - Added .login-register-page specificity */
 .login-register-page .auth-container {
     max-width: 500px;
     margin: 2rem auto;
@@ -307,7 +295,6 @@ input[type="file"]#logo {
 
 .login-register-page .auth-form {
     display: none;
-    /* Initially hidden */
 }
 
 .login-register-page .auth-form.active {
@@ -315,7 +302,6 @@ input[type="file"]#logo {
     animation: fadeIn 0.5s ease;
 }
 
-/* Keyframes don't need the specificity prefix */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -327,5 +313,3 @@ input[type="file"]#logo {
         transform: translateY(0);
     }
 }
-
-/* End styles from login.php */

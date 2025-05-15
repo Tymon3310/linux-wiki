@@ -23,6 +23,30 @@ function showFirefoxError(dropZone) {
     }, 7000);
 }
 
+// Funkcja do pokazywania niestandardowego komunikatu o błędzie uploadu w obrębie dropZone
+function showCustomUploadAlert(dropZone, message) {
+    // Najpierw usuń stare komunikaty o błędach, żeby nie było bałaganu
+    const existingErrors = dropZone.querySelectorAll('.upload-error');
+    existingErrors.forEach(err => err.remove());
+
+    const errorMsg = document.createElement('div');
+    errorMsg.className = 'upload-error'; // Użyj tej samej klasy co showFirefoxError dla spójności stylów
+    errorMsg.innerHTML = `<p><i class="fas fa-exclamation-triangle"></i> ${message}</p>`;
+
+    // Dodaj nowy komunikat
+    dropZone.appendChild(errorMsg);
+
+    // Opcjonalnie: schowaj komunikat po pewnym czasie
+    setTimeout(() => {
+        if (errorMsg && errorMsg.parentElement) { // Sprawdź, czy element wciąż istnieje w DOM
+            errorMsg.style.opacity = '0';
+            setTimeout(() => {
+                if (errorMsg && errorMsg.parentElement) errorMsg.remove();
+            }, 500);
+        }
+    }, 7000); // Taki sam czas jak w showFirefoxError
+}
+
 // Funkcja generująca podgląd wybranego obrazka
 function previewImage(file, dropZone, logoInput) {
     console.log('Generuję podgląd dla:', file.name);
@@ -101,7 +125,6 @@ function previewImage(file, dropZone, logoInput) {
                     logoInput.parentElement.classList.remove('error-field');
                 }
 
-
                 console.log('Obrazek usunięty pomyślnie');
             });
         }
@@ -120,6 +143,7 @@ function handleDrop(event, dropZone, logoInput) {
     const files = event.dataTransfer.files;
     const items = event.dataTransfer.items;
     const types = event.dataTransfer.types;
+    const uploadHint = dropZone.querySelector('.upload-hint'); // Pobierz referencję do uploadHint
 
     // Sprawdź, czy upuszczono pliki (np. z pulpitu)
     if (files && files.length > 0) {
@@ -134,7 +158,7 @@ function handleDrop(event, dropZone, logoInput) {
             logoInput.files = dataTransfer.files;
             // Wygeneruj podgląd
             previewImage(file, dropZone, logoInput);
-            // Usuń ewentualny komunikat o błędzie Firefoxa
+            // Usuń ewentualny komunikat o błędzie Firefoxa lub niestandardowy alert
             const existingError = dropZone.querySelector('.upload-error');
             if (existingError) existingError.remove();
             // Ukryj wskazówkę po upuszczeniu pliku
@@ -142,9 +166,9 @@ function handleDrop(event, dropZone, logoInput) {
                 uploadHint.style.display = 'none';
             }
         } else {
-            alert('Proszę upuścić plik obrazka (np. PNG, JPG, GIF).');
+            showCustomUploadAlert(dropZone, 'Proszę upuścić plik obrazka (np. PNG, JPG, GIF).');
         }
-    } 
+    }
     // --- NOWA OBSŁUGA: Przeciąganie obrazka z tej samej strony w Firefox ---
     else if (isFirefox() && types.includes('text/uri-list') && types.includes('application/x-moz-nativeimage')) {
         console.log('[Firefox Intra-Page Drag] Wykryto przeciągnięcie obrazka z tej samej strony.');
@@ -184,24 +208,21 @@ function handleDrop(event, dropZone, logoInput) {
                     // Wygeneruj podgląd
                     previewImage(file, dropZone, logoInput);
 
-                    // Usuń ewentualny komunikat o błędzie Firefoxa
+                    // Usuń ewentualny komunikat o błędzie Firefoxa lub niestandardowy alert
                     const existingError = dropZone.querySelector('.upload-error');
                     if (existingError) existingError.remove();
                     // Ukryj wskazówkę po przetworzeniu
-                    const uploadHint = dropZone.querySelector('.upload-hint');
                     if (uploadHint) {
                         uploadHint.style.display = 'none';
                     }
                 })
                 .catch(error => {
                     console.error('[Firefox Intra-Page Drag] Błąd podczas pobierania lub przetwarzania obrazka z URL:', error);
-                    alert('Nie udało się pobrać przeciągniętego obrazka. Spróbuj zapisać go najpierw na dysku.');
-                    // Pokaż błąd specyficzny dla Firefoxa, jeśli to był problem z URI
-                    showFirefoxError(dropZone);
+                    showCustomUploadAlert(dropZone, 'Nie udało się pobrać przeciągniętego obrazka. Spróbuj zapisać go najpierw na dysku.');
                 });
         } else {
-             console.warn('[Firefox Intra-Page Drag] Nie udało się uzyskać URL obrazka z dataTransfer.');
-             alert('Nie udało się przetworzyć przeciągniętego obrazka.');
+            console.warn('[Firefox Intra-Page Drag] Nie udało się uzyskać URL obrazka z dataTransfer.');
+            showCustomUploadAlert(dropZone, 'Nie udało się przetworzyć przeciągniętego obrazka.');
         }
     }
     // --- Koniec nowej obsługi ---
@@ -211,14 +232,12 @@ function handleDrop(event, dropZone, logoInput) {
         if (isFirefox()) {
             // W Firefoksie to często nie działa poprawnie, pokażmy błąd
             console.warn('Firefox może mieć problem z przeciąganiem obrazków z URI.');
-            showFirefoxError(dropZone);
+            showFirefoxError(dropZone); // Dedykowany komunikat dla FF
         } else {
             // W innych przeglądarkach spróbujmy pobrać URL
             items[0].getAsString(function (url) {
                 console.log('Przeciągnięty URL obrazka:', url);
-                // Tutaj można by spróbować pobrać obrazek z URL, ale to bardziej skomplikowane
-                // Na razie pokażmy błąd, bo nie mamy pewności, czy to zadziała
-                alert('Przeciąganie obrazków bezpośrednio ze stron internetowych może nie działać. Spróbuj zapisać obraz na dysku i wtedy go przeciągnąć lub wybrać.');
+                showCustomUploadAlert(dropZone, 'Przeciąganie obrazków bezpośrednio ze stron internetowych może nie działać. Spróbuj zapisać obraz na dysku i wtedy go przeciągnąć lub wybrać.');
             });
         }
     } else if (items && items.length > 0 && items[0].kind === 'string' && items[0].type.startsWith('image/')) {
@@ -231,21 +250,20 @@ function handleDrop(event, dropZone, logoInput) {
             dataTransfer.items.add(file);
             logoInput.files = dataTransfer.files;
             previewImage(file, dropZone, logoInput);
+            // Usuń ewentualny komunikat o błędzie Firefoxa lub niestandardowy alert
             const existingError = dropZone.querySelector('.upload-error');
             if (existingError) existingError.remove();
             // Ukryj wskazówkę po wklejeniu
             if (uploadHint) {
                 uploadHint.style.display = 'none';
             }
-            foundImage = true;
-            // break; // USUNIĘTO: Nieprawidłowe użycie break poza pętlą
         } else {
             console.warn('Nie udało się uzyskać pliku z wklejonych danych obrazka.');
-            alert('Nie udało się przetworzyć wklejonego obrazka.');
+            showCustomUploadAlert(dropZone, 'Nie udało się przetworzyć wklejonego obrazka.');
         }
     } else {
         console.log('Upuszczono coś innego niż plik lub obsługiwany typ danych.');
-        alert('Proszę upuścić plik obrazka.');
+        showCustomUploadAlert(dropZone, 'Proszę upuścić plik obrazka.');
     }
 }
 
@@ -271,19 +289,21 @@ function handlePaste(event, dropZone, logoInput) {
                 const existingError = dropZone.querySelector('.upload-error');
                 if (existingError) existingError.remove();
                 // Ukryj wskazówkę po wklejeniu
+                const uploadHint = dropZone.querySelector('.upload-hint');
                 if (uploadHint) {
                     uploadHint.style.display = 'none';
                 }
                 foundImage = true;
                 break; // Wystarczy nam pierwszy znaleziony obrazek
+            } else {
+                console.warn('item.getAsFile() zwrócił null dla wklejonego elementu typu image/*');
+                showCustomUploadAlert(dropZone, 'Nie udało się odczytać wklejonego obrazka.');
             }
         }
     }
 
     if (!foundImage) {
         console.log('Nie znaleziono obrazka w schowku.');
-        // Można by tu dodać komunikat dla użytkownika, ale może to być irytujące,
-        // jeśli wklejał coś innego celowo.
     }
 }
 
@@ -327,7 +347,6 @@ export function initializeImageUpload() {
         // Upewnij się, że wskazówka jest widoczna na początku
         uploadHint.style.display = '';
 
-
         // --- Obsługa przycisku "Wybierz plik" ---
         if (fileSelectButton) {
             fileSelectButton.addEventListener('click', (e) => {
@@ -339,38 +358,56 @@ export function initializeImageUpload() {
         // --- Obsługa zmiany pliku w inpucie (po wybraniu przez okno dialogowe) ---
         logoInput.addEventListener('change', function () {
             if (this.files && this.files.length > 0) {
-                console.log('Plik wybrany przez okno dialogowe:', this.files[0]);
-                previewImage(this.files[0], dropZone, logoInput);
-                // Usuń ewentualny komunikat o błędzie Firefoxa
-                const existingError = dropZone.querySelector('.upload-error');
-                if (existingError) existingError.remove();
-                // Ukryj wskazówkę po wybraniu pliku
-                if (uploadHint) {
-                    uploadHint.style.display = 'none';
+                const selectedFile = this.files[0];
+                console.log('Plik wybrany przez okno dialogowe:', selectedFile);
+
+                // Sprawdź typ pliku
+                if (selectedFile.type.startsWith('image/')) {
+                    previewImage(selectedFile, dropZone, logoInput);
+                    // Usuń ewentualny komunikat o błędzie Firefoxa lub niestandardowy alert
+                    const existingError = dropZone.querySelector('.upload-error');
+                    if (existingError) existingError.remove();
+                    // Ukryj wskazówkę po wybraniu pliku
+                    if (uploadHint) {
+                        uploadHint.style.display = 'none';
+                    }
+                } else {
+                    showCustomUploadAlert(dropZone, 'Wybrany plik nie jest obrazkiem. Proszę wybrać plik graficzny (np. PNG, JPG, GIF).');
+                    // Wyczyść input pliku, aby nie próbować wysłać nieprawidłowego pliku
+                    this.value = ''; // Standardowe czyszczenie
+                    // Dodatkowe sztuczki dla starszych przeglądarek (IE, Edge)
+                    if (this.value) {
+                        this.type = '';
+                        this.type = 'file';
+                    }
+                    // Pokaż ponownie wskazówkę, jeśli była ukryta
+                    if (uploadHint) {
+                        uploadHint.style.display = '';
+                    }
+                    // Usuń istniejący podgląd, jeśli jakiś jest (np. po błędnym przeciągnięciu)
+                    const existingPreview = dropZone.querySelector('.image-preview');
+                    if (existingPreview) {
+                        existingPreview.remove();
+                    }
                 }
             }
         });
 
         // --- Obsługa przeciągania i upuszczania (Drag & Drop) ---
-
-        // Kiedy coś jest przeciągane NAD strefę
         dropZone.addEventListener('dragover', (event) => {
             event.preventDefault(); // Niezbędne, aby umożliwić 'drop'
             event.stopPropagation();
             dropZone.classList.add('dragover'); // Dodaj wizualne podświetlenie
         });
 
-        // Kiedy coś opuszcza strefę przeciągania (bez upuszczenia)
         dropZone.addEventListener('dragleave', (event) => {
             event.preventDefault();
             event.stopPropagation();
-            // Sprawdź, czy kursor faktycznie opuścił strefę, a nie wszedł na jej element potomny
             if (!dropZone.contains(event.relatedTarget)) {
                 dropZone.classList.remove('dragover');
             }
         });
 
-        // Kiedy coś zostaje upuszczone NA strefę
         dropZone.addEventListener('drop', (event) => handleDrop(event, dropZone, logoInput));
 
         // --- Obsługa wklejania (Paste) ---
@@ -378,91 +415,82 @@ export function initializeImageUpload() {
             e.preventDefault();
             e.stopPropagation();
             console.log('Wykryto wklejenie');
-            dropZone.classList.remove('drag-over');
+            dropZone.classList.remove('dragover');
 
             const items = (e.clipboardData || window.clipboardData).items;
             let foundImage = false;
+            const currentUploadHint = dropZone.querySelector('.upload-hint');
 
             if (items) {
-                // Użyj pętli for...of zamiast forEach, aby móc użyć break
                 for (const item of items) {
                     if (item.kind === 'file' && item.type.startsWith('image/')) {
                         const file = item.getAsFile();
-                        console.log('Wklejony plik obrazka:', file);
+                        if (file) {
+                            console.log('Wklejony plik obrazka:', file);
 
-                        // Ustaw plik w inpucie
-                        try {
-                            const dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(file);
-                            logoInput.files = dataTransfer.files;
-                            console.log('Plik ustawiony w inpucie po wklejeniu.');
-                        } catch (err) {
-                            console.error('Błąd podczas ustawiania pliku w inpucie po wklejeniu:', err);
-                            // Można dodać komunikat dla użytkownika
-                            showUploadError(dropZone, 'Nie udało się przetworzyć wklejonego obrazka.');
-                            continue; // Przejdź do następnego elementu, jeśli wystąpił błąd
-                        }
+                            try {
+                                const dataTransfer = new DataTransfer();
+                                dataTransfer.items.add(file);
+                                logoInput.files = dataTransfer.files;
+                                console.log('Plik ustawiony w inpucie po wklejeniu.');
+                            } catch (err) {
+                                console.error('Błąd podczas ustawiania pliku w inpucie po wklejeniu:', err);
+                                showCustomUploadAlert(dropZone, 'Nie udało się ustawić wklejonego obrazka.');
+                                continue;
+                            }
 
-                        // Wygeneruj podgląd
-                        previewImage(file, dropZone, logoInput);
-                        // Usuń ewentualny komunikat o błędzie Firefoxa
-                        const existingError = dropZone.querySelector('.upload-error');
-                        if (existingError) existingError.remove();
-                        // Ukryj wskazówkę po wklejeniu
-                        if (uploadHint) {
-                            uploadHint.style.display = 'none';
+                            previewImage(file, dropZone, logoInput);
+                            const existingError = dropZone.querySelector('.upload-error');
+                            if (existingError) existingError.remove();
+                            if (currentUploadHint) {
+                                currentUploadHint.style.display = 'none';
+                            }
+                            foundImage = true;
+                            break;
+                        } else {
+                            console.warn('item.getAsFile() zwrócił null dla wklejonego elementu typu image/*');
+                            showCustomUploadAlert(dropZone, 'Nie udało się odczytać wklejonego obrazka.');
                         }
-                        foundImage = true;
-                        break; // Znaleziono i przetworzono obrazek, przerwij pętlę
                     }
                 }
             }
 
             if (!foundImage) {
                 console.log('Nie znaleziono obrazka w schowku.');
-                // Opcjonalnie: Pokaż komunikat użytkownikowi
-                // showUploadError(dropZone, 'Nie znaleziono obrazka w schowku.');
             }
         });
 
         // --- Inicjalizacja: Sprawdź, czy jest już istniejące logo (np. przy edycji) ---
         const existingLogoUrl = dropZone.dataset.existingLogo;
-        const existingLogoName = dropZone.dataset.existingLogoName || 'Istniejące logo'; // Domyślna nazwa
+        const existingLogoName = dropZone.dataset.existingLogoName || 'Istniejące logo';
         if (existingLogoUrl) {
             console.log('Znaleziono istniejące logo:', existingLogoUrl);
-            // Utwórz "pseudo-plik" dla podglądu istniejącego logo
-            // To nie jest prawdziwy plik, tylko obiekt z potrzebnymi danymi dla previewImage
-            const pseudoFile = { name: existingLogoName }; // Potrzebujemy tylko nazwy dla podglądu
+            const pseudoFile = { name: existingLogoName };
 
-            // Usuń istniejący podgląd, jeśli istnieje
             const existingPreview = dropZone.querySelector('.image-preview');
             if (existingPreview) {
                 existingPreview.remove();
             }
 
-            // Utwórz nowy podgląd dla istniejącego logo
             const preview = document.createElement('div');
-            preview.className = 'image-preview existing-preview'; // Dodaj klasę dla odróżnienia
+            preview.className = 'image-preview existing-preview';
             preview.style.marginTop = '10px';
 
             preview.innerHTML = `
-                < div class="preview-header" >
+                <div class="preview-header">
                     <span class="filename">${pseudoFile.name}</span>
                     <span class="existing-info">(aktualne)</span>
-                    </div >
+                </div>
                 <img src="${existingLogoUrl}" alt="Podgląd istniejącego logo" style="max-width: 100%; max-height: 200px;">
-                    <p class="change-hint">Aby zmienić, wybierz lub przeciągnij nowy plik.</p>
-                    `;
+                <p class="change-hint">Aby zmienić, wybierz lub przeciągnij nowy plik.</p>
+            `;
 
             dropZone.appendChild(preview);
 
-            // Ukryj wskazówkę uploadowania, jeśli jest istniejące logo
-            // const uploadHint = dropZone.querySelector('.upload-hint'); // Już zdefiniowane wyżej
             if (uploadHint) {
                 uploadHint.style.display = 'none';
             }
         } else {
-            // Jeśli nie ma istniejącego logo, upewnij się, że wskazówka jest widoczna
             if (uploadHint) {
                 uploadHint.style.display = '';
             }
@@ -479,10 +507,8 @@ document.addEventListener('click', function (event) {
             const logoInput = dropZone.querySelector('input[type="file"]');
             const uploadHint = dropZone.querySelector('.upload-hint');
 
-            // Usunięcie podglądu (kod przeniesiony z previewImage dla spójności)
             preview.remove();
 
-            // Wyczyść pole input typu 'file'
             try {
                 logoInput.value = '';
                 if (logoInput.value) {
@@ -497,13 +523,10 @@ document.addEventListener('click', function (event) {
                 }
             } catch (e) { console.error('Błąd podczas czyszczenia pola input pliku:', e); }
 
-
-            // Pokaż ponownie tekst zachęcający do przeciągnięcia pliku
             if (uploadHint) {
                 uploadHint.style.display = '';
             }
 
-            // Usuń klasę błędu z rodzica inputa, jeśli była dodana
             if (logoInput && logoInput.parentElement) {
                 logoInput.parentElement.classList.remove('error-field');
             }

@@ -3,6 +3,7 @@
 session_start();
 
 include 'include/db_config.php';
+include __DIR__ . '/include/validation_utils.php'; // Dodanie walidacji emoji
 
 // Sprawdzenie czy użytkownik jest już zalogowany
 if (isset($_SESSION['user_id'])) {
@@ -23,6 +24,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Walidacja danych wejściowych
         if (empty($username) || empty($password)) {
             $error = "Proszę wypełnić wszystkie pola.";
+        } elseif (contains_emoji($username)) { // Walidacja emoji dla nazwy użytkownika przy logowaniu
+            $error = "Nazwa użytkownika nie może zawierać emoji.";
+        } elseif (contains_emoji($password)) { // Walidacja emoji dla hasła przy logowaniu
+            $error = "Hasło nie może zawierać emoji.";
         } else {
             // Sprawdzenie danych uwierzytelniających
             $sql = "SELECT id, username, password FROM accounts WHERE username = '$username'";
@@ -60,6 +65,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Walidacja danych wejściowych
         if (empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
             $error = "Proszę wypełnić wszystkie pola.";
+        } elseif (contains_emoji($username)) { // Walidacja emoji dla nazwy użytkownika
+            $error = "Nazwa użytkownika nie może zawierać emoji.";
+        } elseif (contains_emoji($email)) { // Walidacja emoji dla emaila
+            $error = "Adres email nie może zawierać emoji.";
+        } elseif (contains_emoji($password)) { // Walidacja emoji dla hasła
+            $error = "Hasło nie może zawierać emoji.";
         } elseif ($password !== $confirm_password) {
             $error = "Hasła nie są identyczne.";
         } elseif (strlen($password) < 6) {

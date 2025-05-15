@@ -2,6 +2,7 @@
 // Rozpoczynamy sesję, żeby wiedzieć, kto jest zalogowany
 session_start();
 include 'include/db_config.php';
+include __DIR__ . '/include/validation_utils.php'; // Dodanie walidacji emoji
 
 // Sprawdzamy, czy użytkownik jest zalogowany. Jeśli nie, przekierowujemy go do logowania
 if (!isset($_SESSION['user_id'])) {
@@ -33,6 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     
     if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
         $error = "Wszystkie pola są wymagane.";
+    } elseif (contains_emoji($current_password) || contains_emoji($new_password)) { // Walidacja emoji dla haseł
+        $error = "Hasła nie mogą zawierać emoji.";
     } elseif (!password_verify($current_password, $user['password'])) {
         $error = "Aktualne hasło jest nieprawidłowe.";
     } elseif ($new_password !== $confirm_password) {

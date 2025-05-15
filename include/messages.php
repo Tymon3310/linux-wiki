@@ -5,7 +5,11 @@ $messageDisplayed = false; // Flag to track if a message was shown
 // Prioritize messages passed via URL parameters
 if (isset($_GET['status'], $_GET['message'])) {
     $status = $_GET['status'];
-    $text  = htmlspecialchars(urldecode($_GET['message']));
+    $raw_text = urldecode($_GET['message']);
+    // Sanitize the text first
+    $sanitized_text = htmlspecialchars($raw_text, ENT_QUOTES, 'UTF-8');
+    // Then replace the newline placeholder with <br />
+    $text = str_replace("__NEWLINE__", "<br />", $sanitized_text);
     $messageId = 'flash-message-' . uniqid(); // Generate a unique ID
 
     if ($status === 'error') {
@@ -67,10 +71,14 @@ SCRIPT;
 // These won't have the fade-out effect unless explicitly added here too.
 if (!$messageDisplayed && (isset($error) || isset($message))) {
     if (!empty($error)) {
-        echo "<div class=\"error-message\">" . htmlspecialchars($error) . "</div>";
+        $sanitized_error = htmlspecialchars($error, ENT_QUOTES, 'UTF-8');
+        $error_text = str_replace("__NEWLINE__", "<br />", $sanitized_error);
+        echo "<div class=\"error-message\">{$error_text}</div>";
     }
     if (!empty($message)) {
-        echo "<div class=\"success-message\">" . htmlspecialchars($message) . "</div>";
+        $sanitized_message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+        $message_text = str_replace("__NEWLINE__", "<br />", $sanitized_message);
+        echo "<div class=\"success-message\">{$message_text}</div>";
     }
 }
 ?>

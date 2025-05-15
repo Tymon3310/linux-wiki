@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once 'db_config.php';
+require_once __DIR__ . '/validation_utils.php'; // Dodanie walidacji emoji
 
 // Włączamy wyświetlanie błędów, żeby łatwiej było znaleźć problemy
 error_reporting(E_ALL);
@@ -31,9 +32,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
     if (empty($name)) {
         $errors[] = "Nazwa dystrybucji jest wymagana.";
     }
+    if (contains_emoji($name)) {
+        $errors[] = "Nazwa dystrybucji nie może zawierać emoji.";
+    }
     
     if (empty($description) || strlen($description) < 30) {
         $errors[] = "Opis musi zawierać co najmniej 30 znaków.";
+    }
+    if (contains_emoji($description)) {
+        $errors[] = "Opis dystrybucji nie może zawierać emoji.";
     }
     
     // Sprawdzamy poprawność adresu strony www
@@ -104,7 +111,7 @@ if (empty($errors)) { // Only check if other validations passed
 // --- END ADDED CODE ---
 
 if (!empty($errors)) {
-    $error_message = implode("<br>", $errors);
+    $error_message = implode("__NEWLINE__", $errors);
     header("Location: ../index.php?status=error&message=" . urlencode($error_message));
     exit;
 }
@@ -155,7 +162,7 @@ if (!is_writable(dirname($target_file))) {
 }
 // Przesuń przesłany plik
 if (!move_uploaded_file($_FILES['logo']['tmp_name'], $target_file)) {
-    $error_message = "Wystąpił błąd podczas przesyłania pliku.";
+    $error_message = "Wystąpił błąd podczas przesłania pliku.";
     switch ($_FILES['logo']['error']) {
         case UPLOAD_ERR_INI_SIZE:
             $error_message = "Przesłany plik przekracza dyrektywę upload_max_filesize w php.ini.";

@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Uruchamiamy inicjalizację różnych części interfejsu
     initializeShowAddFormButton(isUserLoggedIn); // Przycisk "Dodaj dystrybucję"
     initializeCharacterCounters(); // Liczniki znaków w polach tekstowych
-    displayStatusMessages(); // Komunikaty o sukcesie/błędzie (np. po dodaniu dystrybucji)
 
     // Uruchamiamy walidację formularzy
     initializeAddFormValidation(); // Formularz dodawania

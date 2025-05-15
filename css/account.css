@@ -19,7 +19,6 @@
     margin-bottom: 1.5rem;
 }
 
-/* Style moved from account.php & user.php */
 .tab-container.activity-tabs {
     margin-top: 20px;
 }
@@ -95,7 +94,6 @@
     margin-top: 8px;
 }
 
-/* Style moved from account.php & user.php */
 .activity-item .comment-excerpt {
     margin-top: 5px;
 }

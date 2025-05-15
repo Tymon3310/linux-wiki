@@ -59,66 +59,6 @@ export function initializeCharacterCounters() {
     }
 }
 
-// Wyświetla komunikaty o statusie (np. po dodaniu dystrybucji)
-// Odczytuje parametry 'status' i 'added' (lub 'message') z adresu URL
-export function displayStatusMessages() {
-    const status = getUrlParameter('status');
-    const added = getUrlParameter('added'); // Nazwa dodanej dystrybucji
-    const message = getUrlParameter('message'); // Ogólny komunikat (np. błędu)
-
-    // Znajdź miejsce na wyświetlenie komunikatu (najlepiej div#results, awaryjnie body)
-    const resultsDiv = document.getElementById('results') || document.body;
-
-    // Komunikat o sukcesie (np. ?status=success&added=NazwaDystrybucji)
-    if (status === 'success' && added) {
-        if (resultsDiv) {
-            const successDiv = document.createElement('div');
-            successDiv.className = 'success-message'; // Nadaj odpowiednią klasę CSS
-            // Użyj `textContent` dla bezpieczeństwa, chociaż `added` powinno być już oczyszczone przez PHP
-            const p = document.createElement('p');
-            p.innerHTML = `<strong>Sukces!</strong> Dystrybucja "${added}" została pomyślnie dodana! <i class="fas fa-check-circle"></i>`;
-            successDiv.appendChild(p);
-
-            // Wstaw komunikat na górze diva z wynikami (lub body)
-            resultsDiv.insertBefore(successDiv, resultsDiv.firstChild);
-
-            // Automatycznie ukryj komunikat po 5 sekundach z ładnym zanikaniem
-            setTimeout(function () {
-                successDiv.style.opacity = '0';
-                successDiv.style.transition = 'opacity 1s ease-out'; // Dodaj płynne przejście
-
-                // Poczekaj na zakończenie animacji zanikania i dopiero usuń element z DOM
-                setTimeout(function () {
-                    successDiv.remove();
-                }, 1000); // Czas musi być równy lub dłuższy niż transition duration
-            }, 5000);
-        }
-    }
-
-    // Komunikat o błędzie (np. ?status=error&message=TekstBledu)
-    if (status === 'error' && message) {
-        if (resultsDiv) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'error-message'; // Nadaj odpowiednią klasę CSS
-            const p = document.createElement('p');
-            // Użyj textContent dla bezpieczeństwa, bo message może pochodzić z różnych źródeł
-            p.innerHTML = `<strong>Błąd!</strong> ${message} <i class="fas fa-exclamation-triangle"></i>`;
-            errorDiv.appendChild(p);
-
-            resultsDiv.insertBefore(errorDiv, resultsDiv.firstChild);
-
-            // Błędy zostawiamy widoczne dłużej, np. 10 sekund
-            setTimeout(function () {
-                errorDiv.style.opacity = '0';
-                errorDiv.style.transition = 'opacity 1s ease-out';
-                setTimeout(function () {
-                    errorDiv.remove();
-                }, 1000);
-            }, 10000);
-        }
-    }
-}
-
 // Inicjalizuje modale potwierdzenia usunięcia (dystrybucji i komentarzy)
 export function initializeDeleteModals() {
     // --- Modal usuwania dystrybucji (edit.php) ---

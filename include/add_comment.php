@@ -7,6 +7,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require_once 'db_config.php';
+require_once __DIR__ . '/validation_utils.php'; // Dołączamy plik z funkcją walidacji emoji
 
 // Sprawdzamy, czy użytkownik jest zalogowany. Jeśli nie, wracamy do logowania i zapamiętujemy, gdzie był
 if (!isset($_SESSION['user_id'])) {
@@ -18,6 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Pobieramy dane z formularza i czyścimy je, żeby było bezpiecznie
     $distro_id = mysqli_real_escape_string($conn, $_POST['distro_id']);
     $comment = mysqli_real_escape_string($conn, $_POST['comment']);
+
+    // Walidacja emoji w komentarzu
+    if (contains_emoji($comment)) {
+        header("Location: ../details.php?id=$distro_id&status=error&message=" . urlencode("Komentarz nie może zawierać emoji."));
+        exit;
+    }
     
     // Pobieramy nazwę użytkownika z sesji
     $user_id = $_SESSION['user_id'];

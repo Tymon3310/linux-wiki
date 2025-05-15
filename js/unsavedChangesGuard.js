@@ -4,6 +4,8 @@
 window.formIsDirty = false; // Ogólna flaga: czy była interakcja z formularzem?
 window.userConfirmedUnload = false; // Czy użytkownik potwierdził opuszczenie strony przez customowy modal?
 window.isDestructiveActionInProgress = false; // Czy trwa akcja destrukcyjna (np. usuwanie)?
+let G_lastNavigationEvent = null; // Przechowuje ostatnie zdarzenie nawigacyjne, które próbowało opuścić stronę
+let G_targetHref = null; // Przechowuje href celu nawigacji
 
 // Przechowuje początkowe dane formularza do porównania.
 let initialFormData = {};
@@ -15,24 +17,17 @@ function ensureCustomModalExists() {
     if (document.getElementById('custom-unsaved-modal')) return;
 
     const modalHTML = `
-        <div id="custom-unsaved-modal" style="display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
-            <div style="background-color:#fff; color:#333; margin:auto; padding:20px; border:1px solid #888; width:90%; max-width:450px; text-align:center; border-radius:8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-                <h3 style="margin-top:0; font-size:1.5em;">Niezapisane zmiany</h3>
-                <p style="font-size:1.1em;">Masz niezapisane zmiany. Czy na pewno chcesz opuścić stronę?</p>
-                <div style="margin-top:25px;">
-                    <button id="custom-unsaved-confirm-leave" style="padding:10px 18px; margin-right:10px; background-color:#d9534f; color:white; border:none; border-radius:5px; cursor:pointer; font-size:1em;">Opuść stronę</button>
-                    <button id="custom-unsaved-cancel-stay" style="padding:10px 18px; background-color:#6c757d; color:white; border:none; border-radius:5px; cursor:pointer; font-size:1em;">Pozostań</button>
+        <div id="custom-unsaved-modal">
+            <div class="custom-unsaved-modal-content">
+                <h3>Niezapisane zmiany</h3>
+                <p>Masz niezapisane zmiany. Czy na pewno chcesz opuścić stronę?</p>
+                <div>
+                    <button id="custom-unsaved-confirm-leave">Opuść stronę</button>
+                    <button id="custom-unsaved-cancel-stay">Pozostań</button>
                 </div>
             </div>
         </div>
     `;
-    const styleElement = document.createElement('style');
-    styleElement.textContent = `
-        #custom-unsaved-modal {
-            display: none;
-        }
-    `;
-    document.head.appendChild(styleElement);
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
@@ -78,13 +73,13 @@ function isFormActuallyDirty(form) {
 // Główny handler dla zdarzenia beforeunload
 function beforeUnloadHandler(event) {
     if (window.isDestructiveActionInProgress) {
-        window.isDestructiveActionInProgress = false;
-        return;
+        window.isDestructiveActionInProgress = false; // Reset flag
+        return; // Allow destructive action
     }
 
     if (window.userConfirmedUnload) {
-        window.userConfirmedUnload = false;
-        return;
+        window.userConfirmedUnload = false; // Reset flag for next time
+        return; // Allow unload
     }
 
     let actuallyDirty = false;
@@ -99,13 +94,13 @@ function beforeUnloadHandler(event) {
 
     if (actuallyDirty) {
         event.preventDefault();
-        event.returnValue = '';
+        event.returnValue = ''; // Required for some browsers to trigger the custom dialog flow
 
         const customModal = document.getElementById('custom-unsaved-modal');
         if (customModal) {
             customModal.style.display = 'flex';
         }
-        return '';
+        return event.returnValue;
     }
 }
 
@@ -121,10 +116,20 @@ export function initUnsavedChangesGuard() {
         confirmLeaveBtn.addEventListener('click', () => {
             window.userConfirmedUnload = true;
             customModal.style.display = 'none';
+
+            if (G_targetHref) {
+                window.location.href = G_targetHref;
+                G_targetHref = null;
+                G_lastNavigationEvent = null;
+            } else if (G_lastNavigationEvent) {
+                G_lastNavigationEvent = null;
+            }
         });
 
         cancelStayBtn.addEventListener('click', () => {
             window.userConfirmedUnload = false;
+            G_lastNavigationEvent = null;
+            G_targetHref = null;
             customModal.style.display = 'none';
         });
     }
@@ -174,6 +179,44 @@ export function initUnsavedChangesGuard() {
 
     window.removeEventListener('beforeunload', beforeUnloadHandler);
     window.addEventListener('beforeunload', beforeUnloadHandler);
+
+    document.body.addEventListener('click', (event) => {
+        let target = event.target;
+        while (target && target !== document.body) {
+            if (target.tagName === 'A' && target.href &&
+                target.href !== '#' &&
+                !target.href.startsWith('javascript:') &&
+                !target.classList.contains('btn-delete') &&
+                !target.classList.contains('btn-delete-comment') &&
+                target.target !== '_blank' &&
+                !target.hasAttribute('data-bs-toggle') &&
+                !target.closest('.modal')
+            ) {
+                let actuallyDirty = false;
+                if (window.formIsDirty) {
+                    for (const form of formsToWatchGlobally) {
+                        if (isFormActuallyDirty(form)) {
+                            actuallyDirty = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (actuallyDirty) {
+                    event.preventDefault();
+                    G_lastNavigationEvent = event;
+                    G_targetHref = target.href;
+
+                    const customModal = document.getElementById('custom-unsaved-modal');
+                    if (customModal) {
+                        customModal.style.display = 'flex';
+                    }
+                }
+                break;
+            }
+            target = target.parentNode;
+        }
+    }, true);
 }
 
 // Globalne funkcje dostępne dla innych skryptów, jeśli potrzebne

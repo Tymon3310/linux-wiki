@@ -17,11 +17,6 @@ $id = (int)$_GET['id'];
 $sql = "SELECT * FROM distributions WHERE id = $id";
 $result = $conn->query($sql);
 
-if (!$result || $result->num_rows === 0) {
-    header("Location: index.php?status=error&message=" . urlencode("Nie znaleziono dystrybucji o podanym identyfikatorze."));
-    exit();
-}
-
 $distro = $result->fetch_assoc();
 ?>
 

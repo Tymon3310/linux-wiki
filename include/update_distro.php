@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once 'db_config.php';
+require_once __DIR__ . '/validation_utils.php'; // Dodanie walidacji emoji
 
 // Włączenie raportowania błędów do debugowania
 error_reporting(E_ALL);
@@ -43,9 +44,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     if (empty($name)) {
         $errors[] = "Nazwa dystrybucji jest wymagana.";
     }
+    if (contains_emoji($name)) {
+        $errors[] = "Nazwa dystrybucji nie może zawierać emoji.";
+    }
     
     if (empty($description) || strlen($description) < 30) {
         $errors[] = "Opis musi zawierać co najmniej 30 znaków.";
+    }
+    if (contains_emoji($description)) {
+        $errors[] = "Opis dystrybucji nie może zawierać emoji.";
     }
     
     if (!empty($website) && !filter_var($website, FILTER_VALIDATE_URL)) {
@@ -57,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     }
     
     if (!empty($errors)) {
-        $error_message = implode("<br>", $errors);
+        $error_message = implode("__NEWLINE__", $errors);
         header("Location: ../edit.php?id=$id&status=error&message=" . urlencode($error_message));
         exit;
     }

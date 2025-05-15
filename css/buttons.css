@@ -84,7 +84,6 @@ button[type="submit"]:active {
 button[type="submit"] i {
     font-size: 0.9em;
     margin-right: 8px;
-    /* Dodanie odstępu między ikoną a tekstem */
 }
 
 /* Poprawka dla wyrównania w przyciskach, aby tekst i ikony były odpowiednio wyśrodkowane */
@@ -151,7 +150,6 @@ button[type="submit"] i {
 /* Stylizacja przycisku usuwania */
 .btn-delete {
     background-color: var(--error-color) !important;
-    /* Użyj !important, aby nadpisać inne reguły */
     color: white;
     text-decoration: none;
     padding: 10px 20px;
@@ -165,7 +163,6 @@ button[type="submit"] i {
 
 .btn-delete:hover {
     background-color: #c0392b !important;
-    /* Ciemniejszy czerwony przy najechaniu */
 }
 
 /* Kontener przycisków karty */
@@ -244,9 +241,7 @@ button[type="submit"] {
     cursor: pointer;
     transition: background-color 0.3s;
     display: block;
-    /* Zachowaj dla samodzielnych przycisków submit */
     margin: 0 auto;
-    /* Zachowaj dla samodzielnych przycisków submit */
 }
 
 button[type="submit"]:hover {
