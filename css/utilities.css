@@ -1,5 +1,5 @@
 /* css/utilities.css */
-/* Utility Helpers */
+/* Pomocnicze klasy CSS */
 
 /* Kontener akcji */
 .actions {
@@ -31,7 +31,7 @@
     color: var(--primary-color);
 }
 
-/* Back to top button */
+/* Przycisk powrotu na górę */
 .back-to-top {
     display: none;
     position: fixed;

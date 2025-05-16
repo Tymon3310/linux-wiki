@@ -1,11 +1,11 @@
 <?php
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczęcie sesji w celu uwierzytelniania użytkowników
 session_start();
 
-include 'include/db_config.php';
-include __DIR__ . '/include/validation_utils.php'; // Dodanie walidacji emoji
+include 'include/db_config.php'; // Dołączenie konfiguracji bazy danych
+include __DIR__ . '/include/validation_utils.php'; // Dołączenie funkcji walidacji emoji
 
-// Sprawdzenie czy użytkownik jest już zalogowany
+// Sprawdzenie, czy użytkownik jest już zalogowany
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
@@ -14,7 +14,7 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 $success = '';
 
-// Przetwarzanie formularzy logowania i rejestracji
+// Przetwarzanie danych z formularzy logowania i rejestracji
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obsługa formularza logowania
     if (isset($_POST['login'])) {
@@ -24,12 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Walidacja danych wejściowych
         if (empty($username) || empty($password)) {
             $error = "Proszę wypełnić wszystkie pola.";
-        } elseif (contains_emoji($username)) { // Walidacja emoji dla nazwy użytkownika przy logowaniu
+        } elseif (contains_emoji($username)) { // Walidacja emoji dla nazwy użytkownika podczas logowania
             $error = "Nazwa użytkownika nie może zawierać emoji.";
-        } elseif (contains_emoji($password)) { // Walidacja emoji dla hasła przy logowaniu
+        } elseif (contains_emoji($password)) { // Walidacja emoji dla hasła podczas logowania
             $error = "Hasło nie może zawierać emoji.";
         } else {
-            // Sprawdzenie danych uwierzytelniających
+            // Sprawdzenie danych uwierzytelniających w bazie danych
             $sql = "SELECT id, username, password FROM accounts WHERE username = '$username'";
             $result = $conn->query($sql);
             
@@ -38,11 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Weryfikacja hasła
                 if (password_verify($password, $user['password'])) {
-                    // Ustawienie zmiennych sesji
+                    // Ustawienie zmiennych sesji po pomyślnym zalogowaniu
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
                     
-                    // Przekierowanie do strony źródłowej lub strony głównej
+                    // Przekierowanie na stronę, z której użytkownik przyszedł, lub na stronę główną
                     $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
                     header("Location: $redirect");
                     exit;
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Proszę wypełnić wszystkie pola.";
         } elseif (contains_emoji($username)) { // Walidacja emoji dla nazwy użytkownika
             $error = "Nazwa użytkownika nie może zawierać emoji.";
-        } elseif (contains_emoji($email)) { // Walidacja emoji dla emaila
+        } elseif (contains_emoji($email)) { // Walidacja emoji dla adresu email
             $error = "Adres email nie może zawierać emoji.";
         } elseif (contains_emoji($password)) { // Walidacja emoji dla hasła
             $error = "Hasło nie może zawierać emoji.";
@@ -78,17 +78,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = "Podany adres email jest nieprawidłowy.";
         } else {
-            // Sprawdzenie czy nazwa użytkownika lub email już istnieją
+            // Sprawdzenie, czy nazwa użytkownika lub adres email już istnieją w bazie danych
             $check_sql = "SELECT id FROM accounts WHERE username = '$username' OR email = '$email'";
             $check_result = $conn->query($check_sql);
             
             if ($check_result && $check_result->num_rows > 0) {
                 $error = "Nazwa użytkownika lub adres email jest już zajęty.";
             } else {
-                // Hashowanie hasła
+                // Haszowanie hasła przed zapisaniem do bazy danych
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
-                // Dodanie nowego użytkownika
+                // Dodanie nowego użytkownika do bazy danych
                 $insert_sql = "INSERT INTO accounts (username, email, password) VALUES ('$username', '$email', '$hashed_password')";
                 
                 if ($conn->query($insert_sql)) {

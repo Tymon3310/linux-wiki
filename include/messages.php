@@ -1,33 +1,34 @@
 <?php
-// include/messages.php
-$messageDisplayed = false; // Flag to track if a message was shown
+// Plik do obsługi wyświetlania komunikatów (błędów, sukcesów)
 
-// Prioritize messages passed via URL parameters
+$messageDisplayed = false; // Flaga śledząca, czy komunikat został już wyświetlony
+
+// Priorytet dla komunikatów przekazywanych przez parametry URL (GET)
 if (isset($_GET['status'], $_GET['message'])) {
     $status = $_GET['status'];
     $raw_text = urldecode($_GET['message']);
-    // Sanitize the text first
+    // Najpierw oczyszczenie tekstu (zabezpieczenie przed XSS)
     $sanitized_text = htmlspecialchars($raw_text, ENT_QUOTES, 'UTF-8');
-    // Then replace the newline placeholder with <br />
+    // Następnie zamiana znacznika nowej linii na tag <br />
     $text = str_replace("__NEWLINE__", "<br />", $sanitized_text);
-    $messageId = 'flash-message-' . uniqid(); // Generate a unique ID
+    $messageId = 'flash-message-' . uniqid(); // Wygenerowanie unikalnego ID dla elementu komunikatu
 
     if ($status === 'error') {
-        // Output error message div with unique ID
+        // Wyświetlenie diva z komunikatem o błędzie, używając unikalnego ID
         echo "<div id=\"{$messageId}\" class=\"error-message\"><strong>Błąd!</strong> {$text}</div>";
 
-        // Output inline script for timed fade-out
+        // Wyświetlenie skryptu JavaScript (inline) do animowanego ukrycia i usunięcia komunikatu
         echo <<<SCRIPT
         <script>
             (function() {
                 const errorElement = document.getElementById('{$messageId}');
                 if (errorElement) {
-                    // Start fade out after 8 seconds
+                    // Rozpoczęcie animacji zanikania po 8 sekundach
                     setTimeout(function() {
                         errorElement.style.opacity = '0';
                         errorElement.style.transition = 'opacity 1s ease-out';
 
-                        // Remove element after transition (1 second)
+                        // Usunięcie elementu z DOM po zakończeniu animacji (1 sekunda)
                         setTimeout(function() {
                             errorElement.remove();
                         }, 1000);
@@ -36,39 +37,37 @@ if (isset($_GET['status'], $_GET['message'])) {
             })();
         </script>
 SCRIPT;
-        $messageDisplayed = true; // Mark that a GET error message was shown and handled
+        $messageDisplayed = true; // Ustawienie flagi, że komunikat błędu z GET został wyświetlony i obsłużony
 
     } elseif ($status === 'success') {
-        // Handle success messages (can keep simple or add fade-out too if desired)
+        // Obsługa komunikatów o sukcesie (można je uprościć lub dodać podobne wygaszanie)
         $class = 'success-message';
         echo "<div id=\"{$messageId}\" class=\"{$class}\"><strong>Sukces!</strong> {$text}</div>";
-         // Optional: Add similar fade-out script for success messages if needed
          echo <<<SCRIPT
          <script>
              (function() {
                  const successElement = document.getElementById('{$messageId}');
                  if (successElement) {
-                     // Start fade out after 5 seconds for success
+                     // Rozpoczęcie animacji zanikania po 5 sekundach dla komunikatu o sukcesie
                      setTimeout(function() {
                          successElement.style.opacity = '0';
                          successElement.style.transition = 'opacity 1s ease-out';
  
-                         // Remove element after transition (1 second)
+                         // Usunięcie elementu z DOM po zakończeniu animacji (1 sekunda)
                          setTimeout(function() {
                              successElement.remove();
                          }, 1000);
-                     }, 5000); // Shorter duration for success
+                     }, 5000); // Krótszy czas trwania dla komunikatu o sukcesie
                  }
              })();
          </script>
  SCRIPT;
 
-        $messageDisplayed = true; // Mark that a GET success message was shown
+        $messageDisplayed = true; // Ustawienie flagi, że komunikat sukcesu z GET został wyświetlony
     }
 }
 
-// Only check for locally set PHP variables ($error, $message) if no GET message was displayed
-// These won't have the fade-out effect unless explicitly added here too.
+// Sprawdzenie lokalnie ustawionych zmiennych PHP ($error, $message), jeśli nie wyświetlono komunikatu z GET
 if (!$messageDisplayed && (isset($error) || isset($message))) {
     if (!empty($error)) {
         $sanitized_error = htmlspecialchars($error, ENT_QUOTES, 'UTF-8');

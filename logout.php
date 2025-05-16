@@ -1,19 +1,19 @@
 <?php
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczęcie sesji w celu zarządzania stanem zalogowania użytkownika
 session_start();
 
-// Wyczyść wszystkie zmienne sesji
+// Usunięcie wszystkich zmiennych sesji
 $_SESSION = array();
 
-// Jeśli używane jest ciasteczko sesji, zniszcz je
+// Jeśli używane jest ciasteczko sesyjne, usunięcie go
 if (isset($_COOKIE[session_name()])) {
     setcookie(session_name(), '', time()-42000, '/');
 }
 
-// Zniszcz sesję
+// Zniszczenie sesji
 session_destroy();
 
-// Przekieruj na stronę główną
+// Przekierowanie użytkownika na stronę główną po wylogowaniu
 header("Location: index.php");
 exit;
 ?>

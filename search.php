@@ -1,28 +1,31 @@
 <?php
-// Endpoint do wyszukiwania dystrybucji Linux poprzez AJAX
+// Endpoint API do wyszukiwania dystrybucji Linuksa za pomocą AJAX
 
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczęcie sesji w celu uwierzytelniania użytkowników (jeśli potrzebne w przyszłości)
 session_start();
 
-// Dołączenie konfiguracji bazy danych
+// Dołączenie pliku konfiguracyjnego bazy danych
 include 'include/db_config.php';
 
-// Włączenie logowania błędów do diagnostyki
+// Włączenie wyświetlania błędów PHP w celach diagnostycznych
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Sprawdzenie czy parametr wyszukiwania został podany
+// Sprawdzenie, czy parametr wyszukiwania (q) został przekazany i nie jest pusty
 if (!isset($_GET['q']) || empty($_GET['q'])) {
     echo json_encode([]);
     exit;
 }
 
-// Pobranie i oczyszczenie frazy wyszukiwania
+// Pobranie i oczyszczenie (zabezpieczenie przed SQL injection) frazy wyszukiwania
 $search = $conn->real_escape_string($_GET['q']);
 
-// Wyszukiwanie w bazie danych (nazwa, opis i wyszukiwanie rozszerzone)
+// Zapytanie SQL do wyszukiwania w bazie danych (w nazwie, opisie)
+// Sortowanie wyników: najpierw te, gdzie fraza pasuje do początku nazwy, 
+// potem do dowolnej części nazwy, następnie do opisu.
+// Ograniczenie liczby wyników do 10.
 $sql = "SELECT * FROM distributions WHERE 
         name LIKE '%$search%' OR 
         description LIKE '%$search%'
@@ -38,18 +41,18 @@ $sql = "SELECT * FROM distributions WHERE
 
 $result = $conn->query($sql);
 
-// Przygotowanie odpowiedzi
+// Przygotowanie tablicy na wyniki
 $distributions = [];
 
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        // Naprawa ścieżki do logo, jeśli potrzebna
+        // Poprawienie ścieżki do logo, jeśli jest to konieczne (dodanie prefiksu "img/")
         $logo_path = $row['logo_path'];
         if (!preg_match('/^img\//', $logo_path)) {
             $logo_path = 'img/' . $logo_path;
         }
         
-        // Dodanie każdej dystrybucji do tablicy wyników
+        // Dodanie każdej znalezionej dystrybucji do tablicy wyników
         $distributions[] = [
             'id' => $row['id'],
             'name' => htmlspecialchars($row['name']),
@@ -60,7 +63,7 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Zwrócenie odpowiedzi w formacie JSON
+// Zwrócenie wyników w formacie JSON
 echo json_encode($distributions);
 
 // Zamknięcie połączenia z bazą danych

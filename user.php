@@ -1,15 +1,15 @@
 <?php
-session_start();
-include 'include/db_config.php';
+session_start(); // Rozpoczęcie sesji
+include 'include/db_config.php'; // Dołączenie konfiguracji bazy danych
 
-// Walidacja ID użytkownika
+// Walidacja ID użytkownika przekazanego w URL
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: index.php?status=error&message=" . urlencode("Nieprawidłowy identyfikator użytkownika."));
     exit;
 }
 $user_id = (int)$_GET['id'];
 
-// Pobierz informacje o użytkowniku
+// Pobranie informacji o użytkowniku z bazy danych
 $user_sql = "SELECT id, username, date_added FROM accounts WHERE id = $user_id";
 $user_result = $conn->query($user_sql);
 if (!$user_result || $user_result->num_rows === 0) {
@@ -18,11 +18,11 @@ if (!$user_result || $user_result->num_rows === 0) {
 }
 $user = $user_result->fetch_assoc();
 
-// Pobierz dystrybucje dodane przez użytkownika
+// Pobranie dystrybucji dodanych przez tego użytkownika
 $distros_sql = "SELECT id, name, date_added FROM distributions WHERE added_by = $user_id ORDER BY date_added DESC";
 $distros_result = $conn->query($distros_sql);
 
-// Pobierz komentarze użytkownika
+// Pobranie komentarzy dodanych przez tego użytkownika
 $comments_sql = "SELECT c.id, c.comment, c.date_added, d.id AS distro_id, d.name AS distro_name
                  FROM comments c
                  JOIN distributions d ON c.distro_id = d.id

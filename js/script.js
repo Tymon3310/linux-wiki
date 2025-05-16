@@ -1,14 +1,16 @@
 // Główny plik JavaScript aplikacji - taki trochę dyrygent :)
 
 // Importujemy potrzebne funkcje z innych plików (modułów)
-import { initializeShowAddFormButton, initializeCharacterCounters, displayStatusMessages, initializeDeleteModals } from './uiUtils.js';
+import { initializeShowAddFormButton, initializeCharacterCounters, initializeDeleteModals } from './uiUtils.js';
 import { initializeAddFormValidation, initializeEditFormValidation } from './formHandler.js';
 import { initializeImageUpload } from './imageUpload.js';
 import { initializeThemeSwitcher } from './themeSwitcher.js';
 import { initializeSearch } from './searchHandler.js';
-import { initializeAllTabs } from './tabs.js'; // Moduł do obsługi zakładek
-import { initializeYoutubeEmbed } from './youtubeEmbed.js'; // Importujemy nowy moduł YouTube
-import { initUnsavedChangesGuard } from './unsavedChangesGuard.js'; // Importujemy moduł do ochrony przed niezapisanymi zmianami
+import { initializeAllTabs } from './tabs.js';
+import { initializeYoutubeEmbed } from './youtubeEmbed.js';
+import { initUnsavedChangesGuard } from './unsavedChangesGuard.js';
+import { loadBadAppleFramesConsole, playBadAppleConsole, stopBadAppleConsole } from './easterEgg.js';
+import { initializeUiAnimations } from './uiAnimations.js';
 
 // Czekamy, aż cała strona (DOM) się załaduje
 document.addEventListener('DOMContentLoaded', function () {
@@ -46,6 +48,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Uruchamiamy ochronę przed niezapisanymi zmianami
     initUnsavedChangesGuard();
+
+    // Inicjalizujemy animacje UI (fade-in, back-to-top)
+    initializeUiAnimations();
+
+    // Inicjalizujemy Easter Egg
+    loadBadAppleFramesConsole(); // Ładujemy klatki przy starcie
+    // Udostępniamy funkcje globalnie dla dostępu z konsoli, jeśli jest to nadal pożądane, lub zarządzamy dostępem inaczej
+    window.playBadAppleConsole = playBadAppleConsole;
+    window.stopBadAppleConsole = stopBadAppleConsole;
 
     console.log("Wszystkie skrypty startowe wykonane.");
 });

@@ -1,7 +1,7 @@
 /* filepath: /opt/lampp/htdocs/css/responsive.css */
-/* Style Responsywne */
+/* Style responsywne */
 
-/* na małe wyświetlacze */
+/* Dla małych wyświetlaczy */
 @media (max-width: 768px) {
     h1 {
         font-size: 1.8rem;

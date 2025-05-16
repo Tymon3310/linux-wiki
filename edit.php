@@ -1,17 +1,17 @@
 <?php
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczęcie sesji w celu uwierzytelniania użytkowników
 session_start();
 
-// Sprawdzenie czy użytkownik jest zalogowany
+// Sprawdzenie, czy użytkownik jest zalogowany
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php?redirect=" . urlencode("edit.php?id=" . $_GET['id']));
     exit;
 }
 
-// Dołączenie konfiguracji bazy danych
+// Dołączenie pliku konfiguracyjnego bazy danych
 include 'include/db_config.php';
 
-// Sprawdzenie czy parametr ID istnieje
+// Sprawdzenie, czy parametr ID istnieje i jest numeryczny
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: index.php?status=error&message=" . urlencode("Nieprawidłowy identyfikator dystrybucji."));
     exit();
@@ -20,7 +20,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = (int)$_GET['id'];
 $user_id = $_SESSION['user_id'];
 
-// Pobieranie szczegółów dystrybucji
+// Pobranie szczegółów dystrybucji z bazy danych
 $sql = "SELECT * FROM distributions WHERE id = $id";
 $result = $conn->query($sql);
 
@@ -31,7 +31,7 @@ if (!$result || $result->num_rows === 0) {
 
 $distro = $result->fetch_assoc();
 
-// Sprawdzenie czy użytkownik jest właścicielem tej dystrybucji
+// Sprawdzenie, czy użytkownik jest właścicielem dystrybucji lub administratorem
 if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
     header("Location: details.php?id=$id&status=error&message=" . urlencode("Nie masz uprawnień do edycji tej dystrybucji."));
     exit();
@@ -61,12 +61,12 @@ if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
                 </button>
                 <a href="index.php" class="btn-return"><i class="fas fa-home"></i> Strona główna</a>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <!-- Użytkownik jest zalogowany -->
+                    <!-- Użytkownik zalogowany -->
                     <a href="logout.php" class="btn-primary">
                         <i class="fas fa-sign-out-alt"></i> Wyloguj się
                     </a>
                 <?php else: ?>
-                    <!-- Użytkownik nie jest zalogowany -->
+                    <!-- Użytkownik niezalogowany -->
                     <a href="login.php" class="btn-primary">
                         <i class="fas fa-sign-in-alt"></i> Zaloguj się
                     </a>

@@ -1,5 +1,6 @@
-/* CSS Theme Module */
-/* Variables and theme definitions for light/dark modes */
+/* filepath: /opt/lampp/htdocs/css/theme.css */
+/* Moduł motywu CSS */
+/* Zmienne i definicje motywów dla trybu jasnego/ciemnego */
 :root {
     --primary-color: #2b70b6;
     --secondary-color: #f7a41d;
@@ -24,7 +25,7 @@
     --transition-time: 0.3s;
 }
 
-/* Light theme overrides */
+/* Nadpisania dla motywu jasnego */
 .light-mode {
     --primary-color: var(--light-primary-color);
     --secondary-color: var(--light-secondary-color);
@@ -39,12 +40,12 @@
     color: var(--light-text-color);
 }
 
-/* Smooth transitions during theme switch */
+/* Płynne przejścia podczas zmiany motywu */
 .theme-transitioning * {
     transition: background-color var(--transition-time), color var(--transition-time), border-color var(--transition-time);
 }
 
-/* Light mode element overrides */
+/* Nadpisania elementów w trybie jasnym */
 body.light-mode,
 body:has(.light-mode) {
     background-color: var(--light-bg-color);
@@ -120,7 +121,7 @@ body:has(.light-mode) .logo-preview {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Light mode back to top button */
+/* Przycisk powrotu na górę w trybie jasnym */
 .light-mode~.back-to-top,
 body:has(.light-mode) .back-to-top {
     background-color: rgba(255, 255, 255, 0.9);

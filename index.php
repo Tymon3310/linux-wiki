@@ -1,5 +1,5 @@
 <?php
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczęcie sesji w celu uwierzytelniania użytkowników
 session_start();
 ?>
 <!DOCTYPE html>
@@ -29,7 +29,7 @@ session_start();
                 </button>
                 
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <!-- Użytkownik jest zalogowany -->
+                    <!-- Użytkownik zalogowany -->
                     <button id="show-add-form" class="btn-primary">
                         <i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję
                     </button>
@@ -40,7 +40,7 @@ session_start();
                         <i class="fas fa-sign-out-alt"></i> Wyloguj się
                     </a>
                 <?php else: ?>
-                    <!-- Użytkownik nie jest zalogowany -->
+                    <!-- Użytkownik niezalogowany -->
                     <a href="login.php" class="btn-primary">
                         <i class="fas fa-sign-in-alt"></i> Zaloguj się
                     </a>
@@ -49,7 +49,7 @@ session_start();
         </header>
         <?php include 'include/messages.php'; ?>
 
-        <!-- Wyszukiwanie dystrybucji -->
+        <!-- Sekcja wyszukiwania dystrybucji -->
         <div class="search-section">
             <h2>Znajdź dystrybucję Linux</h2>
             <form id="search-form" onsubmit="performSearch(); return false;">
@@ -62,10 +62,10 @@ session_start();
         <div id="results" class="results-section">
             <?php
             if (isset($_POST['search'])) {
-                include 'include/db_config.php';
+                include 'include/db_config.php'; // Dołączenie konfiguracji bazy danych
                 
                 $search = $conn->real_escape_string($_POST['search_distro']);
-                $sql = "SELECT * a WHERE name LIKE '%$search%'";
+                $sql = "SELECT * a WHERE name LIKE '%$search%'"; // Zapytanie SQL do wyszukiwania dystrybucji
                 $result = $conn->query($sql);
                 
                 if ($result && $result->num_rows > 0) {
@@ -85,7 +85,7 @@ session_start();
                     echo "<div class='not-found'>";
                     echo "<p>Nie znaleziono dystrybucji \"" . htmlspecialchars($search) . "\" w naszej bazie danych.</p>";
                     
-                    // Pokaż przycisk "Dodaj nową dystrybucję" tylko zalogowanym użytkownikom
+                    // Wyświetlenie przycisku "Dodaj nową dystrybucję" tylko dla zalogowanych użytkowników
                     if (isset($_SESSION['user_id'])) {
                         echo "<p>Czy chcesz dodać tę dystrybucję?</p>";
                         echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
@@ -125,7 +125,7 @@ session_start();
                     echo "<div class='no-distros'>";
                     echo "<p>Brak dystrybucji w bazie danych.</p>";
                     
-                    // Pokaż przycisk "Dodaj nową dystrybucję" tylko zalogowanym użytkownikom
+                    // Wyświetlenie przycisku "Dodaj nową dystrybucję" tylko dla zalogowanych użytkowników
                     if (isset($_SESSION['user_id'])) {
                         echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
                     } else {
@@ -197,48 +197,9 @@ session_start();
         <footer>
             <p>&copy; <?php echo date('Y'); ?> Tymon3310</p>
         </footer>
-        <button onclick="topFunction()" id="backToTop" class="back-to-top" title="Go to top">
+        <button id="backToTop" class="back-to-top" title="Przewiń do góry">
         <i class="fas fa-arrow-up"></i>
     </button>
     </div>
-    <script>
-        // Scroll animations
-        document.addEventListener('DOMContentLoaded', function() {
-            const fadeElements = document.querySelectorAll('.fade-in');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, { threshold: 0.1 });
-            
-            fadeElements.forEach(element => {
-                observer.observe(element);
-            });
-            
-            // Back to top button functionality
-            const backToTopButton = document.getElementById('backToTop');
-            
-            window.onscroll = function() {
-                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                    backToTopButton.style.display = 'block';
-                } else {
-                    backToTopButton.style.display = 'none';
-                }
-            };
-        });
-
-        // Funkcja przewijania do góry strony
-       // Back to top button functionality
-    function topFunction() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    }
-        
-    </script>
 </body>
 </html>
