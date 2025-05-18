@@ -77,6 +77,7 @@ $comments_result = $conn->query($comments_sql);
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script type="module" src="js/script.js"></script>
 </head>
 <body>
     <div class="container">
@@ -206,35 +207,6 @@ $comments_result = $conn->query($comments_sql);
         </footer>
     </div>
     
-    <script src="js/script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Obsługa zakładek
-            const handleTabs = (tabContainerSelector, tabContentSelector) => {
-                const tabs = document.querySelectorAll(tabContainerSelector + ' .tab');
-                const contents = document.querySelectorAll(tabContentSelector);
-                
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', function() {
-                        const tabId = this.getAttribute('data-tab');
-                        
-                        // Usuwanie klasy aktywnej
-                        tabs.forEach(t => t.classList.remove('active'));
-                        contents.forEach(c => c.classList.remove('active'));
-                        
-                        // Dodawanie klasy aktywnej
-                        this.classList.add('active');
-                        document.getElementById(tabId).classList.add('active');
-                    });
-                });
-            };
-            
-            // Inicjalizacja głównych zakładek
-            handleTabs('.account-container > .tab-container', '.account-section.tab-content');
-            
-            // Inicjalizacja podzakładek aktywności
-            handleTabs('#activity > .tab-container', '#activity .tab-content');
-        });
-    </script>
+    
 </body>
 </html>

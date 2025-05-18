@@ -104,3 +104,5 @@ export function initializeAllTabs() {
     // Inicjalizuj zakładki aktywności użytkownika (na stronie profilu)
     initializeTabs('.tab-container.activity-tabs');
 }
+
+// Funkcja do inicjalizacji zakładek dla formularzy logowania/rejestracji

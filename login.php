@@ -114,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script type="module" src="js/script.js"></script>
 </head>
 <body>
     <!-- Added class="login-register-page" -->
@@ -131,13 +132,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php include 'include/messages.php'; ?>
 
         <div class="auth-container">
-            <div class="auth-tabs">
-                <div class="auth-tab active" data-tab="login">Logowanie</div>
-                <div class="auth-tab" data-tab="register">Rejestracja</div>
+            <div class="tab-container auth-tabs">
+                <div class="tab auth-tab active" data-tab="login">Logowanie</div>
+                <div class="tab auth-tab" data-tab="register">Rejestracja</div>
             </div>
 
             <!-- Formularz logowania -->
-            <form method="post" id="login-form" class="auth-form active">
+            <form method="post" id="login" class="tab-content auth-form active">
                 <div class="form-group">
                     <label for="username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
                     <input type="text" id="username" name="username" required>
@@ -154,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
             
             <!-- Formularz rejestracji -->
-            <form method="post" id="register-form" class="auth-form">
+            <form method="post" id="register" class="tab-content auth-form">
                 <div class="form-group">
                     <label for="reg-username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
                     <input type="text" id="reg-username" name="username" required>
@@ -182,27 +183,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
         </div>
     </div>
-    
-    <script src="js/script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabs = document.querySelectorAll('.auth-tab');
-            const forms = document.querySelectorAll('.auth-form');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const target = this.getAttribute('data-tab');
-                    
-                    // Usunięcie klasy aktywnej ze wszystkich zakładek i formularzy
-                    tabs.forEach(t => t.classList.remove('active'));
-                    forms.forEach(f => f.classList.remove('active'));
-                    
-                    // Dodanie klasy aktywnej do bieżącej zakładki i formularza
-                    this.classList.add('active');
-                    document.getElementById(target + '-form').classList.add('active');
-                });
-            });
-        });
-    </script>
 </body>
 </html>

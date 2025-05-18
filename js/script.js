@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Uruchamiamy wyszukiwarkę
     initializeSearch();
 
-    // Uruchamiamy obsługę zakładek (np. na stronie logowania)
+    // Uruchamiamy obsługę zakładek
     initializeAllTabs();
 
     // Uruchamiamy osadzanie wideo YouTube (jeśli jest na stronie)
@@ -55,8 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Inicjalizujemy Easter Egg
     loadBadAppleFramesConsole(); // Ładujemy klatki przy starcie
     // Udostępniamy funkcje globalnie dla dostępu z konsoli, jeśli jest to nadal pożądane, lub zarządzamy dostępem inaczej
-    window.playBadAppleConsole = playBadAppleConsole;
-    window.stopBadAppleConsole = stopBadAppleConsole;
+
 
     console.log("Wszystkie skrypty startowe wykonane.");
 });

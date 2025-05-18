@@ -56,13 +56,9 @@ export async function playBadAppleConsole() {
         doTimer(frames.length * msPerFrame, fps,
             (steps, count) => { // oninstance
                 if (frames[count + 1]) {
-                    if (isFirefox && (msPerFrame * count) % 6000 < msPerFrame) {
-                        // Firefox console has a hard time clearing too fast
-                        // This tries to clear less often on Firefox.
-                        // However, for simplicity and consistency, we might clear every frame.
-                        // You can experiment with this.
-                        console.clear();
-                    } else if (!isFirefox) {
+                    // Clear console every second (every 'fps' frames) instead of every frame
+                    // or based on the Firefox condition
+                    if (count % fps === 0) {
                         console.clear();
                     }
                     console.log(frames[count + 1]);
@@ -140,7 +136,8 @@ export function loadBadAppleFramesConsole() {
             // console.log("Type playBadAppleConsole() to try again after fixing the issue, or loadBadAppleFramesConsole() to reload.");
         });
 };
-
+window.playBadAppleConsole = playBadAppleConsole;
+window.stopBadAppleConsole = stopBadAppleConsole;
 // Automatically load frames when the script is loaded.
 // loadBadAppleFramesConsole(); // Commented out: Will be called from script.js
 

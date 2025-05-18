@@ -73,13 +73,13 @@ function isFormActuallyDirty(form) {
 // Główny handler dla zdarzenia beforeunload
 function beforeUnloadHandler(event) {
     if (window.isDestructiveActionInProgress) {
-        window.isDestructiveActionInProgress = false; // Reset flag
-        return; // Allow destructive action
+        window.isDestructiveActionInProgress = false; // Zresetuj flagę
+        return; // Zezwól na akcję destrukcyjną
     }
 
     if (window.userConfirmedUnload) {
-        window.userConfirmedUnload = false; // Reset flag for next time
-        return; // Allow unload
+        window.userConfirmedUnload = false; // Zresetuj flagę na następny raz
+        return; // Zezwól na opuszczenie
     }
 
     let actuallyDirty = false;
@@ -94,7 +94,7 @@ function beforeUnloadHandler(event) {
 
     if (actuallyDirty) {
         event.preventDefault();
-        event.returnValue = ''; // Required for some browsers to trigger the custom dialog flow
+        event.returnValue = ''; // Wymagane dla niektórych przeglądarek, aby uruchomić niestandardowy przepływ dialogu
 
         const customModal = document.getElementById('custom-unsaved-modal');
         if (customModal) {

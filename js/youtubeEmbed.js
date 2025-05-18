@@ -59,7 +59,7 @@ export function initializeYoutubeEmbed() {
             iframe.setAttribute('src', embedUrl);
             iframe.setAttribute('title', 'Odtwarzacz wideo YouTube'); // Dla dostępności
             iframe.setAttribute('frameborder', '0');
-            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+            iframe.setAttribute('allow', 'web-share'); // Updated to remove unsupported features
             iframe.setAttribute('allowfullscreen', ''); // Pozwól na pełny ekran
             iframe.setAttribute('loading', 'lazy'); // Ładuj iframe dopiero, gdy będzie blisko widoku
 
