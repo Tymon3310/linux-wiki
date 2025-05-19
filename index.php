@@ -76,7 +76,9 @@ session_start();
                             <img src="<?php echo htmlspecialchars($row['logo_path']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>" class="distro-logo">
                             <h3><?php echo htmlspecialchars($row['name']); ?></h3>
                             <p><?php echo substr(htmlspecialchars($row['description']), 0, 150); echo (strlen($row['description']) > 150) ? '...' : ''; ?></p>
-                            <a href="details.php?id=<?php echo $row['id']; ?>" class="btn-details">Szczegóły</a>
+                            <div class="card-buttons">
+                                <a href="details.php?id=<?php echo $row['id']; ?>" class="btn-details"><i class="fas fa-info-circle"></i> Szczegóły</a>
+                            </div>
                         </div>
                         <?php
                     }
@@ -156,7 +158,7 @@ session_start();
                 <div class="form-group">
                     <label for="description"><i class="fas fa-align-left"></i> Opis (min. 30 znaków):</label>
                     <textarea name="description" id="description" rows="5" required></textarea>
-                    <div id="description-counter" class="char-counter">0 znaków</div>
+                    <small id="description-counter" class="char-counter">0 znaków</small>
                 </div>
                 
                 <div class="form-group">

@@ -13,31 +13,39 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Sprawdzenie, czy parametr wyszukiwania (q) został przekazany i nie jest pusty
-if (!isset($_GET['q']) || empty($_GET['q'])) {
-    echo json_encode([]);
-    exit;
+// Get the search query parameter, trim whitespace. Default to empty string if not set.
+$search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
+
+if ($search_query === '') {
+    // If the search query is empty, fetch a default list of distributions
+    // Ordered by name, limited to 20 results as an example
+    $sql = "SELECT id, name, description, logo_path, website 
+            FROM distributions 
+            ORDER BY name ASC 
+            LIMIT 20";
+} else {
+    // If there is a search query, proceed with the existing search logic
+    $escaped_search_query = $conn->real_escape_string($search_query);
+
+    // Zapytanie SQL do wyszukiwania w bazie danych (w nazwie, opisie)
+    // Sortowanie wyników: najpierw te, gdzie fraza pasuje do początku nazwy, 
+    // potem do dowolnej części nazwy, następnie do opisu.
+    // Ograniczenie liczby wyników do 10.
+    $sql = "SELECT id, name, description, logo_path, website 
+            FROM distributions 
+            WHERE 
+                name LIKE '%$escaped_search_query%' OR 
+                description LIKE '%$escaped_search_query%'
+            ORDER BY 
+            CASE 
+                WHEN name LIKE '$escaped_search_query%' THEN 1
+                WHEN name LIKE '%$escaped_search_query%' THEN 2
+                WHEN description LIKE '%$escaped_search_query%' THEN 3
+                ELSE 4
+            END, 
+            name ASC
+            LIMIT 10";
 }
-
-// Pobranie i oczyszczenie (zabezpieczenie przed SQL injection) frazy wyszukiwania
-$search = $conn->real_escape_string($_GET['q']);
-
-// Zapytanie SQL do wyszukiwania w bazie danych (w nazwie, opisie)
-// Sortowanie wyników: najpierw te, gdzie fraza pasuje do początku nazwy, 
-// potem do dowolnej części nazwy, następnie do opisu.
-// Ograniczenie liczby wyników do 10.
-$sql = "SELECT * FROM distributions WHERE 
-        name LIKE '%$search%' OR 
-        description LIKE '%$search%'
-        ORDER BY 
-        CASE 
-            WHEN name LIKE '$search%' THEN 1
-            WHEN name LIKE '%$search%' THEN 2
-            WHEN description LIKE '%$search%' THEN 3
-            ELSE 4
-        END, 
-        name ASC
-        LIMIT 10";
 
 $result = $conn->query($sql);
 

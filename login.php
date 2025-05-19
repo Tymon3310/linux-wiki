@@ -93,6 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 if ($conn->query($insert_sql)) {
                     $success = "Rejestracja przebiegła pomyślnie! Możesz się teraz zalogować.";
+                    // Map $success to $message so include/messages.php will display it
+                    $message = $success;
                 } else {
                     $error = "Wystąpił błąd podczas rejestracji: " . $conn->error;
                 }
@@ -117,7 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script type="module" src="js/script.js"></script>
 </head>
 <body>
-    <!-- Added class="login-register-page" -->
     <div class="container login-register-page">
         <header>
             <h1>Logowanie / Rejestracja</h1>
@@ -147,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="password"><i class="fas fa-lock"></i> Hasło</label>
                     <input type="password" id="password" name="password" required>
+                    <small id="password-counter" class="char-counter">0 znaków</small>
                 </div>
                 
                 <button type="submit" name="login" class="btn-primary">
@@ -169,14 +171,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="reg-password"><i class="fas fa-lock"></i> Hasło</label>
                     <input type="password" id="reg-password" name="password" required>
-                    <small>Minimum 6 znaków</small>
+                    <small id="reg-password-counter" class="char-counter">0 znaków</small>
+                    <small>, Minimum 6 znaków</small>
                 </div>
                 
                 <div class="form-group">
                     <label for="confirm-password"><i class="fas fa-lock"></i> Potwierdź hasło</label>
                     <input type="password" id="confirm-password" name="confirm_password" required>
+                    <small id="confirm-password-counter" class="char-counter">0 znaków</small>
                 </div>
-                
+
                 <button type="submit" name="register" class="btn-primary">
                     <i class="fas fa-user-plus"></i> Utwórz konto
                 </button>

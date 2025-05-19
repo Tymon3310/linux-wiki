@@ -47,6 +47,35 @@ export function initializeCharacterCounters() {
     }
 
     // Licznik dla pola komentarza
+    // Licznik dla pola hasła logowania
+    const loginPasswordInput = document.getElementById('password');
+    const loginPasswordCounter = document.getElementById('password-counter');
+    if (loginPasswordInput && loginPasswordCounter) {
+        loginPasswordCounter.textContent = `${loginPasswordInput.value.length} znaków`;
+        loginPasswordInput.addEventListener('input', () => {
+            loginPasswordCounter.textContent = `${loginPasswordInput.value.length} znaków`;
+        });
+    }
+
+    // Licznik dla pola hasła rejestracji
+    const regPasswordInput = document.getElementById('reg-password');
+    const regPasswordCounter = document.getElementById('reg-password-counter');
+    if (regPasswordInput && regPasswordCounter) {
+        regPasswordCounter.textContent = `${regPasswordInput.value.length} znaków`;
+        regPasswordInput.addEventListener('input', () => {
+            regPasswordCounter.textContent = `${regPasswordInput.value.length} znaków`;
+        });
+    }
+
+    // Licznik dla pola potwierdzenia hasła rejestracji
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const confirmPasswordCounter = document.getElementById('confirm-password-counter');
+    if (confirmPasswordInput && confirmPasswordCounter) {
+        confirmPasswordCounter.textContent = `${confirmPasswordInput.value.length} znaków`;
+        confirmPasswordInput.addEventListener('input', () => {
+            confirmPasswordCounter.textContent = `${confirmPasswordInput.value.length} znaków`;
+        });
+    }
     const commentTextarea = document.getElementById('comment');
     const commentCounter = document.getElementById('comment-counter');
     if (commentTextarea && commentCounter) {

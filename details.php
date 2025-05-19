@@ -168,7 +168,7 @@ $distro = $result->fetch_assoc();
                         <div class="form-group">
                             <label for="comment"><i class="fas fa-pen"></i> Komentarz</label>
                         <textarea id="comment" name="comment" rows="4" placeholder="Twój komentarz..." required></textarea>
-                        <div id="comment-counter" class="char-counter">0 znaków</div>
+                        <small id="comment-counter" class="char-counter">0 znaków</small>
                         </div>
                         <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Dodaj komentarz</button>
                     </form>

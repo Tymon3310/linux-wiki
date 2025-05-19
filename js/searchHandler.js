@@ -2,6 +2,8 @@
 
 import { getUrlParameter } from './utils.js';
 
+let initialResultsHTML = ''; // Zmienna do przechowywania początkowego HTML wyników
+
 // Funkcja do "oczyszczania" tekstu przed wstawieniem go do HTML
 // Zapobiega to atakom XSS (Cross-Site Scripting)
 function escapeHTML(str) {
@@ -20,27 +22,21 @@ function performSearch() {
     const resultsDiv = document.getElementById('results');
     if (!resultsDiv) return; // Jak nie ma gdzie wyświetlić wyników, to też nic nie robimy
 
-    // Jeśli pole wyszukiwania jest puste, czyścimy wyniki i URL
+    // Jeśli pole wyszukiwania jest puste, przywróć początkowy HTML i zaktualizuj URL
     if (searchTerm === '') {
-        resultsDiv.innerHTML = ''; // Wyczyść poprzednie wyniki
-        // Zaktualizuj URL, usuwając parametr 'q'
+        resultsDiv.innerHTML = initialResultsHTML; // Przywróć oryginalną zawartość
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.delete('q');
-        window.history.pushState({}, '', newUrl); // Zmień URL bez przeładowania strony
-        // Można by tu przywrócić domyślną listę, ale na razie samo czyszczenie wystarczy
-        return;
+        window.history.pushState({}, '', newUrl);
+        return; // Zakończ funkcję, nie wykonuj fetch
     }
 
     // Pokaż animację ładowania tylko, gdy coś faktycznie szukamy
-    resultsDiv.innerHTML = '<div class="loading">Szukam dystrybucji... <i class="fas fa-spinner fa-spin"></i></div>';
-
-    // Zaktualizuj URL strony, dodając parametr wyszukiwania (?q=...)
-    // Dzięki temu można skopiować link z wynikami wyszukiwania
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.set('q', searchTerm);
-    window.history.pushState({}, '', newUrl);
+    resultsDiv.innerHTML = '<div class="loading">Ładuję... <i class="fas fa-spinner fa-spin"></i></div>';
 
     // Wyślij zapytanie do serwera (do pliku search.php)
+    // encodeURIComponent(searchTerm) będzie pustym stringiem jeśli searchTerm jest pusty,
+    // co jest prawidłowe dla search.php, aby zwrócić domyślną listę.
     fetch(`search.php?q=${encodeURIComponent(searchTerm)}`)
         .then(response => {
             // Sprawdź, czy serwer odpowiedział poprawnie (status 200 OK)
@@ -50,59 +46,66 @@ function performSearch() {
             return response.json(); // Przekształć odpowiedź z JSON na obiekt JavaScript
         })
         .then(data => {
-            // Mamy dane! Najpierw wyczyść komunikat "Szukam..."
+            // Mamy dane! Najpierw wyczyść komunikat "Ładuję..."
             resultsDiv.innerHTML = '';
 
             // Sprawdź, czy serwer znalazł cokolwiek
             if (data.length === 0) {
-                // Nic nie znaleziono :( Pokaż odpowiedni komunikat
-                // Sprawdź, czy użytkownik jest zalogowany (korzystając ze zmiennej globalnej)
-                const isUserLoggedIn = typeof window.isUserLoggedIn !== 'undefined' ? window.isUserLoggedIn : false;
-                if (isUserLoggedIn) {
-                    // Zalogowany? Zaproponuj dodanie nowej dystrybucji
-                    resultsDiv.innerHTML = `
-                        <div class="no-results">
-                            <p><i class="fas fa-ghost"></i> Ups! Nie znaleźliśmy nic pasującego do "${escapeHTML(searchTerm)}".</p>
-                            <p>Może chcesz dodać tę dystrybucję do naszej bazy?</p>
-                            <button id="add-missing-distro" class="btn"><i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję</button>
-                        </div>
-                    `;
-
-                    // Dodaj obsługę kliknięcia przycisku "Dodaj nową dystrybucję"
-                    const addMissingButton = document.getElementById('add-missing-distro');
-                    if (addMissingButton) {
-                        addMissingButton.addEventListener('click', function () {
-                            const addFormContainer = document.getElementById('add-form-container');
-                            const nameInput = document.getElementById('name');
-
-                            if (addFormContainer && nameInput) {
-                                nameInput.value = searchTerm; // Wypełnij pole nazwy tym, czego szukał użytkownik
-                                addFormContainer.style.display = 'block'; // Pokaż formularz dodawania
-                                addFormContainer.scrollIntoView({ behavior: 'smooth' }); // Przewiń do formularza
-
-                                // Ustaw fokus na polu opisu, żeby od razu można było pisać
-                                const descriptionInput = document.getElementById('description');
-                                if (descriptionInput) descriptionInput.focus();
-                            } else {
-                                console.error("Nie znaleziono kontenera formularza dodawania lub pola nazwy.");
-                                // W ostateczności można by przekierować na osobną stronę dodawania
-                                // window.location.href = `add_distro.php?name=${encodeURIComponent(searchTerm)}`;
-                            }
-                        });
-                    }
+                if (searchTerm === '') {
+                    // Jeśli searchTerm był pusty i nic nie wróciło (co nie powinno się zdarzyć z obecnym backendem)
+                    resultsDiv.innerHTML = '<div class="no-results"><p><i class="fas fa-info-circle"></i> Brak dystrybucji do wyświetlenia.</p></div>';
                 } else {
-                    // Niezalogowany? Poinformuj, że trzeba się zalogować, żeby dodawać
-                    resultsDiv.innerHTML = `
-                        <div class="no-results">
-                            <p><i class="fas fa-search-minus"></i> Nie znaleźliśmy nic pasującego do "${escapeHTML(searchTerm)}".</p>
-                            <p>Zaloguj się, aby móc dodawać nowe dystrybucje.</p>
-                            <a href="login.php" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Zaloguj się</a>
-                        </div>
-                    `;
+                    // Nic nie znaleziono dla konkretnego zapytania :( Pokaż odpowiedni komunikat
+                    const isUserLoggedIn = typeof window.isUserLoggedIn !== 'undefined' ? window.isUserLoggedIn : false;
+                    if (isUserLoggedIn) {
+                        // Zalogowany? Zaproponuj dodanie nowej dystrybucji
+                        resultsDiv.innerHTML = `
+                            <div class="no-results">
+                                <p><i class="fas fa-ghost"></i> Ups! Nie znaleźliśmy nic pasującego do "${escapeHTML(searchTerm)}".</p>
+                                <p>Może chcesz dodać tę dystrybucję do naszej bazy?</p>
+                                <button id="add-missing-distro" class="btn"><i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję</button>
+                            </div>
+                        `;
+
+                        // Dodaj obsługę kliknięcia przycisku "Dodaj nową dystrybucję"
+                        const addMissingButton = document.getElementById('add-missing-distro');
+                        if (addMissingButton) {
+                            addMissingButton.addEventListener('click', function () {
+                                const addFormContainer = document.getElementById('add-form-container');
+                                const nameInput = document.getElementById('name');
+
+                                if (addFormContainer && nameInput) {
+                                    nameInput.value = searchTerm; // Wypełnij pole nazwy tym, czego szukał użytkownik
+                                    addFormContainer.style.display = 'block'; // Pokaż formularz dodawania
+                                    addFormContainer.scrollIntoView({ behavior: 'smooth' }); // Przewiń do formularza
+
+                                    // Ustaw fokus na polu opisu, żeby od razu można było pisać
+                                    const descriptionInput = document.getElementById('description');
+                                    if (descriptionInput) descriptionInput.focus();
+                                } else {
+                                    console.error("Nie znaleziono kontenera formularza dodawania lub pola nazwy.");
+                                }
+                            });
+                        }
+                    } else {
+                        // Niezalogowany? Poinformuj, że trzeba się zalogować, żeby dodawać
+                        resultsDiv.innerHTML = `
+                            <div class="no-results">
+                                <p><i class="fas fa-search-minus"></i> Nie znaleźliśmy nic pasującego do "${escapeHTML(searchTerm)}".</p>
+                                <p>Zaloguj się, aby móc dodawać nowe dystrybucje.</p>
+                                <a href="login.php" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Zaloguj się</a>
+                            </div>
+                        `;
+                    }
                 }
             } else {
                 // Coś znaleziono! Wygeneruj HTML z wynikami
-                let resultsHTML = `<h2 class="section-title">Wyniki wyszukiwania dla: "${escapeHTML(searchTerm)}"</h2>`;
+                let resultsHTML = '';
+                if (searchTerm === '') {
+                    resultsHTML = `<h2 class="section-title">Przeglądaj dystrybucje</h2>`; // Tytuł dla domyślnej listy
+                } else {
+                    resultsHTML = `<h2 class="section-title">Wyniki wyszukiwania dla: "${escapeHTML(searchTerm)}"</h2>`;
+                }
                 resultsHTML += '<div class="distro-grid search-results">'; // Użyj tej samej siatki co na stronie głównej
                 data.forEach(distro => {
                     // Upewnij się, że ścieżka do obrazka jest bezpieczna i użyj domyślnego, jeśli brakuje
@@ -110,22 +113,15 @@ function performSearch() {
                     const distroName = escapeHTML(distro.name);
                     const distroDesc = escapeHTML(distro.description);
                     // Skróć opis, żeby nie był za długi na karcie
-                    const shortDesc = distroDesc.length > 100 ? distroDesc.substring(0, 100) + '...' : distroDesc;
+                    const shortDesc = distroDesc.length > 150 ? distroDesc.substring(0, 150) + '...' : distroDesc;
 
                     resultsHTML += `
                         <div class="distro-card">
-                            <a href="details.php?id=${distro.id}" class="card-link">
-                                <div class="card-image-container">
-                                    <img src="${imagePath}" alt="Logo ${distroName}" class="distro-logo" loading="lazy">
-                                </div>
-                                <div class="card-content">
-                                    <h3>${distroName}</h3>
-                                    <p>${shortDesc}</p>
-                                </div>
-                            </a>
-                            <div class="card-actions">
+                            <img src="${imagePath}" alt="${distroName}" class="distro-logo">
+                            <h3>${distroName}</h3>
+                            <p>${shortDesc}</p>
+                            <div class="card-buttons">
                                 <a href="details.php?id=${distro.id}" class="btn-details"><i class="fas fa-info-circle"></i> Szczegóły</a>
-                                <!-- Można by dodać przycisk edycji dla zalogowanych adminów -->
                             </div>
                         </div>
                     `;
@@ -144,9 +140,15 @@ function performSearch() {
 // Funkcja inicjalizująca wyszukiwarkę
 export function initializeSearch() {
     const searchInput = document.getElementById('search-input');
-    const searchButton = document.getElementById('search-button'); // Zakładając, że masz przycisk
+    const searchButton = document.getElementById('search-button');
+    const resultsDiv = document.getElementById('results');
 
-    if (!searchInput) return; // Jak nie ma pola, to nic nie inicjalizujemy
+    if (!searchInput || !resultsDiv) return; // Jak nie ma pola lub sekcji wyników, to nic nie inicjalizujemy
+
+    // Zapisz początkową zawartość sekcji wyników, jeśli jeszcze nie została zapisana
+    if (initialResultsHTML === '') {
+        initialResultsHTML = resultsDiv.innerHTML;
+    }
 
     // Wypełnij pole wyszukiwania wartością z URL, jeśli jest (np. po odświeżeniu strony z ?q=...)
     const initialQuery = getUrlParameter('q');

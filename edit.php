@@ -89,7 +89,7 @@ if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
                 <div class="form-group">
                     <label for="description"><i class="fas fa-align-left"></i> Opis (min. 30 znaków):</label>
                     <textarea name="description" id="description" rows="5" required><?php echo htmlspecialchars($distro['description']); ?></textarea>
-                    <div id="description-counter" class="char-counter">0 znaków</div>
+                    <small id="description-counter" class="char-counter">0 znaków</small>
                 </div>
                 
                 <div class="form-group">
