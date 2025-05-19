@@ -11,6 +11,7 @@ import { initializeYoutubeEmbed } from './youtubeEmbed.js';
 import { initUnsavedChangesGuard } from './unsavedChangesGuard.js';
 import { loadBadAppleFramesConsole, playBadAppleConsole, stopBadAppleConsole } from './easterEgg.js';
 import { initializeUiAnimations } from './uiAnimations.js';
+import { initializeAdmin, toggleEdit, filterUsers } from './admin.js';
 
 // Czekamy, aż cała strona (DOM) się załaduje
 document.addEventListener('DOMContentLoaded', function () {
@@ -54,8 +55,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inicjalizujemy Easter Egg
     loadBadAppleFramesConsole(); // Ładujemy klatki przy starcie
-    // Udostępniamy funkcje globalnie dla dostępu z konsoli, jeśli jest to nadal pożądane, lub zarządzamy dostępem inaczej
 
+    initializeAdmin(); // Inicjalizujemy panel admina
 
     console.log("Wszystkie skrypty startowe wykonane.");
+    // Funkcja globalna do rozwijania panelu edycji admina
+
 });
