@@ -1,14 +1,160 @@
 /* css/utilities.css */
 /* Pomocnicze klasy CSS */
 
+/* Spacing utilities */
+.m-0 { margin: 0 !important; }
+.m-1 { margin: var(--space-xs) !important; }
+.m-2 { margin: var(--space-sm) !important; }
+.m-3 { margin: var(--space-md) !important; }
+.m-4 { margin: var(--space-lg) !important; }
+.m-5 { margin: var(--space-xl) !important; }
+
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: var(--space-xs) !important; }
+.mt-2 { margin-top: var(--space-sm) !important; }
+.mt-3 { margin-top: var(--space-md) !important; }
+.mt-4 { margin-top: var(--space-lg) !important; }
+.mt-5 { margin-top: var(--space-xl) !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: var(--space-xs) !important; }
+.mb-2 { margin-bottom: var(--space-sm) !important; }
+.mb-3 { margin-bottom: var(--space-md) !important; }
+.mb-4 { margin-bottom: var(--space-lg) !important; }
+.mb-5 { margin-bottom: var(--space-xl) !important; }
+
+.ml-0 { margin-left: 0 !important; }
+.ml-1 { margin-left: var(--space-xs) !important; }
+.ml-2 { margin-left: var(--space-sm) !important; }
+.ml-3 { margin-left: var(--space-md) !important; }
+.ml-4 { margin-left: var(--space-lg) !important; }
+.ml-5 { margin-left: var(--space-xl) !important; }
+
+.mr-0 { margin-right: 0 !important; }
+.mr-1 { margin-right: var(--space-xs) !important; }
+.mr-2 { margin-right: var(--space-sm) !important; }
+.mr-3 { margin-right: var(--space-md) !important; }
+.mr-4 { margin-right: var(--space-lg) !important; }
+.mr-5 { margin-right: var(--space-xl) !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: var(--space-xs) !important; }
+.p-2 { padding: var(--space-sm) !important; }
+.p-3 { padding: var(--space-md) !important; }
+.p-4 { padding: var(--space-lg) !important; }
+.p-5 { padding: var(--space-xl) !important; }
+
+/* Text utilities */
+.text-center { text-align: center !important; }
+.text-left { text-align: left !important; }
+.text-right { text-align: right !important; }
+
+.text-primary { color: var(--primary-color) !important; }
+.text-secondary { color: var(--secondary-color) !important; }
+.text-accent { color: var(--accent-color) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-error { color: var(--error-color) !important; }
+.text-success { color: var(--success-color) !important; }
+.text-warning { color: var(--warning-color) !important; }
+.text-info { color: var(--info-color) !important; }
+
+.text-bold { font-weight: 700 !important; }
+.text-semibold { font-weight: 600 !important; }
+.text-medium { font-weight: 500 !important; }
+.text-normal { font-weight: 400 !important; }
+.text-light { font-weight: 300 !important; }
+
+.text-small { font-size: 0.85rem !important; }
+.text-large { font-size: 1.2rem !important; }
+.text-xlarge { font-size: 1.5rem !important; }
+
+/* Display utilities */
+.d-none { display: none !important; }
+.d-block { display: block !important; }
+.d-flex { display: flex !important; }
+.d-inline { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-inline-flex { display: inline-flex !important; }
+
+/* Flex utilities */
+.flex-row { flex-direction: row !important; }
+.flex-column { flex-direction: column !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+.flex-grow-1 { flex-grow: 1 !important; }
+.flex-shrink-0 { flex-shrink: 0 !important; }
+
+.justify-content-start { justify-content: flex-start !important; }
+.justify-content-end { justify-content: flex-end !important; }
+.justify-content-center { justify-content: center !important; }
+.justify-content-between { justify-content: space-between !important; }
+.justify-content-around { justify-content: space-around !important; }
+
+.align-items-start { align-items: flex-start !important; }
+.align-items-end { align-items: flex-end !important; }
+.align-items-center { align-items: center !important; }
+.align-items-baseline { align-items: baseline !important; }
+.align-items-stretch { align-items: stretch !important; }
+
+/* Border utilities */
+.border { border: 1px solid var(--border-color) !important; }
+.border-top { border-top: 1px solid var(--border-color) !important; }
+.border-bottom { border-bottom: 1px solid var(--border-color) !important; }
+.border-left { border-left: 1px solid var(--border-color) !important; }
+.border-right { border-right: 1px solid var(--border-color) !important; }
+.border-0 { border: 0 !important; }
+
+.rounded { border-radius: var(--border-radius) !important; }
+.rounded-circle { border-radius: 50% !important; }
+.rounded-0 { border-radius: 0 !important; }
+
+/* Background utilities */
+.bg-primary { background-color: var(--primary-color) !important; }
+.bg-secondary { background-color: var(--secondary-color) !important; }
+.bg-card { background-color: var(--card-bg) !important; }
+.bg-main { background-color: var(--bg-color) !important; }
+.bg-success { background-color: var(--success-color) !important; }
+.bg-error { background-color: var(--error-color) !important; }
+.bg-warning { background-color: var(--warning-color) !important; }
+.bg-info { background-color: var(--info-color) !important; }
+
+/* Visibility utilities */
+.visible { visibility: visible !important; }
+.invisible { visibility: hidden !important; }
+
+/* Position utilities */
+.position-relative { position: relative !important; }
+.position-absolute { position: absolute !important; }
+.position-fixed { position: fixed !important; }
+.position-sticky { position: sticky !important; }
+
+/* Width and height utilities */
+.w-100 { width: 100% !important; }
+.w-75 { width: 75% !important; }
+.w-50 { width: 50% !important; }
+.w-25 { width: 25% !important; }
+.w-auto { width: auto !important; }
+
+.h-100 { height: 100% !important; }
+.h-75 { height: 75% !important; }
+.h-50 { height: 50% !important; }
+.h-25 { height: 25% !important; }
+.h-auto { height: auto !important; }
+
+/* Shadow utilities */
+.shadow { box-shadow: var(--shadow) !important; }
+.shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important; }
+.shadow-lg { box-shadow: var(--shadow-hover) !important; }
+.shadow-none { box-shadow: none !important; }
+
 /* Kontener akcji */
 .actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: var(--space-md);
     justify-content: center;
     text-align: center;
-    margin: 2rem 0;
+    margin: var(--space-xl) 0;
 }
 
 .actions .btn,
@@ -21,37 +167,56 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    text-align: center;
     margin: 0;
 }
 
 /* Tytuł sekcji */
 .section-title {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-lg);
     color: var(--primary-color);
+    position: relative;
+    padding-bottom: var(--space-sm);
+    display: inline-block;
 }
 
-/* Przycisk powrotu na górę */
+/* Admin tag */
+.admin-tag {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-left: var(--space-xs);
+}
+
+/* Back to top button */
 .back-to-top {
-    display: none;
     position: fixed;
-    bottom: 20px;
     right: 20px;
-    z-index: 99;
-    border: none;
-    outline: none;
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    cursor: pointer;
-    padding: 15px 20px;
+    bottom: 20px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    font-size: 18px;
-    border: 1px solid var(--border-color);
+    background-color: var(--primary-color);
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s var(--transition-timing);
+    z-index: 999;
+    border: none;
     box-shadow: var(--shadow);
-    transition: all 0.3s;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s, background-color 0.3s;
 }
 
 .back-to-top:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--primary-hover);
     transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
 }

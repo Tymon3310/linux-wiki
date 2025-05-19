@@ -111,20 +111,24 @@ if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-upload"></i> Zmień logo (opcjonalnie, maks. 2MB):</label>
-                    <div class="file-upload-container">
-                        <!-- Oryginalny input zostaje, ale będzie ukryty przez JavaScript -->
-                        <input type="file" name="logo" id="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml">
+                    <label for="logo"><i class="fas fa-upload"></i> Zmień logo (opcjonalnie, maks. 2MB):</label>
+                    <div class="file-upload-container" data-existing-logo="<?php echo htmlspecialchars($distro['logo_path']); ?>" data-existing-logo-name="<?php echo htmlspecialchars($distro['logo_path'] ? basename($distro['logo_path']) : ''); ?>">
+                        <!-- Wskazówka i podgląd zostaną dodane dynamicznie przez JS -->
+                        <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml" style="display: none;">
+                        <button type="button" class="file-select-button">Wybierz plik</button>
                     </div>
                     <small><i class="fas fa-info-circle"></i> Akceptowane formaty: JPG, JPEG, PNG, GIF, SVG</small>
                     <small><i class="fas fa-hand-pointer"></i> Możesz przeciągnąć i upuścić plik lub wkleić obraz ze schowka (Ctrl+V)</small>
+                    <!-- Komunikaty o błędach będą dodawane tutaj przez JS -->
                 </div>
                 
                 <div class="form-buttons">
-                    <button type="submit" name="update" class="btn-primary"><i class="fas fa-save"></i> Zapisz zmiany</button>
-                    <button type="button" id="delete-button" class="btn-delete" data-id="<?php echo $distro['id']; ?>" 
-                        data-name="<?php echo htmlspecialchars($distro['name']); ?>"><i class="fas fa-trash-alt"></i> Usuń</button>
                     <a href="details.php?id=<?php echo $distro['id']; ?>" class="btn-secondary"><i class="fas fa-times"></i> Anuluj</a>
+                    <div class="action-group">
+                        <button type="submit" name="update" class="btn-primary"><i class="fas fa-save"></i> Zapisz zmiany</button>
+                        <button type="button" id="delete-button" class="btn-delete" data-id="<?php echo $distro['id']; ?>" 
+                            data-name="<?php echo htmlspecialchars($distro['name']); ?>"><i class="fas fa-trash-alt"></i> Usuń</button>
+                    </div>
                 </div>
             </form>
         </div>

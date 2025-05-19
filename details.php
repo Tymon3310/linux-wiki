@@ -120,7 +120,7 @@ $distro = $result->fetch_assoc();
             <?php endif; ?>
             
             <div class="actions">
-                <a href="edit.php?id=<?php echo $distro['id']; ?>" class="btn btn-edit"><i class="fas fa-edit"></i> Edytuj</a>
+                <a href="edit.php?id=<?php echo $distro['id']; ?>" class="btn-edit"><i class="fas fa-edit"></i> Edytuj</a>
             </div>
             <br>
 

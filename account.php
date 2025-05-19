@@ -317,10 +317,10 @@ if ($userId == 1) {
                                         <?php if ($u['id'] != 1): ?>
                                             <form method="post" class="admin-form">
                                                 <input type="hidden" name="target_user_id" value="<?php echo $u['id']; ?>">
-                                                <button type="submit" name="remove_user" class="btn-delete" title="Usuń użytkownika" onclick="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')"><i class="fas fa-trash"></i></button>
+                                                <button type="submit" name="remove_user" class="action-buttons btn-delete" title="Usuń użytkownika" onclick="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')"><i class="fas fa-trash"></i></button>
                                             </form>
                                         <?php endif; ?>
-                                        <button type="button" class="btn-edit" onclick="toggleEdit(<?php echo $u['id']; ?>)" title="Edytuj użytkownika"><i class="fas fa-edit"></i></button>
+                                        <button type="button" class="action-buttons btn-edit" onclick="toggleEdit(<?php echo $u['id']; ?>)" title="Edytuj użytkownika"><i class="fas fa-edit"></i></button>
                                     </div>
                                     <div id="edit-<?php echo $u['id']; ?>" class="admin-edit-panel" style="display:none;">
                                         <form method="post" action="" class="admin-form">

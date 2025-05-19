@@ -1,10 +1,11 @@
 /* filepath: /opt/lampp/htdocs/css/animations.css */
 /* Klatki Kluczowe Animacji */
 
+/* Fade in animation */
 @keyframes fade-in {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-5px);
     }
 
     to {
@@ -13,6 +14,7 @@
     }
 }
 
+/* Modal appear animation */
 @keyframes modal-appear {
     from {
         opacity: 0;
@@ -23,4 +25,155 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Scale in animation */
+@keyframes scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Fade in from bottom animation */
+@keyframes fade-in-bottom {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Bounce animation */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-20px);
+    }
+    60% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Shimmer animation for loading states */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Animation utility classes */
+.fade-in {
+    animation: fade-in 0.3s ease forwards;
+    opacity: 0;
+}
+
+.scale-in {
+    animation: scale-in 0.4s ease-out forwards;
+    opacity: 0;
+}
+
+.fade-in-bottom {
+    animation: fade-in-bottom 0.5s ease forwards;
+    opacity: 0;
+}
+
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+.bounce {
+    animation: bounce 2s ease infinite;
+}
+
+/* Staggered animations for lists */
+.stagger-fade-in > * {
+    opacity: 0;
+}
+
+.stagger-fade-in > *:nth-child(1) {
+    animation: fade-in 0.5s ease forwards 0.1s;
+}
+
+.stagger-fade-in > *:nth-child(2) {
+    animation: fade-in 0.5s ease forwards 0.2s;
+}
+
+.stagger-fade-in > *:nth-child(3) {
+    animation: fade-in 0.5s ease forwards 0.3s;
+}
+
+.stagger-fade-in > *:nth-child(4) {
+    animation: fade-in 0.5s ease forwards 0.4s;
+}
+
+.stagger-fade-in > *:nth-child(5) {
+    animation: fade-in 0.5s ease forwards 0.5s;
+}
+
+.stagger-fade-in > *:nth-child(n+6) {
+    animation: fade-in 0.5s ease forwards 0.6s;
+}
+
+/* Fast simultaneous card animation */
+.search-results .distro-card {
+    animation: fast-appear 0.2s ease-out forwards;
+}
+
+@keyframes fast-appear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading animation */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        transparent
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
 }

@@ -3,34 +3,110 @@
 
 .distro-card {
     background-color: var(--card-bg);
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     box-shadow: var(--shadow);
     overflow: hidden;
     transition: transform 0.3s, box-shadow 0.3s;
     display: flex;
     flex-direction: column;
+    position: relative;
+    height: 100%;
+    padding: var(--space-md);
+    border: 1px solid var(--border-color);
 }
 
 .distro-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-hover);
+}
+
+.distro-card:before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.distro-card:hover:before {
+    opacity: 1;
 }
 
 .distro-logo {
     width: 100px;
     height: 100px;
     object-fit: contain;
-    margin: 1rem auto;
+    margin: 0 auto var(--space-md);
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.distro-card:hover .distro-logo {
+    transform: scale(1.05);
 }
 
 .distro-card h3 {
     text-align: center;
-    padding: 0 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-sm);
+    font-size: 1.3rem;
+    color: var(--primary-color);
 }
 
 .distro-card p {
-    padding: 0 1rem 1rem;
     flex-grow: 1;
-    color: #666;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: var(--space-md);
+}
+
+/* Card grid layout */
+.search-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
+}
+
+/* Empty state styling */
+.no-distros, 
+.not-found {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: var(--space-xl);
+    text-align: center;
+    margin: var(--space-lg) 0;
+    border: 1px dashed var(--border-color);
+}
+
+.no-distros p, 
+.not-found p {
+    margin-bottom: var(--space-md);
+    color: var(--text-muted);
+}
+
+/* Card badges for additional info */
+.distro-badge {
+    display: inline-block;
+    background-color: var(--bg-secondary);
+    color: var(--text-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Featured card styling */
+.distro-card.featured {
+    border: 1px solid var(--primary-color);
+}
+
+.distro-card.featured:before {
+    opacity: 1;
 }

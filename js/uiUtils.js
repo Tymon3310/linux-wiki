@@ -10,6 +10,11 @@ export function initializeShowAddFormButton(isUserLoggedIn) {
     const addFormContainer = document.getElementById('add-form-container'); // Kontener z formularzem dodawania
     const loginPrompt = document.getElementById('login-prompt'); // Komunikat "zaloguj się, aby dodać"
 
+    // Hide the form container by default
+    if (addFormContainer) {
+        addFormContainer.style.display = 'none';
+    }
+
     showAddFormButtons.forEach(button => {
         button.addEventListener('click', function () {
             if (isUserLoggedIn && addFormContainer) {

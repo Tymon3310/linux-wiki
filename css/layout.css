@@ -4,23 +4,48 @@
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: var(--space-xl);
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+main {
+    flex: 1;
+}
+
+section {
+    margin-bottom: var(--space-xxl);
+}
+
+/* Header styling */
 header {
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-xl);
     border-bottom: 2px solid var(--border-color);
-    padding-bottom: 1rem;
+    padding-bottom: var(--space-md);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
-/* Przycisk w nagłówku o spójnej wysokości */
+header h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin-bottom: 0;
+    background: linear-gradient(120deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Header buttons with improved styling */
 .header-buttons {
     display: flex;
-    gap: 10px;
+    gap: var(--space-sm);
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .header-buttons .btn-primary,
@@ -32,12 +57,54 @@ header {
     justify-content: center;
     box-sizing: border-box;
     margin: 0;
+    white-space: nowrap;
 }
 
+/* Section headings with subtle accent */
+.section-title {
+    position: relative;
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-sm);
+    display: inline-block;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Removed underline effect */
+
+/* Footer styling */
 footer {
     text-align: center;
-    margin-top: 2rem;
-    padding: 1rem 0;
+    margin-top: auto;
+    padding: var(--space-lg) 0;
     border-top: 1px solid var(--border-color);
-    color: #777;
+    color: var(--text-muted);
+}
+
+/* Grid layout for content sections */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-lg);
+}
+
+/* Two-column layout for applicable pages */
+.two-column-layout {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: var(--space-xl);
+}
+
+@media (max-width: 768px) {
+    .two-column-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .container {
+        padding: var(--space-md);
+    }
+    
+    .header-buttons {
+        margin-top: var(--space-md);
+    }
 }

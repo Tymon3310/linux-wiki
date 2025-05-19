@@ -65,7 +65,7 @@ session_start();
                 include 'include/db_config.php'; // Dołączenie konfiguracji bazy danych
                 
                 $search = $conn->real_escape_string($_POST['search_distro']);
-                $sql = "SELECT * a WHERE name LIKE '%$search%'"; // Zapytanie SQL do wyszukiwania dystrybucji
+                $sql = "SELECT * FROM distributions WHERE name LIKE '%$search%'"; // Poprawione zapytanie SQL
                 $result = $conn->query($sql);
                 
                 if ($result && $result->num_rows > 0) {
@@ -90,7 +90,7 @@ session_start();
                     // Wyświetlenie przycisku "Dodaj nową dystrybucję" tylko dla zalogowanych użytkowników
                     if (isset($_SESSION['user_id'])) {
                         echo "<p>Czy chcesz dodać tę dystrybucję?</p>";
-                        echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
+                        echo "<button id='show-add-form' class='btn-primary'><i class='fas fa-plus-circle'></i> Dodaj nową dystrybucję</button>";
                     } else {
                         echo "<p>Zaloguj się, aby móc dodać nową dystrybucję.</p>";
                         echo "<a href='login.php' class='btn-primary'><i class='fas fa-sign-in-alt'></i> Zaloguj się</a>";
@@ -108,7 +108,7 @@ session_start();
                 $result = $conn->query($sql);
                 
                 if ($result && $result->num_rows > 0) {
-                    echo '<h2 class="section-title">Wszystkie dystrybucje Linux</h2>';
+                    echo '<h2 class="section-title fade-in">Wszystkie dystrybucje Linux</h2>';
                     echo '<div class="search-results">';
                     while ($row = $result->fetch_assoc()) {
                         ?>
@@ -178,7 +178,6 @@ session_start();
                         <!-- Wskazówka i podgląd zostaną dodane dynamicznie przez JS -->
                         <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml" style="display: none;">
                         <button type="button" class="file-select-button">Wybierz plik</button>
-                        <div class="image-preview-container"></div> <!-- Kontener na podgląd -->
                     </div>
                     <small><i class="fas fa-info-circle"></i> Akceptowane formaty: JPG, JPEG, PNG, GIF, SVG</small>
                     <small><i class="fas fa-hand-pointer"></i> Możesz przeciągnąć i upuścić plik lub wkleić obraz ze schowka (Ctrl+V)</small>

@@ -3,10 +3,11 @@
 /* Formularze */
 .add-form-section {
     background-color: var(--card-bg);
-    padding: 2rem;
-    border-radius: 8px;
+    padding: var(--space-xl);
+    border-radius: var(--border-radius);
     box-shadow: var(--shadow);
-    margin-top: 1.5rem;
+    margin-top: var(--space-lg);
+    border: 1px solid var(--border-color);
 }
 
 #add-form {
@@ -15,301 +16,332 @@
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-lg);
+    position: relative;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
+    margin-bottom: var(--space-sm);
+    font-weight: 600;
+    color: var(--text-color);
+    transition: all 0.3s;
+}
+
+.form-group label i {
+    color: var(--primary-color);
+    margin-right: var(--space-xs);
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
-    padding: 10px;
+    padding: 12px 16px;
     border: 2px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     font-size: 1rem;
     font-family: inherit;
-    transition: border-color 0.3s;
+    background-color: var(--bg-secondary);
+    color: var(--text-color);
+    transition: all 0.3s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) inset;
+}
+
+.form-group input:hover,
+.form-group textarea:hover,
+.form-group select:hover {
+    border-color: rgba(58, 134, 255, 0.5);
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group select:focus {
     border-color: var(--primary-color);
     outline: none;
+    box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.25);
+}
+
+.form-group small {
+    display: block;
+    margin-top: var(--space-xs);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.form-group .char-counter {
+    position: absolute;
+    right: 0;
+    bottom: -22px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
 }
 
 .error-field {
     border-color: var(--error-color) !important;
 }
 
-/* Zapobieganie ponownemu przesyłaniu formularza */
-form {
-    position: relative;
+.error-message {
+    color: var(--error-color);
+    font-size: 0.85rem;
+    margin-top: var(--space-xs);
+    display: block;
 }
 
-/* Strefa upuszczania dla przesyłania metodą przeciągnij i upuść */
+/* File upload styling */
+.file-upload-container,
 .drop-zone {
     border: 2px dashed var(--border-color);
-    border-radius: 4px;
-    padding: 25px;
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
     text-align: center;
     cursor: pointer;
     transition: all 0.3s;
-    background-color: rgba(255, 255, 255, 0.1);
-    margin-bottom: 10px;
+    background-color: var(--bg-secondary);
+    margin-bottom: var(--space-md);
     position: relative;
-
-    /* Poprawki specyficzne dla Firefox */
-    display: block;
-    min-height: 150px;
-    z-index: 10;
-    user-select: none;
-}
-
-.drop-zone-prompt {
-    color: #666;
-}
-
-.drop-zone-prompt p {
-    margin: 5px 0;
-}
-
-.drop-zone-highlight {
-    border-color: var(--primary-color);
-    background-color: rgba(43, 112, 182, 0.05);
-}
-
-.drop-zone.has-file {
-    border-style: solid;
-    background-color: rgba(46, 204, 113, 0.05);
-    border-color: var(--success-color);
-}
-
-.logo-preview {
-    margin-top: 10px;
-    text-align: center;
-    background-color: #757373;
-    border: 1px dashed #ccc;
-    padding: 10px;
-    border-radius: 4px;
     min-height: 120px;
-    display: flex;
+    display: block;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-.logo-preview.has-preview {
-    border-style: solid;
+.file-upload-container:hover,
+.drop-zone:hover {
     border-color: var(--primary-color);
-}
-
-.logo-preview img {
-    max-width: 100%;
-    max-height: 200px;
-    margin-bottom: 8px;
-}
-
-.preview-filename {
-    font-size: 0.9rem;
-    color: #666;
-    margin-top: 5px;
-}
-
-.upload-error {
-    background-color: rgba(231, 76, 60, 0.1);
-    border-left: 4px solid var(--error-color);
-    color: var(--error-color);
-    padding: 8px 12px;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    border-radius: 3px;
-    transition: opacity 0.5s;
-}
-
-/* Stylizacja przeciągnij i upuść */
-.file-upload-container,
-.form-group:has(#logo) {
-    position: relative;
-    padding: 20px;
-    border: 2px dashed #ccc;
-    border-radius: 5px;
-    text-align: center;
-    transition: all 0.3s ease;
-    margin-bottom: 20px;
-    cursor: pointer;
+    background-color: rgba(var(--primary-color-rgb), 0.05);
 }
 
 .file-upload-container.dragover,
-.form-group:has(#logo).dragover {
-    border-color: #4CAF50;
-    background-color: rgba(76, 175, 80, 0.1);
+.drop-zone.dragover {
+    border-color: var(--primary-color);
+    background-color: rgba(var(--primary-color-rgb), 0.05);
+    transform: scale(1.02);
 }
 
-.drop-zone-visual {
-    padding: 20px 0;
+.file-upload-container.has-file,
+.drop-zone.has-file {
+    border-style: solid;
+    border-color: var(--success-color);
+    background-color: rgba(var(--success-color-rgb), 0.05);
 }
 
-.drop-message {
-    color: #666;
-    font-size: 16px;
+.file-select-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+    margin: var(--space-sm) 0;
 }
+
+.file-select-button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.file-upload-hint {
+    color: var(--text-muted);
+    margin: var(--space-sm) 0;
+    font-size: 0.9rem;
+}
+
+.upload-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-md);
+    width: 100%;
+    color: var(--text-muted);
+}
+
+.upload-hint i {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+    color: var(--primary-color);
+    opacity: 0.7;
+}
+
+.upload-hint span {
+    font-size: 1rem;
+    margin-bottom: var(--space-xs);
+}
+
 
 .image-preview {
-    margin-top: 15px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 4px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    margin-top: var(--space-md);
+    width: 100%;
+    text-align: center;
 }
 
-.image-preview img {
-    max-width: 100%;
-    max-height: 200px;
-    display: block;
-    margin: 0 auto;
-}
-
-.preview-header {
+.image-preview .preview-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #555;
+    margin-bottom: var(--space-sm);
 }
 
-.remove-preview {
-    background: #ff5252;
+.image-preview .filename {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    word-break: break-all;
+    max-width: 80%;
+}
+
+.image-preview .remove-preview {
+    background-color: var(--error-color);
     color: white;
     border: none;
     border-radius: 50%;
     width: 24px;
     height: 24px;
-    line-height: 24px;
-    text-align: center;
+    font-size: 1rem;
+    line-height: 1;
     cursor: pointer;
-    font-size: 16px;
-    padding: 0;
-}
-
-/* Ukryj rzeczywiste pole input pliku */
-input[type="file"]#logo {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
-}
-
-.auth-container {
-    max-width: 500px;
-    margin: 2rem auto;
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    padding: 2rem;
-}
-
-.auth-tabs {
+    transition: all 0.3s;
     display: flex;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+    justify-content: center;
 }
 
-.auth-tab {
-    flex: 1;
-    text-align: center;
-    padding: 1rem;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
+.image-preview .remove-preview:hover {
+    background-color: rgba(var(--error-color-rgb), 0.8);
+    transform: scale(1.1);
 }
 
-.auth-tab.active {
-    color: var(--primary-color);
-    border-bottom: 3px solid var(--primary-color);
+.image-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: var(--border-radius);
+    object-fit: contain;
 }
 
-.auth-form {
-    display: none;
+.file-name {
+    margin-top: var(--space-sm);
+    font-size: 0.9rem;
+    color: var(--text-muted);
 }
 
-.auth-form.active {
-    display: block;
-    animation: fadeIn 0.5s ease;
+/* Upload error message styling */
+.upload-error {
+    background-color: rgba(var(--error-color-rgb), 0.1);
+    border-left: 3px solid var(--error-color);
+    padding: var(--space-sm) var(--space-md);
+    margin: var(--space-sm) 0;
+    color: var(--error-color);
+    text-align: left;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    width: 100%;
+    transition: opacity 0.5s;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.upload-error i {
+    margin-right: var(--space-xs);
 }
 
-.current-logo img {
-    max-height: 100px;
+.upload-error p {
+    margin: 0;
 }
 
-#add-form-container,
-#login-prompt {
-    display: none;
-}
-
-.login-register-page .auth-container {
-    max-width: 500px;
-    margin: 2rem auto;
-    background-color: var(--card-bg);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    padding: 2rem;
-}
-
-.login-register-page .auth-tabs {
+.firefox-warning {
+    color: var(--warning-color);
+    font-size: 0.85rem;
+    margin-top: var(--space-xs);
     display: flex;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid var(--border-color);
+    align-items: center;
+    gap: var(--space-xs);
 }
 
-.login-register-page .auth-tab {
+.firefox-warning i {
+    font-size: 1rem !important;
+    margin-bottom: 0 !important;
+    color: var(--warning-color) !important;
+}
+
+/* Form row for multiple inputs on one line */
+.form-row {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.form-row .form-group {
     flex: 1;
-    text-align: center;
-    padding: 1rem;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    margin-bottom: 0;
 }
 
-.login-register-page .auth-tab.active {
-    color: var(--primary-color);
-    border-bottom: 3px solid var(--primary-color);
-}
-
-.login-register-page .auth-form {
-    display: none;
-}
-
-.login-register-page .auth-form.active {
-    display: block;
-    animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
+/* Responsive forms */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: var(--space-md);
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .form-row .form-group {
+        margin-bottom: var(--space-md);
+    }
+
+    .add-form-section {
+        padding: var(--space-md);
+    }
+}
+
+/* Form buttons styling */
+.form-buttons {
+    display: flex;
+    align-items: center;
+    margin-top: var(--space-xl);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+/* Right-side buttons group */
+.form-buttons .btn-primary,
+.form-buttons .btn-delete,
+.form-buttons button[type="submit"] {
+    margin-left: auto;
+    min-width: 160px;
+}
+
+/* Left-side button */
+.form-buttons .btn-secondary {
+    margin-right: auto;
+    order: -1;
+    min-width: 120px;
+}
+
+/* Group for right-side buttons */
+.form-buttons .action-group {
+    display: flex;
+    gap: var(--space-md);
+}
+
+@media (max-width: 768px) {
+    .form-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .form-buttons .action-group {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+    
+    .form-buttons .btn-primary,
+    .form-buttons .btn-delete,
+    .form-buttons .btn-secondary,
+    .form-buttons button[type="submit"] {
+        margin: 0;
+        order: 0;
     }
 }

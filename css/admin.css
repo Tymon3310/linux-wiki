@@ -1,13 +1,18 @@
-.btn-edit i {
+.admin-table .btn-edit i,
+.action-buttons .btn-edit i {
     display: block;
     width: 100%;
     text-align: center;
 }
 
-.btn-delete:focus, 
-.btn-edit:focus,
-.btn-delete:active,
-.btn-edit:active {
+.admin-table .btn-delete:focus, 
+.admin-table .btn-edit:focus,
+.admin-table .btn-delete:active,
+.admin-table .btn-edit:active,
+.action-buttons .btn-delete:focus, 
+.action-buttons .btn-edit:focus,
+.action-buttons .btn-delete:active,
+.action-buttons .btn-edit:active {
     outline: none;
 }
 /* Styles for admin panel */
@@ -146,8 +151,10 @@ button.btn-primary {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.btn-delete, 
-.btn-edit {
+.admin-table .btn-delete, 
+.admin-table .btn-edit,
+.action-buttons .btn-delete,
+.action-buttons .btn-edit {
     padding: 0;
     border: none;
     border-radius: 8px;
@@ -164,25 +171,31 @@ button.btn-primary {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.btn-delete {
+.admin-table .btn-delete,
+.action-buttons .btn-delete {
     background-color: #e74c3c;
     color: white;
 }
 
-.btn-edit {
+.admin-table .btn-edit,
+.action-buttons .btn-edit {
     background-color: #3498db;
     color: white;
 }
 
-.btn-delete:hover, 
-.btn-edit:hover {
+.admin-table .btn-delete:hover, 
+.admin-table .btn-edit:hover,
+.action-buttons .btn-delete:hover, 
+.action-buttons .btn-edit:hover {
     opacity: 0.9;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.btn-delete:active, 
-.btn-edit:active {
+.admin-table .btn-delete:active, 
+.admin-table .btn-edit:active,
+.action-buttons .btn-delete:active, 
+.action-buttons .btn-edit:active {
     transform: translateY(1px);
 }
 
