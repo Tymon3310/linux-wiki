@@ -1,11 +1,11 @@
 <?php
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczęcie sesji w celu uwierzytelniania użytkowników
 session_start();
 
-include 'include/db_config.php';
-include __DIR__ . '/include/validation_utils.php'; // Dodanie walidacji emoji
+include 'include/db_config.php'; // Dołączenie konfiguracji bazy danych
+include __DIR__ . '/include/validation_utils.php'; // Dołączenie funkcji walidacji emoji
 
-// Sprawdzenie czy użytkownik jest już zalogowany
+// Sprawdzenie, czy użytkownik jest już zalogowany
 if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
@@ -14,7 +14,7 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 $success = '';
 
-// Przetwarzanie formularzy logowania i rejestracji
+// Przetwarzanie danych z formularzy logowania i rejestracji
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obsługa formularza logowania
     if (isset($_POST['login'])) {
@@ -24,12 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Walidacja danych wejściowych
         if (empty($username) || empty($password)) {
             $error = "Proszę wypełnić wszystkie pola.";
-        } elseif (contains_emoji($username)) { // Walidacja emoji dla nazwy użytkownika przy logowaniu
+        } elseif (contains_emoji($username)) { // Walidacja emoji dla nazwy użytkownika podczas logowania
             $error = "Nazwa użytkownika nie może zawierać emoji.";
-        } elseif (contains_emoji($password)) { // Walidacja emoji dla hasła przy logowaniu
+        } elseif (contains_emoji($password)) { // Walidacja emoji dla hasła podczas logowania
             $error = "Hasło nie może zawierać emoji.";
         } else {
-            // Sprawdzenie danych uwierzytelniających
+            // Sprawdzenie danych uwierzytelniających w bazie danych
             $sql = "SELECT id, username, password FROM accounts WHERE username = '$username'";
             $result = $conn->query($sql);
             
@@ -38,11 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // Weryfikacja hasła
                 if (password_verify($password, $user['password'])) {
-                    // Ustawienie zmiennych sesji
+                    // Ustawienie zmiennych sesji po pomyślnym zalogowaniu
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
                     
-                    // Przekierowanie do strony źródłowej lub strony głównej
+                    // Przekierowanie na stronę, z której użytkownik przyszedł, lub na stronę główną
                     $redirect = isset($_GET['redirect']) ? $_GET['redirect'] : 'index.php';
                     header("Location: $redirect");
                     exit;
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Proszę wypełnić wszystkie pola.";
         } elseif (contains_emoji($username)) { // Walidacja emoji dla nazwy użytkownika
             $error = "Nazwa użytkownika nie może zawierać emoji.";
-        } elseif (contains_emoji($email)) { // Walidacja emoji dla emaila
+        } elseif (contains_emoji($email)) { // Walidacja emoji dla adresu email
             $error = "Adres email nie może zawierać emoji.";
         } elseif (contains_emoji($password)) { // Walidacja emoji dla hasła
             $error = "Hasło nie może zawierać emoji.";
@@ -78,21 +78,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = "Podany adres email jest nieprawidłowy.";
         } else {
-            // Sprawdzenie czy nazwa użytkownika lub email już istnieją
+            // Sprawdzenie, czy nazwa użytkownika lub adres email już istnieją w bazie danych
             $check_sql = "SELECT id FROM accounts WHERE username = '$username' OR email = '$email'";
             $check_result = $conn->query($check_sql);
             
             if ($check_result && $check_result->num_rows > 0) {
                 $error = "Nazwa użytkownika lub adres email jest już zajęty.";
             } else {
-                // Hashowanie hasła
+                // Haszowanie hasła przed zapisaniem do bazy danych
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
-                // Dodanie nowego użytkownika
+                // Dodanie nowego użytkownika do bazy danych
                 $insert_sql = "INSERT INTO accounts (username, email, password) VALUES ('$username', '$email', '$hashed_password')";
                 
                 if ($conn->query($insert_sql)) {
                     $success = "Rejestracja przebiegła pomyślnie! Możesz się teraz zalogować.";
+                    // Map $success to $message so include/messages.php will display it
+                    $message = $success;
                 } else {
                     $error = "Wystąpił błąd podczas rejestracji: " . $conn->error;
                 }
@@ -114,9 +116,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script type="module" src="js/script.js"></script>
 </head>
 <body>
-    <!-- Added class="login-register-page" -->
     <div class="container login-register-page">
         <header>
             <h1>Logowanie / Rejestracja</h1>
@@ -131,13 +133,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php include 'include/messages.php'; ?>
 
         <div class="auth-container">
-            <div class="auth-tabs">
-                <div class="auth-tab active" data-tab="login">Logowanie</div>
-                <div class="auth-tab" data-tab="register">Rejestracja</div>
+            <div class="tab-container auth-tabs">
+                <div class="tab auth-tab active" data-tab="login">Logowanie</div>
+                <div class="tab auth-tab" data-tab="register">Rejestracja</div>
             </div>
 
             <!-- Formularz logowania -->
-            <form method="post" id="login-form" class="auth-form active">
+            <form method="post" id="login" class="tab-content auth-form active">
                 <div class="form-group">
                     <label for="username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
                     <input type="text" id="username" name="username" required>
@@ -146,6 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="password"><i class="fas fa-lock"></i> Hasło</label>
                     <input type="password" id="password" name="password" required>
+                    <small id="password-counter" class="char-counter">0 znaków</small>
                 </div>
                 
                 <button type="submit" name="login" class="btn-primary">
@@ -154,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
             
             <!-- Formularz rejestracji -->
-            <form method="post" id="register-form" class="auth-form">
+            <form method="post" id="register" class="tab-content auth-form">
                 <div class="form-group">
                     <label for="reg-username"><i class="fas fa-user"></i> Nazwa użytkownika</label>
                     <input type="text" id="reg-username" name="username" required>
@@ -168,41 +171,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="reg-password"><i class="fas fa-lock"></i> Hasło</label>
                     <input type="password" id="reg-password" name="password" required>
-                    <small>Minimum 6 znaków</small>
+                    <small id="reg-password-counter" class="char-counter">0 znaków</small>
+                    <small>, Minimum 6 znaków</small>
                 </div>
                 
                 <div class="form-group">
                     <label for="confirm-password"><i class="fas fa-lock"></i> Potwierdź hasło</label>
                     <input type="password" id="confirm-password" name="confirm_password" required>
+                    <small id="confirm-password-counter" class="char-counter">0 znaków</small>
                 </div>
-                
+
                 <button type="submit" name="register" class="btn-primary">
                     <i class="fas fa-user-plus"></i> Utwórz konto
                 </button>
             </form>
         </div>
     </div>
-    
-    <script src="js/script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabs = document.querySelectorAll('.auth-tab');
-            const forms = document.querySelectorAll('.auth-form');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const target = this.getAttribute('data-tab');
-                    
-                    // Usunięcie klasy aktywnej ze wszystkich zakładek i formularzy
-                    tabs.forEach(t => t.classList.remove('active'));
-                    forms.forEach(f => f.classList.remove('active'));
-                    
-                    // Dodanie klasy aktywnej do bieżącej zakładki i formularza
-                    this.classList.add('active');
-                    document.getElementById(target + '-form').classList.add('active');
-                });
-            });
-        });
-    </script>
 </body>
 </html>

@@ -1,55 +1,66 @@
 <?php
-// Endpoint do wyszukiwania dystrybucji Linux poprzez AJAX
+// Endpoint API do wyszukiwania dystrybucji Linuksa za pomocą AJAX
 
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczęcie sesji w celu uwierzytelniania użytkowników (jeśli potrzebne w przyszłości)
 session_start();
 
-// Dołączenie konfiguracji bazy danych
+// Dołączenie pliku konfiguracyjnego bazy danych
 include 'include/db_config.php';
 
-// Włączenie logowania błędów do diagnostyki
+// Włączenie wyświetlania błędów PHP w celach diagnostycznych
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Sprawdzenie czy parametr wyszukiwania został podany
-if (!isset($_GET['q']) || empty($_GET['q'])) {
-    echo json_encode([]);
-    exit;
+// Get the search query parameter, trim whitespace. Default to empty string if not set.
+$search_query = isset($_GET['q']) ? trim($_GET['q']) : '';
+
+if ($search_query === '') {
+    // If the search query is empty, fetch a default list of distributions
+    // Ordered by name, limited to 20 results as an example
+    $sql = "SELECT id, name, description, logo_path, website 
+            FROM distributions 
+            ORDER BY name ASC 
+            LIMIT 20";
+} else {
+    // If there is a search query, proceed with the existing search logic
+    $escaped_search_query = $conn->real_escape_string($search_query);
+
+    // Zapytanie SQL do wyszukiwania w bazie danych (w nazwie, opisie)
+    // Sortowanie wyników: najpierw te, gdzie fraza pasuje do początku nazwy, 
+    // potem do dowolnej części nazwy, następnie do opisu.
+    // Ograniczenie liczby wyników do 10.
+    $sql = "SELECT id, name, description, logo_path, website 
+            FROM distributions 
+            WHERE 
+                name LIKE '%$escaped_search_query%' OR 
+                description LIKE '%$escaped_search_query%'
+            ORDER BY 
+            CASE 
+                WHEN name LIKE '$escaped_search_query%' THEN 1
+                WHEN name LIKE '%$escaped_search_query%' THEN 2
+                WHEN description LIKE '%$escaped_search_query%' THEN 3
+                ELSE 4
+            END, 
+            name ASC
+            LIMIT 10";
 }
-
-// Pobranie i oczyszczenie frazy wyszukiwania
-$search = $conn->real_escape_string($_GET['q']);
-
-// Wyszukiwanie w bazie danych (nazwa, opis i wyszukiwanie rozszerzone)
-$sql = "SELECT * FROM distributions WHERE 
-        name LIKE '%$search%' OR 
-        description LIKE '%$search%'
-        ORDER BY 
-        CASE 
-            WHEN name LIKE '$search%' THEN 1
-            WHEN name LIKE '%$search%' THEN 2
-            WHEN description LIKE '%$search%' THEN 3
-            ELSE 4
-        END, 
-        name ASC
-        LIMIT 10";
 
 $result = $conn->query($sql);
 
-// Przygotowanie odpowiedzi
+// Przygotowanie tablicy na wyniki
 $distributions = [];
 
 if ($result && $result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        // Naprawa ścieżki do logo, jeśli potrzebna
+        // Poprawienie ścieżki do logo, jeśli jest to konieczne (dodanie prefiksu "img/")
         $logo_path = $row['logo_path'];
         if (!preg_match('/^img\//', $logo_path)) {
             $logo_path = 'img/' . $logo_path;
         }
         
-        // Dodanie każdej dystrybucji do tablicy wyników
+        // Dodanie każdej znalezionej dystrybucji do tablicy wyników
         $distributions[] = [
             'id' => $row['id'],
             'name' => htmlspecialchars($row['name']),
@@ -60,7 +71,7 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Zwrócenie odpowiedzi w formacie JSON
+// Zwrócenie wyników w formacie JSON
 echo json_encode($distributions);
 
 // Zamknięcie połączenia z bazą danych

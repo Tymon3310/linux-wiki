@@ -53,6 +53,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
         }
     }
 }
+// Admin: obsługa zarządzania użytkownikami
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $userId == 1) {
+    // Usuń użytkownika
+    if (isset($_POST['remove_user'])) {
+        $tid = (int)$_POST['target_user_id'];
+        if ($tid !== 1) {
+            $conn->query("DELETE FROM accounts WHERE id = $tid");
+            $message = "Użytkownik został usunięty.";
+        } else {
+            $error = "Nie można usunąć administratora.";
+        }
+    }
+    // Zmień nazwę użytkownika
+    if (isset($_POST['change_username_admin'])) {
+        $tid = (int)$_POST['target_user_id'];
+        $new_username = trim($_POST['new_username']);
+        
+        // Sprawdź, czy użytkownik o takiej nazwie już istnieje
+        $check_sql = "SELECT id FROM accounts WHERE username = ?";
+        $check_stmt = $conn->prepare($check_sql);
+        $check_stmt->bind_param("s", $new_username);
+        $check_stmt->execute();
+        $check_result = $check_stmt->get_result();
+        
+        if ($check_result->num_rows > 0 && $check_result->fetch_assoc()['id'] != $tid) {
+            $error = "Użytkownik o takiej nazwie już istnieje.";
+        } else {
+            if ($new_username !== '' && !contains_emoji($new_username)) {
+                // Używamy prepared statement dla bezpieczeństwa
+                $update_sql = "UPDATE accounts SET username = ? WHERE id = ?";
+                $update_stmt = $conn->prepare($update_sql);
+                $update_stmt->bind_param("si", $new_username, $tid);
+                
+                if ($update_stmt->execute()) {
+                    $message = "Nazwa użytkownika została zmieniona.";
+                } else {
+                    $error = "Wystąpił błąd podczas zmiany nazwy: " . $conn->error;
+                }
+            } else {
+                $error = "Nieprawidłowa nazwa użytkownika.";
+            }
+        }
+    }
+    // Zmień hasło użytkownika
+    if (isset($_POST['change_password_admin'])) {
+        $tid = (int)$_POST['target_user_id'];
+        $np = $_POST['new_password_admin'];
+        $cp = $_POST['confirm_password_admin'];
+        
+        if (empty($np) || empty($cp)) {
+            $error = "Pola hasła nie mogą być puste.";
+        } 
+        elseif ($np !== $cp) {
+            $error = "Hasła nie są identyczne.";
+        } 
+        elseif (strlen($np) < 6) {
+            $error = "Hasło musi mieć co najmniej 6 znaków.";
+        } 
+        elseif (contains_emoji($np)) {
+            $error = "Hasło nie może zawierać emoji.";
+        } 
+        else {
+            // Używamy prepared statement dla bezpieczeństwa
+            $hp = password_hash($np, PASSWORD_DEFAULT);
+            $update_sql = "UPDATE accounts SET password = ? WHERE id = ?";
+            $update_stmt = $conn->prepare($update_sql);
+            $update_stmt->bind_param("si", $hp, $tid);
+            
+            if ($update_stmt->execute()) {
+                $message = "Hasło użytkownika zostało zmienione.";
+            } else {
+                $error = "Wystąpił błąd podczas zmiany hasła: " . $conn->error;
+            }
+        }
+    }
+}
 
 // Pobieramy listę dystrybucji dodanych przez użytkownika
 $distros_sql = "SELECT id, name, date_added FROM distributions WHERE added_by = $userId ORDER BY date_added DESC";
@@ -63,6 +139,11 @@ $comments_sql = "SELECT c.id, c.comment, c.date_added, d.id as distro_id, d.name
                 FROM comments c JOIN distributions d ON c.distro_id = d.id 
                 WHERE c.user_id = $userId ORDER BY c.date_added DESC";
 $comments_result = $conn->query($comments_sql);
+// Jeśli administrator, pobieramy listę wszystkich użytkowników
+if ($userId == 1) {
+    $users_sql = "SELECT id, username, email, date_added FROM accounts";
+    $users_result = $conn->query($users_sql);
+}
 ?>
 
 <!DOCTYPE html>
@@ -77,6 +158,7 @@ $comments_result = $conn->query($comments_sql);
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="favicon.png">
+    <script type="module" src="js/script.js"></script>
 </head>
 <body>
     <div class="container">
@@ -100,6 +182,9 @@ $comments_result = $conn->query($comments_sql);
                 <div class="tab active" data-tab="profile">Profil</div>
                 <div class="tab" data-tab="password">Zmień hasło</div>
                 <div class="tab" data-tab="activity">Moja aktywność</div>
+                <?php if ($userId == 1): // Dodaj zakładkę admina ?>
+                <div class="tab" data-tab="admin">Zarządzaj użytkownikami</div>
+                <?php endif; ?>
             </div>
             
             <!-- Profil -->
@@ -197,8 +282,79 @@ $comments_result = $conn->query($comments_sql);
                     <?php else: ?>
                         <div class="empty-message">Nie dodałeś jeszcze żadnych komentarzy.</div>
                     <?php endif; ?>
+                </div> <!-- #comments -->
+            </div> <!-- #activity -->
+            <?php if ($userId == 1): // Panel admina ?>
+            <div id="admin" class="account-section tab-content">
+                <h3><i class="fas fa-users-cog"></i> Zarządzanie użytkownikami</h3>
+                
+                <div class="admin-controls">
+                    <div class="admin-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="user-search" placeholder="Szukaj użytkowników..." oninput="filterUsers()">
+                    </div>
                 </div>
+                <?php if ($users_result && $users_result->num_rows > 0): ?>
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> ID</th>
+                                <th><i class="fas fa-user"></i> Użytkownik</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
+                                <th><i class="fas fa-calendar-alt"></i> Data</th>
+                                <th><i class="fas fa-tools"></i> Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php while ($u = $users_result->fetch_assoc()): ?>
+                            <tr>
+                                <td><?php echo $u['id']; ?></td>
+                                <td><?php echo htmlspecialchars($u['username']); ?><?php if ($u['id']==1) echo ' <span class="admin-tag">Admin</span>'; ?></td>
+                                <td><?php echo htmlspecialchars($u['email']); ?></td>
+                                <td><?php echo date('d.m.Y', strtotime($u['date_added'])); ?></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <?php if ($u['id'] != 1): ?>
+                                            <form method="post" class="admin-form">
+                                                <input type="hidden" name="target_user_id" value="<?php echo $u['id']; ?>">
+                                                <button type="submit" name="remove_user" class="action-buttons btn-delete" title="Usuń użytkownika" onclick="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        <?php endif; ?>
+                                        <button type="button" class="action-buttons btn-edit" onclick="toggleEdit(<?php echo $u['id']; ?>)" title="Edytuj użytkownika"><i class="fas fa-edit"></i></button>
+                                    </div>
+                                    <div id="edit-<?php echo $u['id']; ?>" class="admin-edit-panel" style="display:none;">
+                                        <form method="post" action="" class="admin-form">
+                                            <input type="hidden" name="target_user_id" value="<?php echo $u['id']; ?>">
+                                            <div class="form-input">
+                                                <input type="text" name="new_username" placeholder="Nowa nazwa użytkownika" required minlength="3">
+                                            </div>
+                                            <button type="submit" name="change_username_admin" class="btn-primary">
+                                                <i class="fas fa-check"></i> Zmień nazwę
+                                            </button>
+                                        </form>
+                                        <form method="post" action="" class="admin-form">
+                                            <input type="hidden" name="target_user_id" value="<?php echo $u['id']; ?>">
+                                            <div class="form-input">
+                                                <input type="password" name="new_password_admin" placeholder="Nowe hasło" required>
+                                            </div>
+                                            <div class="form-input">
+                                                <input type="password" name="confirm_password_admin" placeholder="Potwierdź hasło" required>
+                                            </div>
+                                            <button type="submit" name="change_password_admin" class="btn-primary">
+                                                <i class="fas fa-key"></i> Zmień hasło
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <div class="empty-message">Brak użytkowników.</div>
+                <?php endif; ?>
             </div>
+            <?php endif; ?>
         </main>
         
         <footer>
@@ -206,35 +362,6 @@ $comments_result = $conn->query($comments_sql);
         </footer>
     </div>
     
-    <script src="js/script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Obsługa zakładek
-            const handleTabs = (tabContainerSelector, tabContentSelector) => {
-                const tabs = document.querySelectorAll(tabContainerSelector + ' .tab');
-                const contents = document.querySelectorAll(tabContentSelector);
-                
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', function() {
-                        const tabId = this.getAttribute('data-tab');
-                        
-                        // Usuwanie klasy aktywnej
-                        tabs.forEach(t => t.classList.remove('active'));
-                        contents.forEach(c => c.classList.remove('active'));
-                        
-                        // Dodawanie klasy aktywnej
-                        this.classList.add('active');
-                        document.getElementById(tabId).classList.add('active');
-                    });
-                });
-            };
-            
-            // Inicjalizacja głównych zakładek
-            handleTabs('.account-container > .tab-container', '.account-section.tab-content');
-            
-            // Inicjalizacja podzakładek aktywności
-            handleTabs('#activity > .tab-container', '#activity .tab-content');
-        });
-    </script>
+    
 </body>
 </html>

@@ -1,8 +1,8 @@
 <?php
-// Rozpoczęcie sesji, aby uzyskać informacje o użytkowniku
+// Rozpoczęcie sesji w celu uzyskania informacji o użytkowniku
 session_start();
 
-// Sprawdzenie czy użytkownik jest zalogowany
+// Sprawdzenie, czy użytkownik jest zalogowany
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit;
@@ -14,20 +14,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
     $id = (int)$_POST['id'];
     $user_id = $_SESSION['user_id'];
     
-    // Sprawdzenie czy użytkownik ma uprawnienia do usunięcia tej dystrybucji
+    // Sprawdzenie, czy użytkownik ma uprawnienia do usunięcia tej dystrybucji
     $check_sql = "SELECT added_by, logo_path FROM distributions WHERE id = $id";
     $check_result = $conn->query($check_sql);
     
     if ($check_result && $check_result->num_rows > 0) {
         $distro = $check_result->fetch_assoc();
         
-        // Zezwól właścicielowi lub administratorowi (user_id 1) na usunięcie
+        // Zezwolenie na usunięcie właścicielowi lub administratorowi (user_id 1)
         if ($distro['added_by'] == $user_id || $user_id == 1) {
-            // Usuwanie pliku logo, jeśli istnieje
+            // Usunięcie pliku logo, jeśli istnieje
             if (!empty($distro['logo_path']) && file_exists('../' . $distro['logo_path'])) {
                 unlink('../' . $distro['logo_path']);
             }
-            // Usuwanie dystrybucji z bazy
+            // Usunięcie dystrybucji z bazy danych
             $sql = "DELETE FROM distributions WHERE id = $id";
             if ($conn->query($sql)) {
                 header("Location: ../index.php?status=success&message=" . urlencode("Dystrybucja została usunięta."));

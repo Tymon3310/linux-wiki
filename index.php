@@ -1,5 +1,5 @@
 <?php
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczęcie sesji w celu uwierzytelniania użytkowników
 session_start();
 ?>
 <!DOCTYPE html>
@@ -29,7 +29,7 @@ session_start();
                 </button>
                 
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <!-- Użytkownik jest zalogowany -->
+                    <!-- Użytkownik zalogowany -->
                     <button id="show-add-form" class="btn-primary">
                         <i class="fas fa-plus-circle"></i> Dodaj nową dystrybucję
                     </button>
@@ -40,7 +40,7 @@ session_start();
                         <i class="fas fa-sign-out-alt"></i> Wyloguj się
                     </a>
                 <?php else: ?>
-                    <!-- Użytkownik nie jest zalogowany -->
+                    <!-- Użytkownik niezalogowany -->
                     <a href="login.php" class="btn-primary">
                         <i class="fas fa-sign-in-alt"></i> Zaloguj się
                     </a>
@@ -49,7 +49,7 @@ session_start();
         </header>
         <?php include 'include/messages.php'; ?>
 
-        <!-- Wyszukiwanie dystrybucji -->
+        <!-- Sekcja wyszukiwania dystrybucji -->
         <div class="search-section">
             <h2>Znajdź dystrybucję Linux</h2>
             <form id="search-form" onsubmit="performSearch(); return false;">
@@ -62,10 +62,10 @@ session_start();
         <div id="results" class="results-section">
             <?php
             if (isset($_POST['search'])) {
-                include 'include/db_config.php';
+                include 'include/db_config.php'; // Dołączenie konfiguracji bazy danych
                 
                 $search = $conn->real_escape_string($_POST['search_distro']);
-                $sql = "SELECT * a WHERE name LIKE '%$search%'";
+                $sql = "SELECT * FROM distributions WHERE name LIKE '%$search%'"; // Poprawione zapytanie SQL
                 $result = $conn->query($sql);
                 
                 if ($result && $result->num_rows > 0) {
@@ -76,7 +76,9 @@ session_start();
                             <img src="<?php echo htmlspecialchars($row['logo_path']); ?>" alt="<?php echo htmlspecialchars($row['name']); ?>" class="distro-logo">
                             <h3><?php echo htmlspecialchars($row['name']); ?></h3>
                             <p><?php echo substr(htmlspecialchars($row['description']), 0, 150); echo (strlen($row['description']) > 150) ? '...' : ''; ?></p>
-                            <a href="details.php?id=<?php echo $row['id']; ?>" class="btn-details">Szczegóły</a>
+                            <div class="card-buttons">
+                                <a href="details.php?id=<?php echo $row['id']; ?>" class="btn-details"><i class="fas fa-info-circle"></i> Szczegóły</a>
+                            </div>
                         </div>
                         <?php
                     }
@@ -85,10 +87,10 @@ session_start();
                     echo "<div class='not-found'>";
                     echo "<p>Nie znaleziono dystrybucji \"" . htmlspecialchars($search) . "\" w naszej bazie danych.</p>";
                     
-                    // Pokaż przycisk "Dodaj nową dystrybucję" tylko zalogowanym użytkownikom
+                    // Wyświetlenie przycisku "Dodaj nową dystrybucję" tylko dla zalogowanych użytkowników
                     if (isset($_SESSION['user_id'])) {
                         echo "<p>Czy chcesz dodać tę dystrybucję?</p>";
-                        echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
+                        echo "<button id='show-add-form' class='btn-primary'><i class='fas fa-plus-circle'></i> Dodaj nową dystrybucję</button>";
                     } else {
                         echo "<p>Zaloguj się, aby móc dodać nową dystrybucję.</p>";
                         echo "<a href='login.php' class='btn-primary'><i class='fas fa-sign-in-alt'></i> Zaloguj się</a>";
@@ -106,7 +108,7 @@ session_start();
                 $result = $conn->query($sql);
                 
                 if ($result && $result->num_rows > 0) {
-                    echo '<h2 class="section-title">Wszystkie dystrybucje Linux</h2>';
+                    echo '<h2 class="section-title fade-in">Wszystkie dystrybucje Linux</h2>';
                     echo '<div class="search-results">';
                     while ($row = $result->fetch_assoc()) {
                         ?>
@@ -125,7 +127,7 @@ session_start();
                     echo "<div class='no-distros'>";
                     echo "<p>Brak dystrybucji w bazie danych.</p>";
                     
-                    // Pokaż przycisk "Dodaj nową dystrybucję" tylko zalogowanym użytkownikom
+                    // Wyświetlenie przycisku "Dodaj nową dystrybucję" tylko dla zalogowanych użytkowników
                     if (isset($_SESSION['user_id'])) {
                         echo "<button id='show-add-form'>Dodaj nową dystrybucję</button>";
                     } else {
@@ -156,7 +158,7 @@ session_start();
                 <div class="form-group">
                     <label for="description"><i class="fas fa-align-left"></i> Opis (min. 30 znaków):</label>
                     <textarea name="description" id="description" rows="5" required></textarea>
-                    <div id="description-counter" class="char-counter">0 znaków</div>
+                    <small id="description-counter" class="char-counter">0 znaków</small>
                 </div>
                 
                 <div class="form-group">
@@ -176,7 +178,6 @@ session_start();
                         <!-- Wskazówka i podgląd zostaną dodane dynamicznie przez JS -->
                         <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml" style="display: none;">
                         <button type="button" class="file-select-button">Wybierz plik</button>
-                        <div class="image-preview-container"></div> <!-- Kontener na podgląd -->
                     </div>
                     <small><i class="fas fa-info-circle"></i> Akceptowane formaty: JPG, JPEG, PNG, GIF, SVG</small>
                     <small><i class="fas fa-hand-pointer"></i> Możesz przeciągnąć i upuścić plik lub wkleić obraz ze schowka (Ctrl+V)</small>
@@ -197,48 +198,9 @@ session_start();
         <footer>
             <p>&copy; <?php echo date('Y'); ?> Tymon3310</p>
         </footer>
-        <button onclick="topFunction()" id="backToTop" class="back-to-top" title="Go to top">
+        <button id="backToTop" class="back-to-top" title="Przewiń do góry">
         <i class="fas fa-arrow-up"></i>
     </button>
     </div>
-    <script>
-        // Scroll animations
-        document.addEventListener('DOMContentLoaded', function() {
-            const fadeElements = document.querySelectorAll('.fade-in');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                    }
-                });
-            }, { threshold: 0.1 });
-            
-            fadeElements.forEach(element => {
-                observer.observe(element);
-            });
-            
-            // Back to top button functionality
-            const backToTopButton = document.getElementById('backToTop');
-            
-            window.onscroll = function() {
-                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                    backToTopButton.style.display = 'block';
-                } else {
-                    backToTopButton.style.display = 'none';
-                }
-            };
-        });
-
-        // Funkcja przewijania do góry strony
-       // Back to top button functionality
-    function topFunction() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    }
-        
-    </script>
 </body>
 </html>

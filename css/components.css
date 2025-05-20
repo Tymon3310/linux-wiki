@@ -1,42 +1,161 @@
 /* css/components.css */
 /* Różne Style Komponentów */
 
-.description-text {
-    line-height: 1.8;
-}
-
-/* Tekst */
+/* Text styling */
 h1,
 h2,
-h3 {
+h3,
+h4,
+h5,
+h6 {
     color: var(--primary-color);
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
     line-height: 1.2;
 }
 
 h1 {
-    font-size: 2.2rem;
-    text-align: center;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
     position: relative;
 }
 
-h1::after {
-    content: "";
-    display: block;
-    width: 100px;
-    height: 4px;
-    background: var(--secondary-color);
-    margin: 10px auto;
+h2 {
+    font-size: clamp(1.5rem, 3vw, 2rem);
 }
 
-/* Stylizacja tagu administratora */
-.admin-tag {
-    font-size: 0.85em;
-    font-weight: bold;
+h3 {
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+}
+
+.description-text {
+    line-height: 1.8;
     color: var(--text-color);
-    margin-left: 5px;
-    border: #000000 0px solid;
-    padding: 2px 5px;
-    border-radius: 4px;
+    font-size: 1.05rem;
+}
+
+/* Alert boxes */
+.alert {
+    padding: var(--space-md);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--space-md);
+    border-left: 4px solid transparent;
+}
+
+.alert-info {
+    background-color: rgba(17, 138, 178, 0.1);
+    border-left-color: var(--info-color);
+    color: var(--info-color);
+}
+
+.alert-success {
+    background-color: rgba(6, 214, 160, 0.1);
+    border-left-color: var(--success-color);
+    color: var(--success-color);
+}
+
+.alert-warning {
+    background-color: rgba(255, 209, 102, 0.1);
+    border-left-color: var(--warning-color);
+    color: var(--warning-color);
+}
+
+.alert-error {
+    background-color: rgba(239, 71, 111, 0.1);
+    border-left-color: var(--error-color);
+    color: var(--error-color);
+}
+
+/* Badge component */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 20px;
+    background-color: var(--bg-secondary);
+    color: var(--text-color);
+}
+
+.badge-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.badge-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.badge-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.badge-error {
     background-color: var(--error-color);
+    color: white;
+}
+
+/* Admin tag styling */
+.admin-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background-color: var(--accent-color);
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Avatar component */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Ripple effect for buttons */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-details,
+.btn-edit,
+.btn-delete {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
 }

@@ -1,50 +1,119 @@
-/* CSS Theme Module */
-/* Variables and theme definitions for light/dark modes */
+/* filepath: /opt/lampp/htdocs/css/theme.css */
+/* Moduł motywu CSS */
+/* Zmienne i definicje motywów dla trybu jasnego/ciemnego */
 :root {
+    /* Dark mode colors (default) */
     --primary-color: #2b70b6;
+    --primary-color-rgb: 43, 112, 182;
+    --primary-hover: #2463a0;
     --secondary-color: #f7a41d;
+    --secondary-color-rgb: 247, 164, 29;
+    --secondary-hover: #e59300;
+    --accent-color: #e74c3c;
+    --accent-color-rgb: 231, 76, 60;
+    
     --text-color: #ffffff;
+    --text-muted: #a0a0a0;
     --bg-color: #1b1818;
+    --bg-secondary: #252323;
     --card-bg: #0e0d0d;
+    
     --error-color: #e74c3c;
+    --error-color-rgb: 231, 76, 60;
+    --warning-color: #f39c12;
+    --warning-color-rgb: 243, 156, 18;
     --success-color: #2ecc71;
-    --border-color: #e0e0e0;
-    --shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    --success-color-rgb: 46, 204, 113;
+    --info-color: #3498db;
+    --info-color-rgb: 52, 152, 219;
+    
+    --border-color: #333333;
+    --border-radius: 8px;
+    --shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 4px 10px rgba(0, 0, 0, 0.4);
 
+    /* Light mode colors */
     --light-primary-color: #3498db;
+    --light-primary-color-rgb: 52, 152, 219;
+    --light-primary-hover: #2980b9;
     --light-secondary-color: #e67e22;
-    --light-bg-color: #ecf0f1;
+    --light-secondary-color-rgb: 230, 126, 34;
+    --light-secondary-hover: #d35400;
+    --light-accent-color: #e74c3c;
+    --light-accent-color-rgb: 231, 76, 60;
+    
     --light-text-color: #2c3e50;
+    --light-text-muted: #7f8c8d;
+    --light-bg-color: #ecf0f1;
+    --light-bg-secondary: #f5f5f5;
     --light-card-bg: #ffffff;
-    --light-border-color: #bdc3c7;
+    
     --light-error-color: #e74c3c;
+    --light-error-color-rgb: 231, 76, 60;
+    --light-warning-color: #f39c12;
+    --light-warning-color-rgb: 243, 156, 18;
     --light-success-color: #2ecc71;
+    --light-success-color-rgb: 46, 204, 113;
+    --light-info-color: #3498db;
+    --light-info-color-rgb: 52, 152, 219;
+    
+    --light-border-color: #dddddd;
     --light-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    --light-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
 
+    /* Spacing & Timing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-xxl: 3rem;
+    
     --transition-time: 0.3s;
+    --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Light theme overrides */
+/* Nadpisania dla motywu jasnego */
 .light-mode {
     --primary-color: var(--light-primary-color);
+    --primary-color-rgb: var(--light-primary-color-rgb);
+    --primary-hover: var(--light-primary-hover);
     --secondary-color: var(--light-secondary-color);
+    --secondary-color-rgb: var(--light-secondary-color-rgb);
+    --secondary-hover: var(--light-secondary-hover);
+    --accent-color: var(--light-accent-color);
+    --accent-color-rgb: var(--light-accent-color-rgb);
+    
     --text-color: var(--light-text-color);
+    --text-muted: var(--light-text-muted);
     --bg-color: var(--light-bg-color);
+    --bg-secondary: var(--light-bg-secondary);
     --card-bg: var(--light-card-bg);
-    --border-color: var(--light-border-color);
+    
     --error-color: var(--light-error-color);
+    --error-color-rgb: var(--light-error-color-rgb);
+    --warning-color: var(--light-warning-color);
+    --warning-color-rgb: var(--light-warning-color-rgb);
     --success-color: var(--light-success-color);
+    --success-color-rgb: var(--light-success-color-rgb);
+    --info-color: var(--light-info-color);
+    --info-color-rgb: var(--light-info-color-rgb);
+    
+    --border-color: var(--light-border-color);
     --shadow: var(--light-shadow);
-    background-color: var(--light-bg-color);
-    color: var(--light-text-color);
+    --shadow-hover: var(--light-shadow-hover);
 }
 
-/* Smooth transitions during theme switch */
-.theme-transitioning * {
-    transition: background-color var(--transition-time), color var(--transition-time), border-color var(--transition-time);
+/* Płynne przejścia podczas zmiany motywu */
+body, body * {
+    transition: 
+        background-color var(--transition-time) var(--transition-timing),
+        color var(--transition-time) var(--transition-timing),
+        border-color var(--transition-time) var(--transition-timing),
+        box-shadow var(--transition-time) var(--transition-timing);
 }
 
-/* Light mode element overrides */
+/* Nadpisania elementów w trybie jasnym */
 body.light-mode,
 body:has(.light-mode) {
     background-color: var(--light-bg-color);
@@ -105,8 +174,10 @@ body:has(.light-mode) footer {
 }
 
 .light-mode .drop-zone,
+.light-mode .file-upload-container,
 .light-mode .logo-preview,
 body:has(.light-mode) .drop-zone,
+body:has(.light-mode) .file-upload-container,
 body:has(.light-mode) .logo-preview {
     border-color: var(--light-border-color);
     background-color: rgba(0, 0, 0, 0.05);
@@ -120,7 +191,7 @@ body:has(.light-mode) .logo-preview {
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Light mode back to top button */
+/* Przycisk powrotu na górę w trybie jasnym */
 .light-mode~.back-to-top,
 body:has(.light-mode) .back-to-top {
     background-color: rgba(255, 255, 255, 0.9);

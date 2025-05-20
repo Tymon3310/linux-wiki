@@ -1,17 +1,17 @@
 <?php
-// Rozpoczęcie sesji dla uwierzytelniania użytkowników
+// Rozpoczęcie sesji w celu uwierzytelniania użytkowników
 session_start();
 
-// Sprawdzenie czy użytkownik jest zalogowany
+// Sprawdzenie, czy użytkownik jest zalogowany
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php?redirect=" . urlencode("edit.php?id=" . $_GET['id']));
     exit;
 }
 
-// Dołączenie konfiguracji bazy danych
+// Dołączenie pliku konfiguracyjnego bazy danych
 include 'include/db_config.php';
 
-// Sprawdzenie czy parametr ID istnieje
+// Sprawdzenie, czy parametr ID istnieje i jest numeryczny
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: index.php?status=error&message=" . urlencode("Nieprawidłowy identyfikator dystrybucji."));
     exit();
@@ -20,7 +20,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = (int)$_GET['id'];
 $user_id = $_SESSION['user_id'];
 
-// Pobieranie szczegółów dystrybucji
+// Pobranie szczegółów dystrybucji z bazy danych
 $sql = "SELECT * FROM distributions WHERE id = $id";
 $result = $conn->query($sql);
 
@@ -31,7 +31,7 @@ if (!$result || $result->num_rows === 0) {
 
 $distro = $result->fetch_assoc();
 
-// Sprawdzenie czy użytkownik jest właścicielem tej dystrybucji
+// Sprawdzenie, czy użytkownik jest właścicielem dystrybucji lub administratorem
 if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
     header("Location: details.php?id=$id&status=error&message=" . urlencode("Nie masz uprawnień do edycji tej dystrybucji."));
     exit();
@@ -61,12 +61,12 @@ if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
                 </button>
                 <a href="index.php" class="btn-return"><i class="fas fa-home"></i> Strona główna</a>
                 <?php if (isset($_SESSION['user_id'])): ?>
-                    <!-- Użytkownik jest zalogowany -->
+                    <!-- Użytkownik zalogowany -->
                     <a href="logout.php" class="btn-primary">
                         <i class="fas fa-sign-out-alt"></i> Wyloguj się
                     </a>
                 <?php else: ?>
-                    <!-- Użytkownik nie jest zalogowany -->
+                    <!-- Użytkownik niezalogowany -->
                     <a href="login.php" class="btn-primary">
                         <i class="fas fa-sign-in-alt"></i> Zaloguj się
                     </a>
@@ -89,7 +89,7 @@ if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
                 <div class="form-group">
                     <label for="description"><i class="fas fa-align-left"></i> Opis (min. 30 znaków):</label>
                     <textarea name="description" id="description" rows="5" required><?php echo htmlspecialchars($distro['description']); ?></textarea>
-                    <div id="description-counter" class="char-counter">0 znaków</div>
+                    <small id="description-counter" class="char-counter">0 znaków</small>
                 </div>
                 
                 <div class="form-group">
@@ -111,20 +111,24 @@ if ($distro['added_by'] != $user_id && $_SESSION['user_id'] != 1) {
                 </div>
                 
                 <div class="form-group">
-                    <label><i class="fas fa-upload"></i> Zmień logo (opcjonalnie, maks. 2MB):</label>
-                    <div class="file-upload-container">
-                        <!-- Oryginalny input zostaje, ale będzie ukryty przez JavaScript -->
-                        <input type="file" name="logo" id="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml">
+                    <label for="logo"><i class="fas fa-upload"></i> Zmień logo (opcjonalnie, maks. 2MB):</label>
+                    <div class="file-upload-container" data-existing-logo="<?php echo htmlspecialchars($distro['logo_path']); ?>" data-existing-logo-name="<?php echo htmlspecialchars($distro['logo_path'] ? basename($distro['logo_path']) : ''); ?>">
+                        <!-- Wskazówka i podgląd zostaną dodane dynamicznie przez JS -->
+                        <input type="file" id="logo" name="logo" accept="image/png, image/jpeg, image/gif, image/svg+xml" style="display: none;">
+                        <button type="button" class="file-select-button">Wybierz plik</button>
                     </div>
                     <small><i class="fas fa-info-circle"></i> Akceptowane formaty: JPG, JPEG, PNG, GIF, SVG</small>
                     <small><i class="fas fa-hand-pointer"></i> Możesz przeciągnąć i upuścić plik lub wkleić obraz ze schowka (Ctrl+V)</small>
+                    <!-- Komunikaty o błędach będą dodawane tutaj przez JS -->
                 </div>
                 
                 <div class="form-buttons">
-                    <button type="submit" name="update" class="btn-primary"><i class="fas fa-save"></i> Zapisz zmiany</button>
-                    <button type="button" id="delete-button" class="btn-delete" data-id="<?php echo $distro['id']; ?>" 
-                        data-name="<?php echo htmlspecialchars($distro['name']); ?>"><i class="fas fa-trash-alt"></i> Usuń</button>
                     <a href="details.php?id=<?php echo $distro['id']; ?>" class="btn-secondary"><i class="fas fa-times"></i> Anuluj</a>
+                    <div class="action-group">
+                        <button type="submit" name="update" class="btn-primary"><i class="fas fa-save"></i> Zapisz zmiany</button>
+                        <button type="button" id="delete-button" class="btn-delete" data-id="<?php echo $distro['id']; ?>" 
+                            data-name="<?php echo htmlspecialchars($distro['name']); ?>"><i class="fas fa-trash-alt"></i> Usuń</button>
+                    </div>
                 </div>
             </form>
         </div>

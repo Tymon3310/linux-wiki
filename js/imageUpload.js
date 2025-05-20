@@ -341,7 +341,7 @@ export function initializeImageUpload() {
             <span>Przeciągnij i upuść obrazek tutaj, wklej ze schowka (Ctrl+V), lub</span>
         `;
         if (isFirefox()) {
-            hintText += ` <p class="firefox-warning"><i class="fas fa-exclamation-triangle"></i> Uwaga: Firefox może nie obsługiwać przeciągania obrazów z innych stron. Zalecamy zapisać obraz na dysk i przeciągnąć go stąd.</p>`;
+            hintText += `<div class="firefox-warning"><i class="fas fa-exclamation-triangle"></i> Uwaga: Firefox może nie obsługiwać przeciągania obrazów z innych stron. Zalecamy zapisać obraz na dysk i przeciągnąć go stąd.</div>`;
         }
         uploadHint.innerHTML = hintText;
         // Upewnij się, że wskazówka jest widoczna na początku

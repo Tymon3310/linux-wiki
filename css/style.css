@@ -1,10 +1,10 @@
 /* filepath: /opt/lampp/htdocs/css/style.css */
-/* Modular CSS imports */
+/* Importy modularnych arkuszy CSS */
 @import url('theme.css');
 @import url('base.css');
 @import url('layout.css');
 @import url('components.css');
-/* Contains misc components like headings, admin-tag */
+/* Zawiera różne komponenty, takie jak nagłówki, tag administratora */
 @import url('buttons.css');
 @import url('forms.css');
 @import url('cards.css');
@@ -16,5 +16,7 @@
 @import url('video.css');
 @import url('account.css');
 @import url('animations.css');
+@import url('custom-animations.css');
 @import url('utilities.css');
 @import url('responsive.css');
+@import url('admin.css');

@@ -1,17 +1,17 @@
 <?php
-// Rozpoczęcie sesji, aby uzyskać informacje o użytkowniku
+// Rozpoczęcie sesji w celu uzyskania informacji o użytkowniku
 session_start();
 
-// Sprawdzenie czy użytkownik jest zalogowany
+// Sprawdzenie, czy użytkownik jest zalogowany
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php?redirect=" . urlencode("edit.php?id=" . $_POST['id']));
     exit;
 }
 
 require_once 'db_config.php';
-require_once __DIR__ . '/validation_utils.php'; // Dodanie walidacji emoji
+require_once __DIR__ . '/validation_utils.php'; // Dołączenie pliku z funkcją walidacji emoji
 
-// Włączenie raportowania błędów do debugowania
+// Włączenie raportowania wszystkich błędów PHP w celach diagnostycznych
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $website = isset($_POST['website']) ? mysqli_real_escape_string($conn, $_POST['website']) : '';
     $youtube = isset($_POST['youtube']) ? mysqli_real_escape_string($conn, $_POST['youtube']) : '';
 
-    // Najpierw sprawdź czy dystrybucja istnieje i pobierz stare logo i autora
+    // Najpierw sprawdzenie, czy dystrybucja istnieje oraz pobranie starego logo i informacji o autorze
     $check_sql = "SELECT * FROM distributions WHERE id = $id";
     $check_result = mysqli_query($conn, $check_sql);
     if (!$check_result || mysqli_num_rows($check_result) == 0) {
@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $distro = mysqli_fetch_assoc($check_result);
     $old_logo = $distro['logo_path'];
 
-    // Sprawdzenie uprawnień właściciela
+    // Sprawdzenie uprawnień: czy zalogowany użytkownik jest właścicielem dystrybucji lub administratorem
     if ($distro['added_by'] != $_SESSION['user_id'] && $_SESSION['user_id'] != 1) {
         header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Nie masz uprawnień do edycji tej dystrybucji."));
         exit;
@@ -69,9 +69,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
         exit;
     }
 
-    // Domyślnie użyj starej ścieżki logo
+    // Domyślnie użycie starej ścieżki do logo
     $logo_path = $old_logo;
-    // Obsługa przesyłania logo, jeśli nowe zostało dostarczone
+    // Obsługa przesyłania nowego logo, jeśli zostało dostarczone
     if (isset($_FILES['logo']) && $_FILES['logo']['error'] !== UPLOAD_ERR_NO_FILE) {
         $target_dir = $_SERVER['DOCUMENT_ROOT'] . "/img/";
         if (!file_exists($target_dir) && !mkdir($target_dir, 0777, true)) {
@@ -96,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
                 header("Location: ../edit.php?id=$id&status=error&message=" . urlencode("Katalog docelowy nie ma uprawnień do zapisu.")); exit;
             }
         }
-        // Jeśli plik o tej samej nazwie istnieje, usuń go, aby move_uploaded_file mógł go nadpisać
+        // Jeśli plik o tej samej nazwie już istnieje, usunięcie go, aby `move_uploaded_file` mógł go nadpisać
         if (file_exists($target_file)) {
             unlink($target_file);
         }

@@ -1,47 +1,183 @@
 /* filepath: /opt/lampp/htdocs/css/responsive.css */
-/* Style Responsywne */
+/* Style responsywne */
 
-/* na małe wyświetlacze */
-@media (max-width: 768px) {
+/* Base responsive breakpoints */
+:root {
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+}
+
+/* Tablet and smaller devices */
+@media (max-width: 992px) {
+    html {
+        font-size: 15px;
+    }
+
+    .container {
+        padding: var(--space-md);
+    }
+
     h1 {
+        font-size: 2.2rem;
+    }
+
+    h2 {
         font-size: 1.8rem;
     }
-
-    #search-form {
-        flex-direction: column;
+    
+    .distro-logo {
+        width: 80px;
+        height: 80px;
     }
+}
 
-    #search-input {
-        border-radius: 4px;
-        margin-bottom: 10px;
-    }
-
-    #search-button {
-        border-radius: 4px;
-        width: 100%;
-    }
-
-    .search-section,
-    .add-form-section {
-        padding: 1.5rem;
-    }
-
-    .distro-content {
-        flex-direction: column;
+/* For small tablets and large phones */
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;
     }
 
     header {
         flex-direction: column;
         text-align: center;
+        gap: var(--space-md);
     }
-
-    .btn-return {
-        margin-top: 1rem;
+    
+    .header-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
     }
-
-    /* Upewnij się, że komentarze zajmują pełną szerokość na małych ekranach */
+    
+    .header-buttons .btn-primary,
+    .header-buttons .btn-return,
+    .header-buttons button#show-add-form {
+        min-width: 140px;
+        margin: var(--space-xs);
+    }
+    
+    #search-form {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+    
+    #search-input {
+        border-radius: var(--border-radius);
+        margin-bottom: var(--space-sm);
+    }
+    
+    #search-button {
+        border-radius: var(--border-radius);
+        width: 100%;
+    }
+    
+    .search-section,
+    .add-form-section {
+        padding: var(--space-lg);
+    }
+    
+    .distro-content {
+        flex-direction: column;
+    }
+    
+    .search-results {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .form-group label {
+        font-size: 1rem;
+    }
+    
+    /* Make sure comments are properly sized on small screens */
     .comment {
         max-width: 100%;
         min-width: unset;
+    }
+    
+    .modal-content {
+        width: 90%;
+        max-width: 500px;
+    }
+}
+
+/* Small phones */
+@media (max-width: 576px) {
+    html {
+        font-size: 13px;
+    }
+    
+    .container {
+        padding: var(--space-sm);
+    }
+    
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .search-section,
+    .add-form-section {
+        padding: var(--space-md);
+    }
+    
+    /* Single column for the smallest screens */
+    .search-results {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-buttons .btn-primary,
+    .header-buttons .btn-return,
+    .header-buttons button#show-add-form {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+    
+    /* Optimize form elements for small screens */
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 10px 12px;
+    }
+    
+    /* Make long text more readable on small screens */
+    p, li {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+}
+
+/* Print styles for better printing experience */
+@media print {
+    body {
+        background: white;
+        font-size: 12pt;
+        color: black;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    header, footer, .search-section, .add-form-section, 
+    .btn, .btn-primary, .btn-secondary, button, .back-to-top {
+        display: none !important;
+    }
+    
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+    
+    .distro-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        border: 1px solid #ddd;
+        box-shadow: none;
     }
 }

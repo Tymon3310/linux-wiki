@@ -1,32 +1,32 @@
 <?php
-// Zaczynamy sesję, żeby wiedzieć, kto jest zalogowany
+// Rozpoczęcie sesji, aby uzyskać informacje o zalogowanym użytkowniku
 session_start();
 
-// Sprawdzamy, czy użytkownik jest zalogowany. Jeśli nie, przekierowujemy go do logowania i zapamiętujemy, gdzie był
+// Sprawdzenie, czy użytkownik jest zalogowany. Jeśli nie, przekierowanie do strony logowania z zapamiętaniem poprzedniej lokalizacji
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php?redirect=index.php");
     exit;
 }
 
 require_once 'db_config.php';
-require_once __DIR__ . '/validation_utils.php'; // Dodanie walidacji emoji
+require_once __DIR__ . '/validation_utils.php'; // Dołączenie pliku z funkcją walidacji emoji
 
-// Włączamy wyświetlanie błędów, żeby łatwiej było znaleźć problemy
+// Włączenie wyświetlania wszystkich błędów w celu łatwiejszego debugowania
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
-    // Pobieramy ID użytkownika z sesji
+    // Pobranie ID użytkownika z sesji
     $user_id = $_SESSION['user_id'];
     
-    // Pobieramy dane z formularza i czyścimy je
+    // Pobranie danych z formularza i ich oczyszczenie
     $name = mysqli_real_escape_string($conn, $_POST['name']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
     $website = !empty($_POST['website']) ? mysqli_real_escape_string($conn, $_POST['website']) : NULL;
     $youtube = !empty($_POST['youtube']) ? mysqli_real_escape_string($conn, $_POST['youtube']) : NULL;
     
-    // Sprawdzamy poprawność danych
+    // Walidacja danych wejściowych
     $errors = [];
     
     if (empty($name)) {
@@ -43,10 +43,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
         $errors[] = "Opis dystrybucji nie może zawierać emoji.";
     }
     
-    // Sprawdzamy poprawność adresu strony www
+    // Walidacja adresu URL strony internetowej
     if (!empty($website)) {
         $website = trim($website);
-        // Dodajemy http:// jeśli nie ma protokołu
+        // Dodanie "http://" jeśli brakuje protokołu
         if (!preg_match('~^(?:f|ht)tps?://~i', $website)) {
             $website = 'http://' . $website;
             $_POST['website'] = $website;
@@ -56,12 +56,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
         }
     }
     
-    // Sprawdzamy poprawność adresu YouTube
+    // Walidacja adresu URL filmu na YouTube
     if (!empty($youtube)) {
         $youtube = trim($youtube);
-        // Obsługujemy różne formaty linków YouTube
+        // Obsługa różnych formatów linków YouTube
         if (preg_match('/(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/', $youtube, $matches)) {
-            // Przekształcamy do standardowej formy https://www.youtube.com/watch?v=VIDEO_ID
+            // Konwersja do standardowego formatu https://www.youtube.com/watch?v=VIDEO_ID
             $youtube_id = $matches[1];
             $youtube = 'https://www.youtube.com/watch?v=' . $youtube_id;
             $_POST['youtube'] = $youtube;
@@ -70,11 +70,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
         }
     }
     
-    // Sprawdzamy, czy przesłano plik z logo
+    // Sprawdzenie, czy plik z logo został przesłany
     if (!isset($_FILES['logo']) || $_FILES['logo']['error'] === UPLOAD_ERR_NO_FILE) {
         $errors[] = "Logo dystrybucji jest wymagane.";
     } else {
-        // Sprawdzamy typ pliku
+        // Walidacja typu pliku
         $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
         $file_type = $_FILES['logo']['type'];
         
@@ -82,16 +82,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add'])) {
             $errors[] = "Dozwolone są tylko pliki obrazów (JPG, PNG, GIF, SVG).";
         }
         
-        // Sprawdzamy rozmiar pliku (maksymalnie 2MB)
+        // Walidacja rozmiaru pliku (maksymalnie 2MB)
         if ($_FILES['logo']['size'] > 2 * 1024 * 1024) {
             $errors[] = "Rozmiar pliku nie może przekraczać 2MB.";
         }
     }
 }
 
-// --- BEGIN ADDED CODE ---
-// Sprawdź, czy nazwa dystrybucji już istnieje w bazie danych
-if (empty($errors)) { // Only check if other validations passed
+
+// Sprawdzenie, czy nazwa dystrybucji już istnieje w bazie danych
+if (empty($errors)) { // Sprawdzenie tylko jeśli inne walidacje przeszły pomyślnie
     $check_name_sql = "SELECT id FROM distributions WHERE name = ?";
     $stmt_check = $conn->prepare($check_name_sql);
     if ($stmt_check) {
@@ -103,12 +103,12 @@ if (empty($errors)) { // Only check if other validations passed
         }
         $stmt_check->close();
     } else {
-        // Error preparing statement - add a generic error or log it
+        // Błąd podczas przygotowywania zapytania - dodaj ogólny błąd lub zaloguj to
         $errors[] = "Błąd podczas sprawdzania nazwy dystrybucji.";
         error_log("Prepare failed for name check: (" . $conn->errno . ") " . $conn->error);
     }
 }
-// --- END ADDED CODE ---
+
 
 if (!empty($errors)) {
     $error_message = implode("__NEWLINE__", $errors);
@@ -191,35 +191,35 @@ if (!move_uploaded_file($_FILES['logo']['tmp_name'], $target_file)) {
     exit;
 }
 
-// Dodajemy dystrybucję do bazy danych using prepared statement
+// Dodajemy dystrybucję do bazy danych za pomocą przygotowanego zapytania
 $sql = "INSERT INTO distributions (name, description, website, youtube, logo_path, added_by) VALUES (?, ?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
 
 if ($stmt) {
-    // Bind parameters (s=string, i=integer)
+    // Powiązanie parametrów (s - string, i - integer)
     $stmt->bind_param("sssssi", $name, $description, $website, $youtube, $logo_path, $user_id);
 
     if ($stmt->execute()) {
-        // Success
+        // Sukces
         header("Location: ../index.php?status=success&added=" . urlencode($name));
     } else {
-        // Execution error
-        // Log the detailed error for debugging
+        // Błąd wykonania
+        // Zapisz szczegółowy błąd do logów
         error_log("Error inserting distribution: (" . $stmt->errno . ") " . $stmt->error);
-        // Provide a user-friendly error message
+        // Podaj przyjazny komunikat o błędzie
         header("Location: ../index.php?status=error&message=" . urlencode("Wystąpił błąd podczas dodawania dystrybucji. Spróbuj ponownie."));
     }
     $stmt->close();
 } else {
-    // Prepare statement error
-    // Log the detailed error for debugging
+    // Błąd przygotowania zapytania
+    // Zapisz szczegółowy błąd do logów
     error_log("Prepare failed for insert: (" . $conn->errno . ") " . $conn->error);
-    // Provide a user-friendly error message
+    // Podaj przyjazny komunikat o błędzie
     header("Location: ../index.php?status=error&message=" . urlencode("Wystąpił błąd serwera podczas przygotowywania zapytania."));
 }
 
-$conn->close(); // Close connection after use
-exit; // Ensure script stops here
+$conn->close(); // Zamknij połączenie po użyciu
+exit; // Upewnij się, że skrypt zatrzymuje się tutaj
 
 // Przekierowujemy w przypadku bezpośredniego dostępu do pliku
 header("Location: ../index.php");
